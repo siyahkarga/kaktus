@@ -13,95 +13,86 @@
 <link rel="manifest" href='data:application/manifest+json,{"name":"Dans%20Eden%20Kakt%C3%BCs","short_name":"Kakt%C3%BCs","start_url":".","display":"standalone","background_color":"%230f1230","theme_color":"%230f1230"}'>
 <style>
   :root{
-    --night:#0f1230; --panel:rgba(255,255,255,.06); --line:rgba(255,255,255,.14);
+    --night:#0f1230; --panel:rgba(255,255,255,.07); --line:rgba(255,255,255,.16);
     --cream:#f4f6ff; --dim:#98a0d8; --hot:#ff5c8a; --sun:#ffc14d; --aqua:#40c4dd; --leaf:#4fd07f;
   }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
   html,body{margin:0;padding:0}
-  body{
-    min-height:100dvh;
-    background:radial-gradient(120% 65% at 50% 0%, #2a2570 0%, rgba(42,37,112,0) 62%), var(--night);
-    color:var(--cream);
-    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    display:flex;justify-content:center;padding:14px 12px 30px;
-  }
-  .app{width:100%;max-width:480px}
-  header{text-align:center}
-  .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);margin:0 0 3px}
-  h1{font-size:clamp(24px,7vw,32px);font-weight:800;margin:0;letter-spacing:-.01em}
-  h1 span{color:var(--leaf)}
+  body{min-height:100dvh;background:radial-gradient(120% 65% at 50% 0%, #2a2570 0%, rgba(42,37,112,0) 62%), var(--night);
+    color:var(--cream);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    display:flex;justify-content:center;padding:10px 12px 26px}
+  .app{width:100%;max-width:460px}
 
-  .stage{position:relative;margin:8px 0 10px;border-radius:24px;overflow:hidden;
+  .top{display:flex;align-items:center;justify-content:center;position:relative;height:34px}
+  .top h1{font-size:19px;font-weight:800;margin:0;letter-spacing:-.01em}
+  .top h1 span{color:var(--leaf)}
+  .gear{position:absolute;right:0;top:0;width:34px;height:34px;border:0;background:transparent;
+    color:rgba(255,255,255,.28);font-size:17px;cursor:pointer}
+
+  .stage{position:relative;margin:4px 0 12px;border-radius:24px;overflow:hidden;
     background:radial-gradient(75% 50% at 50% 20%, rgba(64,196,221,.16), rgba(64,196,221,0) 70%),
-      linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-    border:1px solid var(--line)}
+      linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));border:1px solid var(--line)}
   .stage svg{display:block;width:100%;height:auto}
-  .badge{position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;
-    color:var(--dim);background:rgba(0,0,0,.3);border:1px solid var(--line);padding:6px 11px;border-radius:999px}
-  .dot{width:8px;height:8px;border-radius:50%;background:var(--dim)}
+  .badge{position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;
+    color:var(--dim);background:rgba(0,0,0,.32);border:1px solid var(--line);padding:7px 13px;border-radius:999px}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--dim)}
   .dot.live{background:var(--hot);animation:pulse 1s infinite}
   .dot.busy{background:var(--sun)}
   @keyframes pulse{50%{opacity:.25}}
-
-  .meter{position:absolute;left:10px;right:10px;bottom:10px;height:6px;border-radius:99px;background:rgba(0,0,0,.35);overflow:hidden;display:none}
+  .meter{position:absolute;left:12px;right:12px;bottom:10px;height:8px;border-radius:99px;background:rgba(0,0,0,.4);overflow:hidden;display:none}
   .meter.on{display:block}
-  .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--aqua),var(--hot));transition:width .06s linear}
-  .meter u{position:absolute;top:-3px;width:2px;height:12px;background:var(--sun);border-radius:2px}
+  .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--aqua),var(--hot))}
 
-  .modes{display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);padding:5px;border-radius:999px}
-  .modes button{flex:1;border:0;background:transparent;color:var(--dim);font:inherit;font-weight:700;font-size:14px;
-    padding:10px 6px;border-radius:999px;cursor:pointer}
-  .modes button[aria-pressed="true"]{background:var(--cream);color:#1b1a44}
+  .modes{display:flex;gap:10px}
+  .modes button{flex:1;border:2px solid var(--line);background:var(--panel);color:var(--dim);
+    font:inherit;font-weight:800;font-size:17px;padding:14px 6px;border-radius:20px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:3px}
+  .modes button b{font-size:26px;line-height:1}
+  .modes button[aria-pressed="true"]{background:var(--cream);color:#1b1a44;border-color:var(--cream)}
 
-  .fx{display:flex;gap:7px;overflow-x:auto;padding:12px 2px 4px;scrollbar-width:none}
-  .fx::-webkit-scrollbar{display:none}
-  .fx button{flex:0 0 auto;border:1px solid var(--line);background:var(--panel);color:var(--cream);
-    font:inherit;font-size:13.5px;font-weight:600;padding:9px 14px;border-radius:999px;cursor:pointer}
-  .fx button[aria-pressed="true"]{background:var(--aqua);border-color:var(--aqua);color:#062b34}
+  .go{width:100%;margin-top:12px;border:0;cursor:pointer;font:inherit;font-weight:900;font-size:26px;
+    color:#25203f;background:linear-gradient(180deg,#7ff0a8,var(--leaf));padding:24px 10px;border-radius:26px;
+    box-shadow:0 7px 0 #2b8a52;transition:transform .08s,box-shadow .08s;letter-spacing:.01em}
+  .go:active{transform:translateY(4px);box-shadow:0 3px 0 #2b8a52}
+  .go.on{background:linear-gradient(180deg,#ff8fb0,var(--hot));box-shadow:0 7px 0 #b23258;color:#fff}
 
-  .talk{display:flex;flex-direction:column;gap:8px;margin:10px 0}
-  .bubble{padding:10px 13px;border-radius:15px;font-size:15px;line-height:1.45;max-width:88%}
+  .grid{display:none;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+  .grid.on{display:grid}
+  .grid button{border:2px solid var(--line);background:var(--panel);color:var(--cream);font:inherit;
+    padding:12px 2px 10px;border-radius:18px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;
+    font-size:12.5px;font-weight:700}
+  .grid button b{font-size:26px;line-height:1}
+  .grid button[aria-pressed="true"]{background:var(--aqua);border-color:var(--aqua);color:#062b34}
+
+  .dance{width:100%;margin-top:10px;border:2px solid var(--line);background:var(--panel);color:var(--cream);
+    font:inherit;font-weight:800;font-size:19px;padding:15px;border-radius:20px;cursor:pointer}
+
+  .talk{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  .bubble{padding:12px 15px;border-radius:16px;font-size:16px;line-height:1.4;max-width:90%;-webkit-user-select:text;user-select:text}
   .me{align-self:flex-end;background:rgba(255,255,255,.1);border:1px solid var(--line);border-bottom-right-radius:5px}
   .cactus{align-self:flex-start;background:linear-gradient(135deg,#2f9d5c,#1d7c46);border-bottom-left-radius:5px;font-weight:600}
-  .bubble.ghost{opacity:.5;font-style:italic}
 
-  .row{display:flex;gap:9px;margin-top:10px}
-  .mic{flex:1;border:0;cursor:pointer;font:inherit;font-weight:800;font-size:17px;color:#25203f;
-    background:linear-gradient(180deg,#ffd889,var(--sun));padding:16px 10px;border-radius:18px;
-    box-shadow:0 5px 0 #c08a1c;transition:transform .08s,box-shadow .08s}
-  .mic:active{transform:translateY(3px);box-shadow:0 2px 0 #c08a1c}
-  .mic.on{background:linear-gradient(180deg,#ff8fb0,var(--hot));box-shadow:0 5px 0 #b23258;color:#fff}
-  .ghost-btn{border:1px solid var(--line);background:var(--panel);color:var(--cream);font-size:17px;
-    padding:16px 17px;border-radius:18px;cursor:pointer}
-
-  .field{display:flex;gap:8px;margin-top:9px}
-  .field input{flex:1;min-width:0;background:rgba(0,0,0,.25);border:1px solid var(--line);color:var(--cream);
-    font:inherit;font-size:15px;padding:13px;border-radius:13px}
-  .field button{border:1px solid var(--line);background:var(--panel);color:var(--cream);padding:0 15px;border-radius:13px;font:inherit;font-weight:700;cursor:pointer}
-
-  .tune{margin-top:12px;display:none}
-  .tune.on{display:block}
-  .tune label{display:flex;justify-content:space-between;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:5px}
-  input[type=range]{width:100%;accent-color:var(--hot)}
-
-  .settings{display:none;flex-direction:column;gap:8px;margin-top:10px}
+  .settings{display:none;flex-direction:column;gap:9px;margin-top:12px;padding:13px;border:1px solid var(--line);
+    background:rgba(0,0,0,.25);border-radius:18px}
   .settings.on{display:flex}
-  .settings select,.settings input{background:rgba(0,0,0,.25);border:1px solid var(--line);color:var(--cream);
-    font:inherit;font-size:14px;padding:11px;border-radius:12px}
+  .settings p{margin:0;font-size:12.5px;color:var(--dim);line-height:1.5}
+  .settings select,.settings input{background:rgba(0,0,0,.3);border:1px solid var(--line);color:var(--cream);
+    font:inherit;font-size:14px;padding:11px;border-radius:12px;-webkit-user-select:text;user-select:text}
+  .settings button{border:1px solid var(--line);background:var(--panel);color:var(--cream);font:inherit;
+    font-weight:700;font-size:14px;padding:12px;border-radius:12px;cursor:pointer}
   .diag{margin-top:11px;font-size:12.5px;line-height:1.5;color:var(--sun);background:rgba(255,193,77,.1);
     border:1px solid rgba(255,193,77,.3);padding:10px 12px;border-radius:12px;display:none}
   .diag.on{display:block}
-  .note{margin-top:12px;font-size:12px;line-height:1.5;color:var(--dim);text-align:center}
   button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--hot);outline-offset:2px}
 </style>
 </head>
 <body>
 <div class="app">
 
-<header>
-  <p class="eyebrow">Blobidea oyuncak tezgâhı</p>
+<div class="top">
   <h1>Dans Eden <span>Kaktüs</span></h1>
-</header>
+  <button class="gear" id="gear" aria-label="Ayarlar">⚙</button>
+</div>
 
 <div class="stage">
   <div class="badge"><i class="dot" id="dot"></i><span id="status">Uyukluyor</span></div>
@@ -132,7 +123,6 @@
 
     <g transform="translate(200,440)">
       <g id="rootBob">
-
         <g id="s1">
           <rect class="limb" x="-25" y="-56" width="50" height="62" rx="24"/>
           <path class="twist" d="M-19,-48 C4,-40 -4,-22 18,-14"/>
@@ -175,19 +165,15 @@
 
                   <g transform="translate(0,-50)">
                     <g id="head">
-                      <!-- kapüşon -->
                       <path d="M-88,-54 C-98,-164 -52,-214 0,-214 C52,-214 98,-164 88,-54 C58,-14 -58,-14 -88,-54 Z"
                             fill="url(#gHood)" stroke="#0e5f72" stroke-width="5" stroke-linejoin="round"/>
                       <path id="hoodTip" d="M-16,-206 C-6,-232 6,-232 16,-206 C8,-214 -8,-214 -16,-206 Z" fill="#5fdcee" stroke="#0e5f72" stroke-width="4"/>
-                      <!-- yüz -->
                       <path d="M-70,-58 C-76,-152 -42,-192 0,-192 C42,-192 76,-152 70,-58 C46,-22 -46,-22 -70,-58 Z"
                             fill="url(#gBody)" stroke="#15532f" stroke-width="5" stroke-linejoin="round"/>
-                      <!-- kapitone doku -->
                       <g clip-path="url(#faceClip)" stroke="#1a6b3f" stroke-width="2.4" fill="none" opacity=".5">
                         <path d="M-120,-40 L40,-220 M-120,10 L90,-220 M-70,40 L140,-190 M-20,40 L160,-150 M30,40 L170,-100"/>
                         <path d="M120,-40 L-40,-220 M120,10 L-90,-220 M70,40 L-140,-190 M20,40 L-160,-150 M-30,40 L-170,-100"/>
                       </g>
-                      <!-- lens gözler -->
                       <g transform="translate(0,-124)">
                         <g id="eyeScale">
                           <ellipse cx="-34" cy="0" rx="28" ry="20" transform="rotate(-15,-34,0)" fill="url(#gLens)" stroke="#14322a" stroke-width="6"/>
@@ -206,11 +192,9 @@
             </g>
           </g>
         </g>
-
       </g>
     </g>
 
-    <!-- kumaş saksı -->
     <g id="pot" transform="translate(200,600)">
       <path d="M-96,-170 C-104,-104 -88,-32 -74,-6 C-38,10 38,10 74,-6 C88,-32 104,-104 96,-170 Z"
             fill="url(#gPot)" stroke="#0e5f72" stroke-width="5" stroke-linejoin="round"/>
@@ -232,53 +216,52 @@
     </style>
   </svg>
 
-  <div class="meter" id="meter"><i id="meterFill"></i><u id="meterMark"></u></div>
+  <div class="meter" id="meter"><i id="meterFill"></i></div>
 </div>
 
-<div class="modes" role="group" aria-label="Mod">
-  <button id="mParrot" aria-pressed="true">🦜 Papağan</button>
-  <button id="mSmart" aria-pressed="false">🧠 Akıllı</button>
+<div class="modes" role="group" aria-label="Oyun modu">
+  <button id="mParrot" aria-pressed="true"><b>🦜</b>Taklit</button>
+  <button id="mSmart" aria-pressed="false"><b>🧠</b>Sohbet</button>
 </div>
 
-<div class="fx" id="fxRow" role="group" aria-label="Ses efekti"></div>
+<button class="go" id="go">▶ BAŞLA</button>
 
-<div class="talk" id="talk">
-  <div class="bubble cactus">Sürekli dinle'ye bas, sonra konuş. Sustuğun anda seni efektli geri söylerim.</div>
-</div>
+<div class="grid on" id="fxGrid" role="group" aria-label="Ses efekti"></div>
 
-<div class="row">
-  <button class="mic" id="micBtn">🎧 Sürekli dinle</button>
-  <button class="ghost-btn" id="danceBtn" title="Dans et">💃</button>
-</div>
+<button class="dance" id="danceBtn">💃 Dans et</button>
 
-<div class="field">
-  <input id="txt" type="text" placeholder="Ya da buraya yaz…" autocomplete="off">
-  <button id="sendBtn">Gönder</button>
-</div>
-
-<div class="tune on" id="tune">
-  <label><span>Mikrofon hassasiyeti</span><span id="thVal">orta</span></label>
-  <input id="th" type="range" min="0.02" max="0.30" step="0.01" value="0.10">
-</div>
+<div class="talk" id="talk"></div>
 
 <div class="settings" id="settings">
-  <select id="brain" aria-label="Cevap kaynağı">
-    <option value="auto">Beyin: otomatik</option>
-    <option value="claude">Claude (kendi API anahtarım)</option>
-    <option value="ollama">Ollama (yerel ağ)</option>
-    <option value="offline">Kaktüs beyni (çevrimdışı)</option>
+  <p>Kaktüsün sesini buradan ayarla. Cevaplar telefonun içinden geliyor, internete gerek yok.</p>
+  <select id="voice" aria-label="Konuşma sesi"></select>
+  <select id="tone" aria-label="Ses tonu">
+    <option value="1">Ton: doğal</option>
+    <option value="1.3" selected>Ton: tatlı</option>
+    <option value="0.85">Ton: kalın</option>
   </select>
-  <input id="brainCfg" type="password" placeholder="sk-ant-… anahtarın (isteğe bağlı)" autocomplete="off">
+  <select id="speed" aria-label="Konuşma hızı">
+    <option value="0.85">Hız: yavaş</option>
+    <option value="1" selected>Hız: normal</option>
+    <option value="1.15">Hız: hızlı</option>
+  </select>
+  <button id="testVoice">🔊 Sesi dene</button>
+  <select id="brain">
+    <option value="offline" selected>Beyin: kaktüsün kendi cevapları</option>
+    <option value="auto">Beyin: otomatik</option>
+    <option value="claude">Claude (API anahtarı)</option>
+    <option value="ollama">Ollama (yerel ağ)</option>
+  </select>
+  <input id="brainCfg" type="password" placeholder="sk-ant-… (isteğe bağlı)" autocomplete="off">
 </div>
 
 <p class="diag" id="diag"></p>
-<p class="note">Karakter orijinal bir tasarım, lisanslı bir kahraman değil.</p>
 </div>
 
 <script>
 const el = id => document.getElementById(id);
 
-/* ============ 1) RIG ============ */
+/* ============ RIG ============ */
 const N = {
   root: el('rootBob'), s1: el('s1'), s2: el('s2'), s3: el('s3'), head: el('head'),
   armL: el('armL'), armLF: el('armLF'), armR: el('armR'), armRF: el('armRF'),
@@ -292,15 +275,13 @@ const C = {
   potSy: ch(1, 220, 18), mouth: ch(.1, 260, 20), eye: ch(1, 200, 16),
   pupX: ch(0, 80, 12), pupY: ch(0, 80, 12), tip: ch(0, 70, 9)
 };
-let state = 'idle', level = 0, blinkAt = 2, eyeClose = 0;
+let state = 'idle', level = 0, blinkAt = 2, eyeClose = 0, _t = 0;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
 function setState(s, label) {
   state = s;
   el('dot').className = 'dot' + (s === 'listening' ? ' live' : (s === 'thinking' ? ' busy' : ''));
-  el('status').textContent = label || ({ idle: 'Uyukluyor', listening: 'Dinliyor', thinking: 'Düşünüyor', talking: 'Konuşuyor', dance: 'Dans ediyor' })[s];
+  el('status').textContent = label || ({ idle: 'Uyukluyor', listening: 'Seni dinliyorum', thinking: 'Düşünüyor', talking: 'Konuşuyor', dance: 'Dans ediyor' })[s];
 }
-
 function targets(t) {
   const T = C, a = level;
   if (state === 'idle') {
@@ -323,8 +304,7 @@ function targets(t) {
   } else if (state === 'thinking') {
     T.s1.t = -2; T.s2.t = -4; T.s3.t = -7 + Math.sin(t * 1.6) * 2;
     T.head.t = 13 + Math.sin(t * 1.6) * 2;
-    T.armL.t = -68; T.armLF.t = -14;
-    T.armR.t = 44 + Math.sin(t * 3.4) * 5; T.armRF.t = 94;
+    T.armL.t = -68; T.armLF.t = -14; T.armR.t = 44 + Math.sin(t * 3.4) * 5; T.armRF.t = 94;
     T.bobY.t = 0; T.rootRot.t = -2; T.sx.t = 1; T.sy.t = 1; T.potSy.t = 1;
     T.mouth.t = .05; T.eye.t = .85; T.pupX.t = -5; T.pupY.t = -6;
   } else if (state === 'talking') {
@@ -334,8 +314,7 @@ function targets(t) {
     T.armL.t = -82 - a * 26 + Math.sin(t * 5) * 8; T.armLF.t = -24 - a * 24;
     T.armR.t = 82 + a * 26 - Math.sin(t * 5 + 1) * 8; T.armRF.t = 24 + a * 24;
     T.bobY.t = -Math.abs(Math.sin(t * 4)) * 5 * g; T.rootRot.t = Math.sin(t * 3.4) * 1.5;
-    T.sx.t = 1 - a * .04; T.sy.t = 1 + a * .06;
-    T.potSy.t = 1 - Math.max(0, Math.sin(t * 4)) * .03;
+    T.sx.t = 1 - a * .04; T.sy.t = 1 + a * .06; T.potSy.t = 1 - Math.max(0, Math.sin(t * 4)) * .03;
     T.mouth.t = .1 + a * .95; T.eye.t = 1 + a * .1; T.pupX.t = Math.sin(t * 1.7) * 4; T.pupY.t = 0;
   } else {
     const b = t * 5.2;
@@ -365,32 +344,29 @@ function apply() {
   N.tip.setAttribute('transform', 'rotate(' + (C.tip.x * .6).toFixed(2) + ')');
 }
 
-/* ============ 2) SES: yakalama + seviye ============ */
+/* ============ SES ============ */
 let ac = null, micStream = null, proc = null, playAnalyser = null, pbuf = null;
-let micLevel = 0, fakeTalk = false, fakeSeed = 0;
+let micLevel = 0, fakeTalk = false, fakeSeed = 0, heardPulse = 0;
 const CAP = { chunks: [], pre: [], preLen: 0, recording: false, preMax: 0 };
 
 function readLevel() {
-  if (fakeTalk) return Math.min(1, .35 + Math.abs(Math.sin(perfNow() * 11 + fakeSeed)) * .4 + Math.abs(Math.sin(perfNow() * 27)) * .2);
+  if (fakeTalk) return Math.min(1, .35 + Math.abs(Math.sin(_t * 11 + fakeSeed)) * .4 + Math.abs(Math.sin(_t * 27)) * .2);
   if (playAnalyser) {
     if (!pbuf || pbuf.length !== playAnalyser.fftSize) pbuf = new Float32Array(playAnalyser.fftSize);
     playAnalyser.getFloatTimeDomainData(pbuf);
     let s = 0; for (let i = 0; i < pbuf.length; i++) s += pbuf[i] * pbuf[i];
     return Math.min(1, Math.sqrt(s / pbuf.length) * 9);
   }
-  return Math.min(1, micLevel * 9);
+  if (micStream) return Math.min(1, micLevel * 9);
+  return heardPulse;
 }
-let _t = 0; const perfNow = () => _t;
-
 function diag(m) { const d = el('diag'); d.textContent = m || ''; d.classList.toggle('on', !!m); }
 function checkEnv() {
-  const inFrame = window.self !== window.top;
-  if (!window.isSecureContext) return 'Sayfa https değil, mikrofon kapalı. GitHub Pages linkinden aç.';
+  if (!window.isSecureContext) return 'Sayfa https değil, mikrofon kapalı.';
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
-    return inFrame ? 'Bu önizleme çerçevesi mikrofon iznini taşımıyor. Yayınladığın linkten aç.' : 'Bu tarayıcı mikrofon vermiyor.';
+    return window.self !== window.top ? 'Bu önizleme mikrofon iznini taşımıyor, yayınladığın linkten aç.' : 'Bu tarayıcı mikrofon vermiyor.';
   return '';
 }
-
 async function ensureMic() {
   if (micStream) { if (ac.state === 'suspended') await ac.resume(); return true; }
   const e0 = checkEnv(); if (e0) { diag(e0); return false; }
@@ -408,41 +384,37 @@ async function ensureMic() {
       let s = 0; for (let i = 0; i < inp.length; i++) s += inp[i] * inp[i];
       micLevel = Math.sqrt(s / inp.length);
       const copy = new Float32Array(inp);
-      if (CAP.recording) { CAP.chunks.push(copy); }
-      else {
-        CAP.pre.push(copy); CAP.preLen += copy.length;
-        while (CAP.preLen > CAP.preMax) CAP.preLen -= CAP.pre.shift().length;
-      }
+      if (CAP.recording) CAP.chunks.push(copy);
+      else { CAP.pre.push(copy); CAP.preLen += copy.length; while (CAP.preLen > CAP.preMax) CAP.preLen -= CAP.pre.shift().length; }
     };
     diag(''); return true;
   } catch (err) {
-    const map = {
-      NotAllowedError: 'Mikrofon izni verilmedi. Adres çubuğundaki kilit ikonundan aç.',
-      NotFoundError: 'Mikrofon bulunamadı.', NotReadableError: 'Mikrofonu başka bir uygulama kullanıyor.'
-    };
-    diag((map[err.name] || 'Mikrofon açılamadı (' + err.name + ').') + ' Yazarak oynayabilirsin.');
+    const map = { NotAllowedError: 'Mikrofon izni verilmedi. Adres çubuğundaki kilit ikonundan aç.', NotFoundError: 'Mikrofon bulunamadı.', NotReadableError: 'Mikrofonu başka bir uygulama kullanıyor.' };
+    diag(map[err.name] || 'Mikrofon açılamadı (' + err.name + ').');
     return false;
   }
+}
+function releaseMic() {
+  if (proc) { try { proc.disconnect(); proc.onaudioprocess = null; } catch (e) { } proc = null; }
+  if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+  CAP.chunks = []; CAP.pre = []; CAP.preLen = 0; CAP.recording = false; micLevel = 0;
 }
 function buildBuffer(chunks) {
   const len = chunks.reduce((a, c) => a + c.length, 0);
   const b = ac.createBuffer(1, Math.max(len, 128), ac.sampleRate);
   const d = b.getChannelData(0); let o = 0;
   for (const c of chunks) { d.set(c, o); o += c.length; }
-  // sessiz kayıtları biraz kaldır
   let peak = 0; for (let i = 0; i < d.length; i++) peak = Math.max(peak, Math.abs(d[i]));
   if (peak > .001 && peak < .5) { const g = Math.min(4, .5 / peak); for (let i = 0; i < d.length; i++) d[i] *= g; }
   return b;
 }
 
-/* ============ 3) EFEKT ZİNCİRİ ============ */
+/* ============ EFEKTLER ============ */
 const FX = ['sincap', 'dev', 'robot', 'yanki', 'uzayli', 'telefon', 'koro', 'ters', 'rastgele'];
-const FXNAME = { sincap: '🐿️ Sincap', dev: '👹 Dev', robot: '🤖 Robot', yanki: '🕳️ Yankı', uzayli: '👽 Uzaylı', telefon: '📞 Telefon', koro: '👥 Koro', ters: '🔁 Ters', rastgele: '🎲 Rastgele' };
+const FXUI = { sincap: ['🐿️', 'Sincap'], dev: ['👹', 'Dev'], robot: ['🤖', 'Robot'], yanki: ['🕳️', 'Yankı'], uzayli: ['👽', 'Uzaylı'], telefon: ['📞', 'Telefon'], koro: ['👥', 'Koro'], ters: ['🔁', 'Ters'], rastgele: ['🎲', 'Karışık'] };
 let fx = 'sincap';
-
 function reversed(b) {
-  const n = ac.createBuffer(1, b.length, b.sampleRate);
-  const s = b.getChannelData(0), d = n.getChannelData(0);
+  const n = ac.createBuffer(1, b.length, b.sampleRate), s = b.getChannelData(0), d = n.getChannelData(0);
   for (let i = 0; i < s.length; i++) d[i] = s[s.length - 1 - i];
   return n;
 }
@@ -451,169 +423,160 @@ function shaper(amount) {
   for (let i = 0; i < n; i++) { const x = i * 2 / n - 1; curve[i] = (1 + amount) * x / (1 + amount * Math.abs(x)); }
   ws.curve = curve; return ws;
 }
-
 function playFx(buffer, kind) {
   const k = kind === 'rastgele' ? FX[Math.floor(Math.random() * (FX.length - 1))] : kind;
   const out = ac.createGain(); out.gain.value = .9;
   const an = ac.createAnalyser(); an.fftSize = 1024;
-  out.connect(an); an.connect(ac.destination);
-  playAnalyser = an;
+  out.connect(an); an.connect(ac.destination); playAnalyser = an;
   const srcs = [], extras = [];
   const mk = (buf, rate) => { const s = ac.createBufferSource(); s.buffer = buf; s.playbackRate.value = rate; srcs.push(s); return s; };
+  const via = (node, amt) => { const ws = shaper(amt); node.connect(ws); ws.connect(out); };
 
-  if (k === 'sincap') {
-    mk(buffer, 1.65).connect(out);
-  } else if (k === 'dev') {
-    const s = mk(buffer, .72);
-    const lp = ac.createBiquadFilter(); lp.type = 'lowshelf'; lp.frequency.value = 320; lp.gain.value = 9;
-    s.connect(lp); lp.connect(shaperTo(out, .4));
+  if (k === 'sincap') mk(buffer, 1.65).connect(out);
+  else if (k === 'dev') {
+    const s = mk(buffer, .72), lp = ac.createBiquadFilter();
+    lp.type = 'lowshelf'; lp.frequency.value = 320; lp.gain.value = 9;
+    s.connect(lp); via(lp, .4);
   } else if (k === 'robot') {
-    const s = mk(buffer, 1);
-    const ring = ac.createGain(); ring.gain.value = 0;
+    const s = mk(buffer, 1), ring = ac.createGain(); ring.gain.value = 0;
     const osc = ac.createOscillator(); osc.type = 'square'; osc.frequency.value = 52;
     osc.connect(ring.gain); osc.start(); extras.push(osc);
     const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 180;
     s.connect(ring); ring.connect(hp); hp.connect(out);
   } else if (k === 'yanki') {
-    const s = mk(buffer, 1.15);
-    const dly = ac.createDelay(1); dly.delayTime.value = .21;
-    const fb = ac.createGain(); fb.gain.value = .42;
-    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2400;
+    const s = mk(buffer, 1.15), dly = ac.createDelay(1), fb = ac.createGain(), lp = ac.createBiquadFilter();
+    dly.delayTime.value = .21; fb.gain.value = .42; lp.type = 'lowpass'; lp.frequency.value = 2400;
     s.connect(out); s.connect(dly); dly.connect(lp); lp.connect(fb); fb.connect(dly); dly.connect(out);
   } else if (k === 'uzayli') {
-    const s = mk(buffer, 1.25);
-    const dly = ac.createDelay(.05); dly.delayTime.value = .009;
-    const lfo = ac.createOscillator(); lfo.frequency.value = 6.5;
-    const depth = ac.createGain(); depth.gain.value = .005;
+    const s = mk(buffer, 1.25), dly = ac.createDelay(.05), lfo = ac.createOscillator(), depth = ac.createGain();
+    dly.delayTime.value = .009; lfo.frequency.value = 6.5; depth.gain.value = .005;
     lfo.connect(depth); depth.connect(dly.delayTime); lfo.start(); extras.push(lfo);
     s.connect(out); s.connect(dly); dly.connect(out);
   } else if (k === 'telefon') {
-    const s = mk(buffer, 1.05);
-    const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1500; bp.Q.value = 1.1;
-    s.connect(bp); bp.connect(shaperTo(out, 6));
+    const s = mk(buffer, 1.05), bp = ac.createBiquadFilter();
+    bp.type = 'bandpass'; bp.frequency.value = 1500; bp.Q.value = 1.1;
+    s.connect(bp); via(bp, 6);
   } else if (k === 'koro') {
-    [[.94, -.02], [1, 0], [1.07, .02]].forEach(([r, off]) => {
-      const s = mk(buffer, r);
-      const g = ac.createGain(); g.gain.value = .55;
-      const d = ac.createDelay(.1); d.delayTime.value = Math.abs(off) + .004;
+    [[.94, .006], [1, .002], [1.07, .012]].forEach(([r, dt]) => {
+      const s = mk(buffer, r), g = ac.createGain(), d = ac.createDelay(.1);
+      g.gain.value = .55; d.delayTime.value = dt;
       s.connect(d); d.connect(g); g.connect(out);
     });
-  } else if (k === 'ters') {
-    mk(reversed(buffer), 1.1).connect(out);
-  }
+  } else if (k === 'ters') mk(reversed(buffer), 1.1).connect(out);
 
-  function shaperTo(dest, amt) { const ws = shaper(amt); ws.connect(dest); return ws; }
-
-  fakeTalk = false; setState('talking', 'Efekt: ' + FXNAME[k].replace(/^\S+\s/, ''));
+  fakeTalk = false; setState('talking', FXUI[k][1]);
   let done = 0;
   srcs.forEach(s => {
     s.onended = () => {
       if (++done < srcs.length) return;
       extras.forEach(o => { try { o.stop(); } catch (e) { } });
-      playAnalyser = null; level = 0;
-      setState('dance');
-      setTimeout(() => { if (state === 'dance') setState(auto ? 'listening' : 'idle'); busy = false; }, 900);
+      playAnalyser = null; level = 0; setState('dance');
+      setTimeout(() => { busy = false; if (state === 'dance') setState(running ? 'listening' : 'idle'); }, 900);
     };
     s.start();
   });
   if (!srcs.length) { playAnalyser = null; busy = false; setState('idle'); }
 }
 
-/* ============ 4) SÜREKLİ DİNLEME (VAD) ============ */
-let auto = false, busy = false;
-const VAD = { on: false, sil: 0, dur: 0, hold: 0 };
-
+/* ============ VAD: otomatik eşik ============ */
+let running = false, busy = false, floorLvl = .01;
+const VAD = { on: false, sil: 0, dur: 0 };
 function vadTick(dt) {
-  if (!auto || !micStream) return;
-  const th = parseFloat(el('th').value), L = micLevel;
+  if (!running || mode !== 'parrot' || !micStream) return;
+  const L = micLevel;
   if (busy) { VAD.on = false; VAD.sil = 0; return; }
+  if (!VAD.on && L < floorLvl * 3) floorLvl += (L - floorLvl) * .03;
+  const th = Math.max(.028, floorLvl * 3.4 + .012);
   if (!VAD.on) {
-    if (L > th) {
-      VAD.on = true; VAD.dur = 0; VAD.sil = 0;
-      CAP.chunks = CAP.pre.slice(); CAP.recording = true;
-    }
+    if (L > th) { VAD.on = true; VAD.dur = 0; VAD.sil = 0; CAP.chunks = CAP.pre.slice(); CAP.recording = true; }
   } else {
     VAD.dur += dt;
-    if (L < th * .55) VAD.sil += dt; else VAD.sil = 0;
+    if (L < th * .6) VAD.sil += dt; else VAD.sil = 0;
     if (VAD.sil > .6 || VAD.dur > 8) {
       VAD.on = false; CAP.recording = false;
-      const chunks = CAP.chunks; CAP.chunks = [];
-      if (VAD.dur > .25) { busy = true; playFx(buildBuffer(chunks), fx); }
+      const c = CAP.chunks; CAP.chunks = [];
+      if (VAD.dur > .3) { busy = true; playFx(buildBuffer(c), fx); }
     }
   }
 }
 
-/* ============ 5) DÖNGÜ ============ */
+/* ============ DÖNGÜ ============ */
 let last = performance.now();
 function frame(now) {
   const dt = Math.min(.05, (now - last) / 1000); last = now; _t += dt;
   const raw = readLevel();
   level += (raw - level) * (raw > level ? .45 : .12);
+  heardPulse = Math.max(0, heardPulse - dt * .7);
   blinkAt -= dt; if (blinkAt < 0) { eyeClose = 1; blinkAt = 2.4 + Math.random() * 3.4; }
   eyeClose = Math.max(0, eyeClose - dt * 9);
   vadTick(dt);
   targets(_t); integrate(reduce ? dt * .5 : dt); apply();
-  if (auto) { el('meterFill').style.width = Math.min(100, micLevel * 400) + '%'; }
+  if (running) el('meterFill').style.width = Math.min(100, Math.max(level, micLevel * 6) * 100) + '%';
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 
-/* ============ 6) TANIMA + BEYİN + TTS ============ */
+/* ============ TANIMA (sohbet modu, sürekli) ============ */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let rec = null, heard = '', recognizing = false;
+let rec = null, recOn = false, speaking = false, wantRec = false;
 if (SR) {
-  rec = new SR(); rec.lang = 'tr-TR'; rec.interimResults = true; rec.continuous = false;
-  rec.onstart = () => recognizing = true;
-  rec.onresult = e => { let s = ''; for (let i = 0; i < e.results.length; i++) s += e.results[i][0].transcript; heard = s.trim(); ghost(heard); };
-  rec.onerror = e => {
-    if (e.error === 'not-allowed' || e.error === 'service-not-allowed')
-      diag('Ses tanıma bu tarayıcıda kapalı (Brave, Google konuşma servisini engeller). Chrome ile aç ya da yaz.');
-    else if (e.error === 'network') diag('Ses tanıma sunucusuna ulaşılamadı. Chrome ile dene veya yazarak konuş.');
-    recognizing = false;
+  rec = new SR(); rec.lang = 'tr-TR'; rec.interimResults = true; rec.continuous = true;
+  rec.onstart = () => { recOn = true; };
+  rec.onresult = e => {
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const txt = e.results[i][0].transcript.trim();
+      if (!txt) continue;
+      heardPulse = .6;
+      if (e.results[i].isFinal) { bubble(txt, 'me'); respond(txt); }
+    }
   };
-  rec.onend = () => recognizing = false;
+  rec.onerror = e => {
+    recOn = false;
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed')
+      diag('Ses tanıma bu tarayıcıda kapalı (Brave engelliyor). Aynı linki Chrome ile aç.');
+    else if (e.error === 'network') diag('Ses tanıma sunucusuna ulaşılamadı. Chrome ile dene.');
+  };
+  rec.onend = () => { recOn = false; if (wantRec && !speaking) setTimeout(startRec, 350); };
 }
+function startRec() { if (!rec || recOn || speaking || !wantRec) return; try { rec.start(); } catch (e) { } }
+function stopRec() { wantRec = false; if (rec && recOn) { try { rec.stop(); } catch (e) { } } }
 
-const SYSTEM = `Sen "Kaktüs", saksıda yaşayan, dans eden, konuşkan bir peluş kaktüssün.
-Kurallar: Türkçe cevap ver. En fazla 2 kısa cümle. Neşeli ve hafif ukala ol. Emoji ve madde işareti kullanma.`;
+/* ============ BEYİN ============ */
+const SYSTEM = `Sen "Kaktüs", saksıda yaşayan dans eden bir peluş kaktüssün. Küçük çocuklarla konuşuyorsun.
+Kurallar: Türkçe konuş. En fazla 2 kısa ve basit cümle. Neşeli, tatlı, nazik ol. Emoji ve madde işareti kullanma.`;
 let history = [];
 let cfgValue = ''; try { cfgValue = localStorage.getItem('kaktus-cfg') || ''; } catch (e) { }
 const cfg = () => (el('brainCfg').value || cfgValue).trim();
-
 async function askClaude(msgs) {
   const key = cfg(), h = { 'Content-Type': 'application/json' };
   if (key.startsWith('sk-')) { h['x-api-key'] = key; h['anthropic-version'] = '2023-06-01'; h['anthropic-dangerous-direct-browser-access'] = 'true'; }
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST', headers: h,
-    body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, system: SYSTEM, messages: msgs })
-  });
+  const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: h, body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, system: SYSTEM, messages: msgs }) });
   if (!r.ok) throw new Error('claude ' + r.status);
   const d = await r.json();
   return (d.content || []).filter(b => b.type === 'text').map(b => b.text).join(' ').trim();
 }
 async function askOllama(msgs) {
   const host = cfg().startsWith('http') ? cfg() : 'http://localhost:11434';
-  const r = await fetch(host + '/api/chat', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'llama3.2', stream: false, options: { temperature: .8, num_predict: 120 }, messages: [{ role: 'system', content: SYSTEM }, ...msgs] })
-  });
+  const r = await fetch(host + '/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: 'llama3.2', stream: false, options: { temperature: .8, num_predict: 120 }, messages: [{ role: 'system', content: SYSTEM }, ...msgs] }) });
   if (!r.ok) throw new Error('ollama ' + r.status);
   const d = await r.json();
   return ((d.message && d.message.content) || '').trim();
 }
 const OFF = {
-  selam: ['Selam! Saksıdan bakıyordum, geldin demek.', 'Hoş geldin. Toprak kuru ama moral yüksek.'],
-  nasil: ['Dikenlerim yerinde, keyfim yerinde.', 'Fena değilim, biraz susadım ama şikayet etmem.'],
-  soru: ['Ben bir kaktüsüm, cevabı sen biliyorsun aslında.', 'Düşündüm, hâlâ bilmiyorum.', 'Sana kesin bir şey söyleyeyim mi: belki.'],
-  emir: ['Tamam patron, ama önce bir dans.', 'Olur da nazlanırım, önce su.'],
-  genel: ['"{w}" dedin, bayıldım. Bir daha söyle.', 'Vay be, {w}. Bunu saksıya yazdırırım.', '{w} mi? Ben de tam onu düşünüyordum.']
+  selam: ['Selam! Saksıdan bakıyordum, geldin demek.', 'Merhaba! Bugün çok neşeliyim.'],
+  nasil: ['Dikenlerim yerinde, keyfim yerinde.', 'Çok iyiyim, biraz susadım ama olsun.'],
+  soru: ['Bilmiyorum ama bence çok güzel bir soru.', 'Hmm, düşünmem lazım. Sen ne dersin?', 'Belki de evet. Belki de dans etmeliyiz.'],
+  emir: ['Tamam, hemen dans ediyorum!', 'Bunu yapabilirim, izle beni.'],
+  isim: ['Benim adım Kaktüs. Seninki ne?'],
+  genel: ['{w} dedin, çok hoşuma gitti.', 'Vay, {w}. Bir daha söyle!', '{w} mi? Ben de onu düşünüyordum.']
 };
 const one = a => a[Math.floor(Math.random() * a.length)];
 function offlineBrain(x) {
   const t = x.toLowerCase();
-  if (!t) return 'Bir şey demedin ama ben yine de salladım.';
+  if (!t) return 'Seni dinliyorum.';
   if (/(selam|merhaba|günaydın|naber|hey)/.test(t)) return one(OFF.selam);
   if (/nasılsın|napıyorsun|iyi misin/.test(t)) return one(OFF.nasil);
+  if (/(adın ne|ismin ne|kimsin)/.test(t)) return one(OFF.isim);
   if (/[?]|neden|niye|nasıl|kim|ne zaman/.test(t)) return one(OFF.soru);
   if (/(dans et|zıpla|konuş|söyle|yap)/.test(t)) return one(OFF.emir);
   const w = x.split(/\s+/).filter(s => s.length > 3).pop() || x;
@@ -625,152 +588,139 @@ async function ask(text) {
   if (m === 'offline') out = offlineBrain(text);
   else if (m === 'ollama') out = await askOllama(msgs);
   else if (m === 'claude') out = await askClaude(msgs);
-  else {
-    try { out = await askClaude(msgs); }
-    catch (e1) {
-      try { out = await askOllama(msgs); }
-      catch (e2) { out = offlineBrain(text); diag('Ağ beyni yok, çevrimdışı kaktüs beyni devrede. Ayarlardan kendi Claude anahtarını girebilirsin.'); }
-    }
-  }
+  else { try { out = await askClaude(msgs); } catch (a) { try { out = await askOllama(msgs); } catch (b) { out = offlineBrain(text); } } }
   history = [...msgs, { role: 'assistant', content: out }].slice(-10);
-  return out || 'Kafam karıştı, bir daha söyler misin?';
+  return out || 'Anlamadım ama seni seviyorum.';
 }
+let voices = [], chosenVoice = null, savedVoice = '';
+try { savedVoice = localStorage.getItem('kaktus-voice') || ''; } catch (e) { }
+function fillVoices() {
+  const sy = window.speechSynthesis; if (!sy) return;
+  voices = sy.getVoices() || [];
+  if (!voices.length) return;
+  const tr = voices.filter(v => /^tr/i.test(v.lang));
+  const list = tr.length ? tr : voices;
+  el('voice').innerHTML = '';
+  list.forEach(v => {
+    const o = document.createElement('option');
+    o.value = v.name; o.textContent = (tr.length ? '' : '⚠ ') + v.name;
+    el('voice').appendChild(o);
+  });
+  chosenVoice = list.find(v => v.name === savedVoice) || list[0] || null;
+  if (chosenVoice) el('voice').value = chosenVoice.name;
+  if (!tr.length) diag('Telefonda Türkçe konuşma sesi kurulu değil, o yüzden aksanlı okuyor. Ayarlar → Genel yönetim → Metin okuma → Google konuşma motoru → Türkçe verisini indir.');
+}
+if (window.speechSynthesis) {
+  speechSynthesis.onvoiceschanged = fillVoices;
+  fillVoices();
+  setTimeout(fillVoices, 600);
+}
+
 function speak(text) {
-  const sy = window.speechSynthesis; if (!sy) { setState('idle'); return; }
+  const sy = window.speechSynthesis;
+  if (!sy) { setState(running ? 'listening' : 'idle'); return; }
   sy.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  const tr = sy.getVoices().find(v => /tr/i.test(v.lang)); if (tr) u.voice = tr;
-  u.lang = 'tr-TR'; u.pitch = 1.9; u.rate = 1.05; fakeSeed = Math.random() * 10;
+  if (!chosenVoice) fillVoices();
+  if (chosenVoice) u.voice = chosenVoice;
+  u.lang = (chosenVoice && chosenVoice.lang) || 'tr-TR';
+  u.pitch = parseFloat(el('tone').value);
+  u.rate = parseFloat(el('speed').value);
+  fakeSeed = Math.random() * 10;
+  speaking = true; if (rec && recOn) { try { rec.stop(); } catch (e) { } }
   u.onstart = () => { fakeTalk = true; setState('talking'); };
-  u.onend = () => { fakeTalk = false; level = 0; setState('dance'); setTimeout(() => { if (state === 'dance') setState('idle'); }, 2400); };
-  u.onerror = () => { fakeTalk = false; setState('idle'); };
+  u.onend = () => {
+    fakeTalk = false; level = 0; speaking = false;
+    setState('dance');
+    setTimeout(() => { if (state === 'dance') setState(running ? 'listening' : 'idle'); if (wantRec) startRec(); }, 1800);
+  };
+  u.onerror = () => { fakeTalk = false; speaking = false; setState(running ? 'listening' : 'idle'); if (wantRec) startRec(); };
   sy.speak(u);
   setTimeout(() => { if (!fakeTalk && sy.speaking) { fakeTalk = true; setState('talking'); } }, 400);
 }
+async function respond(text) {
+  setState('thinking');
+  try { const a = await ask(text); bubble(a, 'cactus'); speak(a); }
+  catch (e) { setState(running ? 'listening' : 'idle'); diag('Cevap alınamadı (' + e.message + ').'); }
+}
 
-/* ============ 7) ARAYÜZ ============ */
-let mode = 'parrot', ghostEl = null, pushing = false;
+/* ============ ARAYÜZ ============ */
+let mode = 'parrot';
 function bubble(t, who) {
   const d = document.createElement('div');
   d.className = 'bubble ' + (who === 'me' ? 'me' : 'cactus'); d.textContent = t;
   el('talk').appendChild(d);
-  while (el('talk').children.length > 8) el('talk').removeChild(el('talk').firstChild);
+  while (el('talk').children.length > 4) el('talk').removeChild(el('talk').firstChild);
   return d;
 }
-const say = t => bubble(t, 'cactus');
-function ghost(t) { if (!t) return; if (!ghostEl) { ghostEl = bubble(t, 'me'); ghostEl.classList.add('ghost'); } else ghostEl.textContent = t; }
-
 FX.forEach(k => {
   const b = document.createElement('button');
-  b.textContent = FXNAME[k]; b.setAttribute('aria-pressed', k === fx);
-  b.onclick = () => { fx = k; [...el('fxRow').children].forEach(c => c.setAttribute('aria-pressed', c === b)); };
-  el('fxRow').appendChild(b);
+  b.innerHTML = '<b>' + FXUI[k][0] + '</b>' + FXUI[k][1];
+  b.setAttribute('aria-pressed', k === fx);
+  b.onclick = () => { fx = k; [...el('fxGrid').children].forEach(c => c.setAttribute('aria-pressed', c === b)); };
+  el('fxGrid').appendChild(b);
 });
-
 function setMode(m) {
+  if (running) stopAll();
   mode = m;
   el('mParrot').setAttribute('aria-pressed', m === 'parrot');
   el('mSmart').setAttribute('aria-pressed', m === 'smart');
-  el('fxRow').style.display = m === 'parrot' ? 'flex' : 'none';
-  el('tune').classList.toggle('on', m === 'parrot');
-  el('settings').classList.toggle('on', m === 'smart');
-  el('micBtn').textContent = m === 'parrot' ? (auto ? '⏸ Dinlemeyi durdur' : '🎧 Sürekli dinle') : '🎤 Bas ve konuş';
+  el('fxGrid').classList.toggle('on', m === 'parrot');
+  el('talk').style.display = m === 'smart' ? 'flex' : 'none';
 }
-el('mParrot').onclick = () => { if (auto) stopAuto(); setMode('parrot'); };
-el('mSmart').onclick = () => { if (auto) stopAuto(); setMode('smart'); };
-
-el('th').oninput = e => {
-  const v = parseFloat(e.target.value);
-  el('thVal').textContent = v < .07 ? 'çok hassas' : v < .14 ? 'orta' : 'gürültülü ortam';
-  el('meterMark').style.left = Math.min(100, v * 400) + '%';
+el('mParrot').onclick = () => setMode('parrot');
+el('mSmart').onclick = () => setMode('smart');
+el('gear').onclick = () => el('settings').classList.toggle('on');
+el('voice').onchange = () => {
+  chosenVoice = voices.find(v => v.name === el('voice').value) || chosenVoice;
+  savedVoice = el('voice').value;
+  try { localStorage.setItem('kaktus-voice', savedVoice); } catch (e) { }
 };
-el('th').oninput({ target: el('th') });
-
+el('testVoice').onclick = () => { unlockAudio(); speak('Merhaba, ben Kaktüs. Beni böyle duyuyorsun.'); };
 el('brainCfg').value = cfgValue;
 el('brainCfg').onchange = () => { cfgValue = el('brainCfg').value.trim(); try { localStorage.setItem('kaktus-cfg', cfgValue); } catch (e) { } };
 el('brain').onchange = () => {
   const m = el('brain').value;
   el('brainCfg').type = m === 'ollama' ? 'text' : 'password';
-  el('brainCfg').placeholder = m === 'ollama' ? 'http://192.168.x.x:11434' : 'sk-ant-… anahtarın';
+  el('brainCfg').placeholder = m === 'ollama' ? 'http://192.168.x.x:11434' : 'sk-ant-…';
 };
 
-async function startAuto() {
-  if (!(await ensureMic())) return;
-  auto = true; busy = false;
+async function startAll() {
+  unlockAudio();
+  if (mode === 'parrot') {
+    if (!(await ensureMic())) return;
+  } else {
+    releaseMic();
+    if (!SR) { diag('Bu tarayıcıda ses tanıma yok. Chrome ile aç.'); return; }
+    wantRec = true; startRec();
+  }
+  running = true; busy = false; floorLvl = .01;
+  el('go').classList.add('on'); el('go').textContent = '⏸ DUR';
   el('meter').classList.add('on');
-  el('micBtn').classList.add('on'); el('micBtn').textContent = '⏸ Dinlemeyi durdur';
   setState('listening');
-  say('Dinliyorum. Konuş, sustuğunda geri söylerim.');
 }
-function stopAuto() {
-  auto = false; CAP.recording = false; VAD.on = false;
+function stopAll() {
+  running = false; busy = false; VAD.on = false; CAP.recording = false;
+  stopRec(); try { speechSynthesis.cancel(); } catch (e) { }
+  fakeTalk = false; speaking = false;
+  el('go').classList.remove('on'); el('go').textContent = '▶ BAŞLA';
   el('meter').classList.remove('on');
-  el('micBtn').classList.remove('on'); el('micBtn').textContent = '🎧 Sürekli dinle';
   setState('idle');
 }
-async function pushStart() {
-  if (!(await ensureMic())) return;
-  heard = ''; ghostEl = null; pushing = true;
-  el('micBtn').classList.add('on'); el('micBtn').textContent = '⏹ Bitir';
-  if (rec && !recognizing) { try { rec.start(); } catch (e) { } }
-  setState('listening');
-}
-function pushStop() {
-  pushing = false;
-  el('micBtn').classList.remove('on'); el('micBtn').textContent = '🎤 Bas ve konuş';
-  if (rec && recognizing) { try { rec.stop(); } catch (e) { } }
-  setState('thinking');
-  setTimeout(() => {
-    const t = heard.trim();
-    if (ghostEl) ghostEl.classList.remove('ghost');
-    if (!t) { setState('idle'); say('Seni duyamadım. Yazarak dener misin?'); return; }
-    respond(t);
-  }, 700);
-}
-async function respond(text) {
-  setState('thinking');
-  try { const a = await ask(text); say(a); speak(a); }
-  catch (e) { setState('idle'); say('Cevap alamadım.'); diag('Beyin bağlantısı kurulamadı (' + e.message + ').'); }
-}
-
-el('micBtn').onclick = () => {
-  unlockAudio();
-  if (mode === 'parrot') { auto ? stopAuto() : startAuto(); }
-  else { pushing ? pushStop() : pushStart(); }
-};
-el('sendBtn').onclick = () => {
-  const v = el('txt').value.trim(); if (!v) return;
-  el('txt').value = ''; bubble(v, 'me'); unlockAudio();
-  if (mode === 'smart') respond(v); else { setState('dance'); speak(v); }
-};
-el('txt').addEventListener('keydown', e => { if (e.key === 'Enter') el('sendBtn').click(); });
+el('go').onclick = () => running ? stopAll() : startAll();
 el('danceBtn').onclick = () => {
   unlockAudio(); setState('dance');
   clearTimeout(window.__d);
-  window.__d = setTimeout(() => { if (state === 'dance') setState(auto ? 'listening' : 'idle'); }, 6000);
+  window.__d = setTimeout(() => { if (state === 'dance') setState(running ? 'listening' : 'idle'); }, 6000);
 };
-addEventListener('pointermove', e => {
-  const r = el('stage').getBoundingClientRect();
-  if (state === 'idle') {
-    C.pupX.t = Math.max(-7, Math.min(7, (e.clientX - (r.left + r.width / 2)) / (r.width / 2) * 7));
-    C.pupY.t = Math.max(-7, Math.min(7, (e.clientY - (r.top + r.height * .35)) / (r.height / 2) * 7));
-  }
-});
-
 let unlocked = false;
 function unlockAudio() {
   if (unlocked) return; unlocked = true;
   try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') ac.resume(); } catch (e) { }
   try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch (e) { }
 }
-
 setMode('parrot');
-(function boot() {
-  const p = [];
-  const e0 = checkEnv(); if (e0) p.push(e0);
-  if (!SR) p.push('Ses tanıma yok; papağan modu çalışır, akıllı modda yaz.');
-  if (p.length) diag(p.join(' '));
-})();
+(function boot() { const e0 = checkEnv(); if (e0) diag(e0); })();
 </script>
 </body>
 </html>
