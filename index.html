@@ -12,26 +12,23 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230f1230'/%3E%3Crect x='27' y='12' width='11' height='33' rx='5.5' fill='%234fd07f'/%3E%3Crect x='15' y='24' width='12' height='9' rx='4.5' fill='%234fd07f'/%3E%3Crect x='38' y='19' width='12' height='9' rx='4.5' fill='%234fd07f'/%3E%3Cpath d='M21 44h22l-3 11H24z' fill='%2340c4dd'/%3E%3C/svg%3E">
 <link rel="manifest" href='data:application/manifest+json,{"name":"Dans%20Eden%20Kakt%C3%BCs","short_name":"Kakt%C3%BCs","start_url":".","display":"standalone","background_color":"%230f1230","theme_color":"%230f1230"}'>
 <style>
-  :root{
-    --night:#0f1230; --panel:rgba(255,255,255,.07); --line:rgba(255,255,255,.16);
-    --cream:#f4f6ff; --dim:#98a0d8; --hot:#ff5c8a; --sun:#ffc14d; --aqua:#40c4dd; --leaf:#4fd07f;
-  }
+  :root{--night:#0f1230;--panel:rgba(255,255,255,.07);--line:rgba(255,255,255,.16);
+    --cream:#f4f6ff;--dim:#98a0d8;--hot:#ff5c8a;--sun:#ffc14d;--aqua:#40c4dd;--leaf:#4fd07f}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
   html,body{margin:0;padding:0}
-  body{min-height:100dvh;background:radial-gradient(120% 65% at 50% 0%, #2a2570 0%, rgba(42,37,112,0) 62%), var(--night);
+  body{min-height:100dvh;background:radial-gradient(120% 65% at 50% 0%,#2a2570 0%,rgba(42,37,112,0) 62%),var(--night);
     color:var(--cream);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     display:flex;justify-content:center;padding:10px 12px 26px}
   .app{width:100%;max-width:460px}
-
   .top{display:flex;align-items:center;justify-content:center;position:relative;height:34px}
-  .top h1{font-size:19px;font-weight:800;margin:0;letter-spacing:-.01em}
+  .top h1{font-size:19px;font-weight:800;margin:0}
   .top h1 span{color:var(--leaf)}
-  .gear{position:absolute;right:0;top:0;width:34px;height:34px;border:0;background:transparent;
-    color:rgba(255,255,255,.28);font-size:17px;cursor:pointer}
+  .gear{position:absolute;right:0;top:0;width:34px;height:34px;border:0;background:transparent;color:rgba(255,255,255,.28);font-size:17px;cursor:pointer}
+  .skin{position:absolute;left:0;top:0;width:34px;height:34px;border:0;background:transparent;font-size:18px;cursor:pointer;opacity:.85}
 
   .stage{position:relative;margin:4px 0 12px;border-radius:24px;overflow:hidden;
-    background:radial-gradient(75% 50% at 50% 20%, rgba(64,196,221,.16), rgba(64,196,221,0) 70%),
-      linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));border:1px solid var(--line)}
+    background:radial-gradient(75% 50% at 50% 20%,rgba(64,196,221,.16),rgba(64,196,221,0) 70%),
+      linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--line)}
   .stage svg{display:block;width:100%;height:auto}
   .badge{position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;
     color:var(--dim);background:rgba(0,0,0,.32);border:1px solid var(--line);padding:7px 13px;border-radius:999px}
@@ -44,28 +41,28 @@
   .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--aqua),var(--hot))}
 
   .modes{display:flex;gap:10px}
-  .modes button{flex:1;border:2px solid var(--line);background:var(--panel);color:var(--dim);
-    font:inherit;font-weight:800;font-size:17px;padding:14px 6px;border-radius:20px;cursor:pointer;
-    display:flex;flex-direction:column;align-items:center;gap:3px}
+  .modes button{flex:1;border:2px solid var(--line);background:var(--panel);color:var(--dim);font:inherit;font-weight:800;
+    font-size:17px;padding:14px 6px;border-radius:20px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
   .modes button b{font-size:26px;line-height:1}
   .modes button[aria-pressed="true"]{background:var(--cream);color:#1b1a44;border-color:var(--cream)}
 
-  .go{width:100%;margin-top:12px;border:0;cursor:pointer;font:inherit;font-weight:900;font-size:26px;
-    color:#25203f;background:linear-gradient(180deg,#7ff0a8,var(--leaf));padding:24px 10px;border-radius:26px;
-    box-shadow:0 7px 0 #2b8a52;transition:transform .08s,box-shadow .08s;letter-spacing:.01em}
+  .go{width:100%;margin-top:12px;border:0;cursor:pointer;font:inherit;font-weight:900;font-size:26px;color:#25203f;
+    background:linear-gradient(180deg,#7ff0a8,var(--leaf));padding:24px 10px;border-radius:26px;box-shadow:0 7px 0 #2b8a52;
+    transition:transform .08s,box-shadow .08s}
   .go:active{transform:translateY(4px);box-shadow:0 3px 0 #2b8a52}
   .go.on{background:linear-gradient(180deg,#ff8fb0,var(--hot));box-shadow:0 7px 0 #b23258;color:#fff}
 
   .grid{display:none;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
   .grid.on{display:grid}
-  .grid button{border:2px solid var(--line);background:var(--panel);color:var(--cream);font:inherit;
-    padding:12px 2px 10px;border-radius:18px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;
-    font-size:12.5px;font-weight:700}
+  .grid button{border:2px solid var(--line);background:var(--panel);color:var(--cream);font:inherit;padding:12px 2px 10px;
+    border-radius:18px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12.5px;font-weight:700}
   .grid button b{font-size:26px;line-height:1}
   .grid button[aria-pressed="true"]{background:var(--aqua);border-color:var(--aqua);color:#062b34}
 
-  .dance{width:100%;margin-top:10px;border:2px solid var(--line);background:var(--panel);color:var(--cream);
-    font:inherit;font-weight:800;font-size:19px;padding:15px;border-radius:20px;cursor:pointer}
+  .pair{display:flex;gap:9px;margin-top:10px}
+  .pair button{flex:1;border:2px solid var(--line);background:var(--panel);color:var(--cream);font:inherit;font-weight:800;
+    font-size:18px;padding:15px 6px;border-radius:20px;cursor:pointer}
+  .pair button:active{transform:translateY(2px)}
 
   .talk{display:flex;flex-direction:column;gap:8px;margin-top:12px}
   .bubble{padding:12px 15px;border-radius:16px;font-size:16px;line-height:1.4;max-width:90%;-webkit-user-select:text;user-select:text}
@@ -76,10 +73,10 @@
     background:rgba(0,0,0,.25);border-radius:18px}
   .settings.on{display:flex}
   .settings p{margin:0;font-size:12.5px;color:var(--dim);line-height:1.5}
-  .settings select,.settings input{background:rgba(0,0,0,.3);border:1px solid var(--line);color:var(--cream);
-    font:inherit;font-size:14px;padding:11px;border-radius:12px;-webkit-user-select:text;user-select:text}
-  .settings button{border:1px solid var(--line);background:var(--panel);color:var(--cream);font:inherit;
-    font-weight:700;font-size:14px;padding:12px;border-radius:12px;cursor:pointer}
+  .settings select,.settings input{background:rgba(0,0,0,.3);border:1px solid var(--line);color:var(--cream);font:inherit;
+    font-size:14px;padding:11px;border-radius:12px;-webkit-user-select:text;user-select:text}
+  .settings button{border:1px solid var(--line);background:var(--panel);color:var(--cream);font:inherit;font-weight:700;
+    font-size:14px;padding:12px;border-radius:12px;cursor:pointer}
   .diag{margin-top:11px;font-size:12.5px;line-height:1.5;color:var(--sun);background:rgba(255,193,77,.1);
     border:1px solid rgba(255,193,77,.3);padding:10px 12px;border-radius:12px;display:none}
   .diag.on{display:block}
@@ -90,6 +87,7 @@
 <div class="app">
 
 <div class="top">
+  <button class="skin" id="skinBtn" aria-label="Görünüm değiştir">🎨</button>
   <h1>Dans Eden <span>Kaktüs</span></h1>
   <button class="gear" id="gear" aria-label="Ayarlar">⚙</button>
 </div>
@@ -97,26 +95,22 @@
 <div class="stage">
   <div class="badge"><i class="dot" id="dot"></i><span id="status">Uyukluyor</span></div>
 
-  <svg id="stage" viewBox="0 0 400 640" role="img" aria-label="Saksıda duran kapüşonlu peluş kaktüs">
+  <svg id="stage" viewBox="0 0 400 640" role="img" aria-label="Saksıda duran peluş kaktüs">
     <defs>
       <linearGradient id="gBody" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#2f9d5c"/><stop offset=".42" stop-color="#59dc87"/><stop offset="1" stop-color="#238a4c"/>
+        <stop id="bodyA" offset="0" stop-color="#2f9d5c"/><stop id="bodyB" offset=".42" stop-color="#59dc87"/><stop id="bodyC" offset="1" stop-color="#238a4c"/>
       </linearGradient>
       <linearGradient id="gHood" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#2ba3bd"/><stop offset=".45" stop-color="#5fdcee"/><stop offset="1" stop-color="#1d8ba6"/>
+        <stop id="hoodA" offset="0" stop-color="#2ba3bd"/><stop id="hoodB" offset=".45" stop-color="#5fdcee"/><stop id="hoodC" offset="1" stop-color="#1d8ba6"/>
       </linearGradient>
       <linearGradient id="gPot" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#2ea6c2"/><stop offset=".4" stop-color="#6fe0f0"/><stop offset="1" stop-color="#1c88a4"/>
+        <stop id="potA" offset="0" stop-color="#2ea6c2"/><stop id="potB" offset=".4" stop-color="#6fe0f0"/><stop id="potC" offset="1" stop-color="#1c88a4"/>
       </linearGradient>
       <linearGradient id="gLens" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d8e6ef"/>
+        <stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#d8e6ef"/>
       </linearGradient>
-      <clipPath id="faceClip">
-        <path d="M-70,-58 C-76,-152 -42,-192 0,-192 C42,-192 76,-152 70,-58 C46,-22 -46,-22 -70,-58 Z"/>
-      </clipPath>
-      <clipPath id="potClip">
-        <path d="M-96,-170 C-104,-104 -88,-32 -74,-6 C-38,10 38,10 74,-6 C88,-32 104,-104 96,-170 Z"/>
-      </clipPath>
+      <clipPath id="faceClip"><path d="M-70,-58 C-76,-152 -42,-192 0,-192 C42,-192 76,-152 70,-58 C46,-22 -46,-22 -70,-58 Z"/></clipPath>
+      <clipPath id="potClip"><path d="M-96,-170 C-104,-104 -88,-32 -74,-6 C-38,10 38,10 74,-6 C88,-32 104,-104 96,-170 Z"/></clipPath>
     </defs>
 
     <ellipse cx="200" cy="606" rx="122" ry="15" fill="rgba(0,0,0,.35)"/>
@@ -126,71 +120,71 @@
         <g id="s1">
           <rect class="limb" x="-25" y="-56" width="50" height="62" rx="24"/>
           <path class="twist" d="M-19,-48 C4,-40 -4,-22 18,-14"/>
-          <g transform="translate(0,-52)">
-            <g id="s2">
-              <rect class="limb" x="-25" y="-56" width="50" height="62" rx="24"/>
-              <path class="twist" d="M18,-48 C-4,-40 4,-22 -18,-14"/>
-              <g transform="translate(0,-52)">
-                <g id="s3">
-                  <rect class="limb" x="-31" y="-62" width="62" height="70" rx="29"/>
-                  <path class="twist" d="M-22,-52 C6,-42 -6,-24 22,-14"/>
+          <g transform="translate(0,-52)"><g id="s2">
+            <rect class="limb" x="-25" y="-56" width="50" height="62" rx="24"/>
+            <path class="twist" d="M18,-48 C-4,-40 4,-22 -18,-14"/>
+            <g transform="translate(0,-52)"><g id="s3">
+              <rect class="limb" x="-31" y="-62" width="62" height="70" rx="29"/>
+              <path class="twist" d="M-22,-52 C6,-42 -6,-24 22,-14"/>
 
-                  <g transform="translate(-27,-30)">
-                    <g id="armL">
-                      <rect class="limb" x="-20" y="-58" width="40" height="66" rx="20"/>
-                      <path class="side" d="M-14,-48 C-19,-30 -19,-12 -14,2"/>
-                      <g transform="translate(0,-54)">
-                        <g id="armLF">
-                          <rect class="limb" x="-19" y="-56" width="38" height="64" rx="19"/>
-                          <path class="side" d="M-13,-46 C-18,-28 -18,-12 -13,0"/>
-                          <path class="stitch" d="M-10,-40 L10,-40 M-11,-24 L11,-24 M-10,-8 L10,-8"/>
-                        </g>
-                      </g>
-                    </g>
-                  </g>
+              <g transform="translate(-27,-30)"><g id="armL">
+                <rect class="limb" x="-20" y="-58" width="40" height="66" rx="20"/>
+                <path class="side" d="M-14,-48 C-19,-30 -19,-12 -14,2"/>
+                <g transform="translate(0,-54)"><g id="armLF">
+                  <rect class="limb" x="-19" y="-56" width="38" height="64" rx="19"/>
+                  <path class="side" d="M-13,-46 C-18,-28 -18,-12 -13,0"/>
+                  <path class="stitch" d="M-10,-40 L10,-40 M-11,-24 L11,-24 M-10,-8 L10,-8"/>
+                </g></g>
+              </g></g>
 
-                  <g transform="translate(27,-30)">
-                    <g id="armR">
-                      <rect class="limb" x="-20" y="-58" width="40" height="66" rx="20"/>
-                      <path class="side" d="M14,-48 C19,-30 19,-12 14,2"/>
-                      <g transform="translate(0,-54)">
-                        <g id="armRF">
-                          <rect class="limb" x="-19" y="-56" width="38" height="64" rx="19"/>
-                          <path class="side" d="M13,-46 C18,-28 18,-12 13,0"/>
-                          <path class="stitch" d="M-10,-40 L10,-40 M-11,-24 L11,-24 M-10,-8 L10,-8"/>
-                        </g>
-                      </g>
-                    </g>
-                  </g>
+              <g transform="translate(27,-30)"><g id="armR">
+                <rect class="limb" x="-20" y="-58" width="40" height="66" rx="20"/>
+                <path class="side" d="M14,-48 C19,-30 19,-12 14,2"/>
+                <g transform="translate(0,-54)"><g id="armRF">
+                  <rect class="limb" x="-19" y="-56" width="38" height="64" rx="19"/>
+                  <path class="side" d="M13,-46 C18,-28 18,-12 13,0"/>
+                  <path class="stitch" d="M-10,-40 L10,-40 M-11,-24 L11,-24 M-10,-8 L10,-8"/>
+                </g></g>
+              </g></g>
 
-                  <g transform="translate(0,-50)">
-                    <g id="head">
-                      <path d="M-88,-54 C-98,-164 -52,-214 0,-214 C52,-214 98,-164 88,-54 C58,-14 -58,-14 -88,-54 Z"
-                            fill="url(#gHood)" stroke="#0e5f72" stroke-width="5" stroke-linejoin="round"/>
-                      <path id="hoodTip" d="M-16,-206 C-6,-232 6,-232 16,-206 C8,-214 -8,-214 -16,-206 Z" fill="#5fdcee" stroke="#0e5f72" stroke-width="4"/>
-                      <path d="M-70,-58 C-76,-152 -42,-192 0,-192 C42,-192 76,-152 70,-58 C46,-22 -46,-22 -70,-58 Z"
-                            fill="url(#gBody)" stroke="#15532f" stroke-width="5" stroke-linejoin="round"/>
-                      <g clip-path="url(#faceClip)" stroke="#1a6b3f" stroke-width="2.4" fill="none" opacity=".5">
-                        <path d="M-120,-40 L40,-220 M-120,10 L90,-220 M-70,40 L140,-190 M-20,40 L160,-150 M30,40 L170,-100"/>
-                        <path d="M120,-40 L-40,-220 M120,10 L-90,-220 M70,40 L-140,-190 M20,40 L-160,-150 M-30,40 L-170,-100"/>
-                      </g>
-                      <g transform="translate(0,-124)">
-                        <g id="eyeScale">
-                          <ellipse cx="-34" cy="0" rx="28" ry="20" transform="rotate(-15,-34,0)" fill="url(#gLens)" stroke="#14322a" stroke-width="6"/>
-                          <ellipse cx="34" cy="0" rx="28" ry="20" transform="rotate(15,34,0)" fill="url(#gLens)" stroke="#14322a" stroke-width="6"/>
-                          <g id="pupils" opacity=".85">
-                            <circle cx="-32" cy="1" r="6" fill="#14322a"/>
-                            <circle cx="32" cy="1" r="6" fill="#14322a"/>
-                          </g>
-                        </g>
-                      </g>
-                      <ellipse id="mouth" cx="0" cy="-58" rx="15" ry="4" fill="#2c0f22" stroke="#15532f" stroke-width="3"/>
-                    </g>
+              <g transform="translate(0,-50)"><g id="head">
+                <path id="hoodShape" d="M-88,-54 C-98,-164 -52,-214 0,-214 C52,-214 98,-164 88,-54 C58,-14 -58,-14 -88,-54 Z"
+                      fill="url(#gHood)" stroke="#0e5f72" stroke-width="5" stroke-linejoin="round"/>
+                <g id="hoodTip">
+                  <path id="tipLeaf" d="M-16,-206 C-6,-232 6,-232 16,-206 C8,-214 -8,-214 -16,-206 Z" fill="#5fdcee" stroke="#0e5f72" stroke-width="4"/>
+                  <path id="tipStar" d="M0,-244 L7,-224 L28,-222 L12,-209 L17,-190 L0,-201 L-17,-190 L-12,-209 L-28,-222 L-7,-224 Z" fill="#ffd66b" stroke="#8a6410" stroke-width="4" stroke-linejoin="round" style="display:none"/>
+                  <g id="tipAnt" style="display:none">
+                    <path d="M0,-206 C-4,-232 -14,-238 -18,-250" fill="none" stroke="#0e5f72" stroke-width="6" stroke-linecap="round"/>
+                    <circle cx="-19" cy="-254" r="11" fill="#ff8fb0" stroke="#0e5f72" stroke-width="4"/>
                   </g>
                 </g>
-              </g>
-            </g>
-          </g>
+                <path d="M-70,-58 C-76,-152 -42,-192 0,-192 C42,-192 76,-152 70,-58 C46,-22 -46,-22 -70,-58 Z"
+                      fill="url(#gBody)" stroke="#15532f" stroke-width="5" stroke-linejoin="round"/>
+                <g clip-path="url(#faceClip)">
+                  <g id="patQuilt" stroke="#1a6b3f" stroke-width="2.4" fill="none" opacity=".5">
+                    <path d="M-120,-40 L40,-220 M-120,10 L90,-220 M-70,40 L140,-190 M-20,40 L160,-150 M30,40 L170,-100"/>
+                    <path d="M120,-40 L-40,-220 M120,10 L-90,-220 M70,40 L-140,-190 M20,40 L-160,-150 M-30,40 L-170,-100"/>
+                  </g>
+                  <g id="patDots" fill="#1a6b3f" opacity=".38" style="display:none">
+                    <circle cx="-46" cy="-168" r="6"/><circle cx="-8" cy="-182" r="6"/><circle cx="30" cy="-170" r="6"/>
+                    <circle cx="-58" cy="-120" r="6"/><circle cx="56" cy="-118" r="6"/>
+                    <circle cx="-52" cy="-72" r="6"/><circle cx="-14" cy="-56" r="6"/><circle cx="24" cy="-60" r="6"/><circle cx="54" cy="-78" r="6"/>
+                  </g>
+                  <g id="patStripe" stroke="#1a6b3f" stroke-width="9" fill="none" opacity=".3" style="display:none">
+                    <path d="M-100,-150 C-40,-134 40,-134 100,-150"/>
+                    <path d="M-100,-104 C-40,-88 40,-88 100,-104"/>
+                    <path d="M-100,-58 C-40,-42 40,-42 100,-58"/>
+                  </g>
+                </g>
+                <g transform="translate(0,-124)"><g id="eyeScale">
+                  <ellipse cx="-34" cy="0" rx="28" ry="20" transform="rotate(-15,-34,0)" fill="url(#gLens)" stroke="#14322a" stroke-width="6"/>
+                  <ellipse cx="34" cy="0" rx="28" ry="20" transform="rotate(15,34,0)" fill="url(#gLens)" stroke="#14322a" stroke-width="6"/>
+                  <g id="pupils" opacity=".85"><circle cx="-32" cy="1" r="6" fill="#14322a"/><circle cx="32" cy="1" r="6" fill="#14322a"/></g>
+                </g></g>
+                <ellipse id="mouth" cx="0" cy="-58" rx="15" ry="4" fill="#2c0f22" stroke="#15532f" stroke-width="3"/>
+              </g></g>
+            </g></g>
+          </g></g>
         </g>
       </g>
     </g>
@@ -199,14 +193,13 @@
       <path d="M-96,-170 C-104,-104 -88,-32 -74,-6 C-38,10 38,10 74,-6 C88,-32 104,-104 96,-170 Z"
             fill="url(#gPot)" stroke="#0e5f72" stroke-width="5" stroke-linejoin="round"/>
       <g clip-path="url(#potClip)" stroke="rgba(8,60,74,.35)" stroke-width="4" fill="none" stroke-linecap="round">
-        <path d="M-52,-160 C-58,-100 -54,-46 -46,-10"/>
-        <path d="M-8,-166 C-14,-100 -12,-44 -6,-4"/>
-        <path d="M40,-162 C34,-104 38,-48 44,-10"/>
+        <path d="M-52,-160 C-58,-100 -54,-46 -46,-10"/><path d="M-8,-166 C-14,-100 -12,-44 -6,-4"/><path d="M40,-162 C34,-104 38,-48 44,-10"/>
       </g>
       <path d="M-100,-186 C-58,-206 58,-206 100,-186 C104,-168 96,-154 90,-150 C56,-166 -56,-166 -90,-150 C-96,-156 -104,-170 -100,-186 Z"
-            fill="#7fe6f4" stroke="#0e5f72" stroke-width="5" stroke-linejoin="round"/>
-      <path d="M-64,-176 C-40,-184 -14,-186 0,-186 C18,-186 44,-183 66,-176" stroke="rgba(8,60,74,.3)" stroke-width="4" fill="none" stroke-linecap="round"/>
+            fill="#7fe6f4" stroke="#0e5f72" stroke-width="5" stroke-linejoin="round" id="potRim"/>
     </g>
+
+    <g id="notes" opacity="0"></g>
 
     <style>
       .limb{fill:url(#gBody);stroke:#15532f;stroke-width:5;stroke-linejoin:round}
@@ -228,22 +221,21 @@
 
 <div class="grid on" id="fxGrid" role="group" aria-label="Ses efekti"></div>
 
-<button class="dance" id="danceBtn">💃 Dans et</button>
+<div class="pair">
+  <button id="danceBtn">💃 Dans</button>
+  <button id="songBtn">🎵 Şarkı</button>
+</div>
 
 <div class="talk" id="talk"></div>
 
 <div class="settings" id="settings">
-  <p>Kaktüsün sesini buradan ayarla. Cevaplar telefonun içinden geliyor, internete gerek yok.</p>
+  <p>Kaktüsün sesini buradan ayarla. Cevaplar telefonun içinden geliyor, internet gerekmez.</p>
   <select id="voice" aria-label="Konuşma sesi"></select>
   <select id="tone" aria-label="Ses tonu">
-    <option value="1">Ton: doğal</option>
-    <option value="1.3" selected>Ton: tatlı</option>
-    <option value="0.85">Ton: kalın</option>
+    <option value="1">Ton: doğal</option><option value="1.3" selected>Ton: tatlı</option><option value="0.85">Ton: kalın</option>
   </select>
   <select id="speed" aria-label="Konuşma hızı">
-    <option value="0.85">Hız: yavaş</option>
-    <option value="1" selected>Hız: normal</option>
-    <option value="1.15">Hız: hızlı</option>
+    <option value="0.85">Hız: yavaş</option><option value="1" selected>Hız: normal</option><option value="1.15">Hız: hızlı</option>
   </select>
   <button id="testVoice">🔊 Sesi dene</button>
   <select id="brain">
@@ -260,8 +252,9 @@
 
 <script>
 const el = id => document.getElementById(id);
+const rnd = (a, b) => a + Math.random() * (b - a);
 
-/* ============ RIG ============ */
+/* ================= RIG ================= */
 const N = {
   root: el('rootBob'), s1: el('s1'), s2: el('s2'), s3: el('s3'), head: el('head'),
   armL: el('armL'), armLF: el('armLF'), armR: el('armR'), armRF: el('armRF'),
@@ -278,10 +271,59 @@ const C = {
 let state = 'idle', level = 0, blinkAt = 2, eyeClose = 0, _t = 0;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function setState(s, label) {
+  if (s === 'dance' && state !== 'dance') newDance();
+  if (s === 'talking' && state !== 'talking') talkSeed = rnd(0, 9);
   state = s;
   el('dot').className = 'dot' + (s === 'listening' ? ' live' : (s === 'thinking' ? ' busy' : ''));
-  el('status').textContent = label || ({ idle: 'Uyukluyor', listening: 'Seni dinliyorum', thinking: 'Düşünüyor', talking: 'Konuşuyor', dance: 'Dans ediyor' })[s];
+  el('status').textContent = label || ({ idle: 'Uyukluyor', listening: 'Seni dinliyorum', thinking: 'Düşünüyor', talking: 'Konuşuyor', dance: 'Dans ediyor', song: 'Şarkı söylüyor' })[s] || '';
 }
+
+/* --- hareket çeşitliliği --- */
+let danceId = 0, danceSpd = 5.2, danceSeed = 0, talkSeed = 0, beat = 0;
+function newDance() { danceId = Math.floor(Math.random() * 5); danceSpd = rnd(4.2, 6.4); danceSeed = rnd(0, 9); }
+let fidget = null, fidgetAt = 5;
+function newFidget() { fidget = { k: Math.floor(Math.random() * 4), t: 0, d: rnd(1.4, 2.2) }; }
+
+function danceTargets(T, b, a) {
+  const p = danceSeed;
+  if (danceId === 0) { // burgu
+    T.s1.t = Math.sin(b) * 7; T.s2.t = Math.sin(b - .7) * 11; T.s3.t = Math.sin(b - 1.4) * 15;
+    T.head.t = Math.sin(b - 2) * 12;
+    T.armL.t = -98 + Math.sin(b) * 42; T.armLF.t = -38 + Math.sin(b * 2) * 34;
+    T.armR.t = 98 + Math.sin(b + Math.PI) * 42; T.armRF.t = 38 + Math.sin(b * 2 + 1) * 34;
+    T.bobY.t = -Math.abs(Math.sin(b)) * 12; T.rootRot.t = Math.sin(b * .5) * 5;
+  } else if (danceId === 1) { // zıplama
+    const hop = Math.abs(Math.sin(b));
+    T.s1.t = Math.sin(b * .5) * 4; T.s2.t = -hop * 6; T.s3.t = -hop * 9;
+    T.head.t = hop * 8;
+    T.armL.t = -120 + hop * 30; T.armLF.t = -60 + hop * 30;
+    T.armR.t = 120 - hop * 30; T.armRF.t = 60 - hop * 30;
+    T.bobY.t = -hop * 22; T.rootRot.t = Math.sin(b * .25) * 3;
+    T.sy.t = 1 + hop * .08; T.sx.t = 1 - hop * .05;
+  } else if (danceId === 2) { // dalga
+    T.s1.t = Math.sin(b) * 12; T.s2.t = Math.sin(b - 1.1) * 14; T.s3.t = Math.sin(b - 2.2) * 16;
+    T.head.t = Math.sin(b - 3.2) * 14;
+    T.armL.t = -90 + Math.sin(b - .5) * 55; T.armLF.t = -30 + Math.sin(b - 1.2) * 45;
+    T.armR.t = 90 + Math.sin(b - .5) * 55; T.armRF.t = 30 + Math.sin(b - 1.2) * 45;
+    T.bobY.t = Math.sin(b) * 6; T.rootRot.t = Math.sin(b) * 7;
+  } else if (danceId === 3) { // kafa sallama
+    T.s1.t = Math.sin(b * .5) * 3; T.s2.t = Math.sin(b) * 6; T.s3.t = Math.sin(b) * 10;
+    T.head.t = Math.sin(b * 2) * 18;
+    T.armL.t = -140 + Math.sin(b * 2) * 12; T.armLF.t = -70;
+    T.armR.t = 140 - Math.sin(b * 2) * 12; T.armRF.t = 70;
+    T.bobY.t = -Math.abs(Math.sin(b * 2)) * 8; T.rootRot.t = 0;
+  } else { // robot adım
+    const st = Math.sign(Math.sin(b)) || 1;
+    T.s1.t = st * 6; T.s2.t = -st * 5; T.s3.t = st * 8;
+    T.head.t = -st * 9;
+    T.armL.t = -70 - (st > 0 ? 55 : 0); T.armLF.t = st > 0 ? -80 : -10;
+    T.armR.t = 70 + (st < 0 ? 55 : 0); T.armRF.t = st < 0 ? 80 : 10;
+    T.bobY.t = -Math.abs(Math.sin(b * 2)) * 6; T.rootRot.t = st * 3;
+  }
+  T.potSy.t = 1 - Math.max(0, Math.sin(b + p)) * .06;
+  T.mouth.t = .45 + Math.abs(Math.sin(b)) * .45; T.eye.t = 1.1; T.pupX.t = Math.sin(b * .5) * 6;
+}
+
 function targets(t) {
   const T = C, a = level;
   if (state === 'idle') {
@@ -290,12 +332,18 @@ function targets(t) {
     T.head.t = -s * 3;
     T.armL.t = -76 + Math.sin(t * .9) * 4; T.armLF.t = -20 + Math.sin(t * 1.3) * 5;
     T.armR.t = 76 - Math.sin(t * .9 + .5) * 4; T.armRF.t = 20 - Math.sin(t * 1.3 + .5) * 5;
-    T.bobY.t = Math.sin(t * 1.1) * 2; T.rootRot.t = s * .8;
+    T.bobY.t = s * 2; T.rootRot.t = s * .8;
     T.sx.t = 1; T.sy.t = 1; T.potSy.t = 1; T.mouth.t = .1; T.eye.t = 1;
+    if (fidget) {
+      const f = fidget.t / fidget.d, e = Math.sin(Math.PI * Math.min(1, f));
+      if (fidget.k === 0) { T.armL.t -= 60 * e; T.armR.t += 60 * e; T.sy.t = 1 + .07 * e; T.mouth.t = .5 * e; T.head.t -= 8 * e; }
+      else if (fidget.k === 1) { T.head.t += 16 * e; T.pupX.t = 6 * e; T.s3.t += 8 * e; }
+      else if (fidget.k === 2) { T.bobY.t -= 16 * e; T.potSy.t = 1 - .05 * e; T.armL.t -= 30 * e; T.armR.t += 30 * e; }
+      else { T.rootRot.t += 6 * Math.sin(fidget.t * 9) * e; T.s2.t += 7 * Math.sin(fidget.t * 9) * e; }
+    }
   } else if (state === 'listening') {
     const w = Math.sin(t * 9) * a;
-    T.s1.t = w * 2; T.s2.t = w * 3; T.s3.t = w * 4 + 2;
-    T.head.t = -w * 4;
+    T.s1.t = w * 2; T.s2.t = w * 3; T.s3.t = w * 4 + 2; T.head.t = -w * 4;
     T.armL.t = -104 - a * 24; T.armLF.t = -46 - a * 20;
     T.armR.t = 104 + a * 24; T.armRF.t = 46 + a * 20;
     T.bobY.t = -a * 5; T.rootRot.t = w * 1.4;
@@ -308,24 +356,19 @@ function targets(t) {
     T.bobY.t = 0; T.rootRot.t = -2; T.sx.t = 1; T.sy.t = 1; T.potSy.t = 1;
     T.mouth.t = .05; T.eye.t = .85; T.pupX.t = -5; T.pupY.t = -6;
   } else if (state === 'talking') {
-    const g = .35 + a;
-    T.s1.t = Math.sin(t * 3.4) * 3 * g; T.s2.t = Math.sin(t * 3.4 - .5) * 5 * g; T.s3.t = Math.sin(t * 3.4 - 1) * 7 * g;
-    T.head.t = Math.sin(t * 7) * 5 * g;
-    T.armL.t = -82 - a * 26 + Math.sin(t * 5) * 8; T.armLF.t = -24 - a * 24;
-    T.armR.t = 82 + a * 26 - Math.sin(t * 5 + 1) * 8; T.armRF.t = 24 + a * 24;
-    T.bobY.t = -Math.abs(Math.sin(t * 4)) * 5 * g; T.rootRot.t = Math.sin(t * 3.4) * 1.5;
+    const g = .35 + a, q = talkSeed;
+    T.s1.t = Math.sin(t * 3.4 + q) * 3 * g; T.s2.t = Math.sin(t * 3.4 - .5 + q) * 5 * g; T.s3.t = Math.sin(t * 3.4 - 1 + q) * 7 * g;
+    T.head.t = Math.sin(t * 7 + q) * 5 * g;
+    T.armL.t = -82 - a * 26 + Math.sin(t * 5 + q) * 10; T.armLF.t = -24 - a * 24;
+    T.armR.t = 82 + a * 26 - Math.sin(t * 5 + 1 + q) * 10; T.armRF.t = 24 + a * 24;
+    T.bobY.t = -Math.abs(Math.sin(t * 4)) * 5 * g; T.rootRot.t = Math.sin(t * 3.4 + q) * 1.5;
     T.sx.t = 1 - a * .04; T.sy.t = 1 + a * .06; T.potSy.t = 1 - Math.max(0, Math.sin(t * 4)) * .03;
     T.mouth.t = .1 + a * .95; T.eye.t = 1 + a * .1; T.pupX.t = Math.sin(t * 1.7) * 4; T.pupY.t = 0;
+  } else if (state === 'song') {
+    danceTargets(T, beat, a);
+    T.mouth.t = .3 + a * .7;
   } else {
-    const b = t * 5.2;
-    T.s1.t = Math.sin(b) * 7; T.s2.t = Math.sin(b - .7) * 11; T.s3.t = Math.sin(b - 1.4) * 15;
-    T.head.t = Math.sin(b - 2) * 12;
-    T.armL.t = -98 + Math.sin(b) * 42; T.armLF.t = -38 + Math.sin(b * 2) * 34;
-    T.armR.t = 98 + Math.sin(b + Math.PI) * 42; T.armRF.t = 38 + Math.sin(b * 2 + 1) * 34;
-    T.bobY.t = -Math.abs(Math.sin(b)) * 12; T.rootRot.t = Math.sin(b * .5) * 5;
-    T.sx.t = 1 + Math.sin(b) * .04; T.sy.t = 1 - Math.sin(b) * .05;
-    T.potSy.t = 1 - Math.max(0, Math.sin(b)) * .06;
-    T.mouth.t = .5 + Math.abs(Math.sin(b)) * .4; T.eye.t = 1.1; T.pupX.t = Math.sin(b * .5) * 6;
+    danceTargets(T, t * danceSpd, a);
   }
   T.tip.t = -C.head.x * 1.4 - C.s3.x * .8;
 }
@@ -344,11 +387,37 @@ function apply() {
   N.tip.setAttribute('transform', 'rotate(' + (C.tip.x * .6).toFixed(2) + ')');
 }
 
-/* ============ SES ============ */
-let ac = null, micStream = null, proc = null, playAnalyser = null, pbuf = null;
+/* ================= GÖRÜNÜMLER ================= */
+const SKINS = [
+  { body: ['#2f9d5c', '#59dc87', '#238a4c'], hood: ['#2ba3bd', '#5fdcee', '#1d8ba6'], pot: ['#2ea6c2', '#6fe0f0', '#1c88a4'], rim: '#7fe6f4', pat: 'patQuilt', tip: 'tipLeaf', line: '#15532f', hline: '#0e5f72' },
+  { body: ['#7d3fb8', '#b57af0', '#5f2a91'], hood: ['#ff7aa8', '#ffb3cd', '#e04d80'], pot: ['#ffb03a', '#ffd98a', '#d4801a'], rim: '#ffe0a6', pat: 'patDots', tip: 'tipStar', line: '#3a1858', hline: '#7d2648' },
+  { body: ['#e05a2b', '#ff9a5c', '#b8401a'], hood: ['#3ac0a0', '#7fe8d0', '#218f74'], pot: ['#5566d8', '#8f9bf0', '#3543a8'], rim: '#a8b2ff', pat: 'patStripe', tip: 'tipAnt', line: '#6b2410', hline: '#155e4c' },
+  { body: ['#2b7fd4', '#77c4ff', '#1b5da0'], hood: ['#f0f4ff', '#ffffff', '#c8d4ee'], pot: ['#8a6fd8', '#c0aef0', '#5f47a8'], rim: '#ddd2ff', pat: 'patQuilt', tip: 'tipStar', line: '#12406e', hline: '#6b7590' }
+];
+let skinIx = 0;
+try { skinIx = parseInt(localStorage.getItem('kaktus-skin') || '0', 10) || 0; } catch (e) { }
+function applySkin(i) {
+  const s = SKINS[i % SKINS.length];
+  ['A', 'B', 'C'].forEach((k, n) => {
+    el('body' + k).setAttribute('stop-color', s.body[n]);
+    el('hood' + k).setAttribute('stop-color', s.hood[n]);
+    el('pot' + k).setAttribute('stop-color', s.pot[n]);
+  });
+  el('potRim').setAttribute('fill', s.rim);
+  ['patQuilt', 'patDots', 'patStripe'].forEach(p => el(p).style.display = p === s.pat ? '' : 'none');
+  ['tipLeaf', 'tipStar', 'tipAnt'].forEach(p => el(p).style.display = p === s.tip ? '' : 'none');
+  document.querySelectorAll('.limb').forEach(n => n.setAttribute('stroke', s.line));
+  document.querySelectorAll('.twist,.side').forEach(n => n.setAttribute('stroke', s.hood[1]));
+  el('hoodShape').setAttribute('stroke', s.hline);
+  try { localStorage.setItem('kaktus-skin', String(i % SKINS.length)); } catch (e) { }
+}
+el('skinBtn').onclick = () => { skinIx = (skinIx + 1) % SKINS.length; applySkin(skinIx); };
+applySkin(skinIx);
+
+/* ================= SES YAKALAMA ================= */
+let ac = null, micStream = null, proc = null, playAnalyser = null, pbuf = null, lastRec = null;
 let micLevel = 0, fakeTalk = false, fakeSeed = 0, heardPulse = 0;
 const CAP = { chunks: [], pre: [], preLen: 0, recording: false, preMax: 0 };
-
 function readLevel() {
   if (fakeTalk) return Math.min(1, .35 + Math.abs(Math.sin(_t * 11 + fakeSeed)) * .4 + Math.abs(Math.sin(_t * 27)) * .2);
   if (playAnalyser) {
@@ -374,7 +443,7 @@ async function ensureMic() {
     micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
     ac = ac || new (window.AudioContext || window.webkitAudioContext)();
     if (ac.state === 'suspended') await ac.resume();
-    CAP.preMax = Math.round(ac.sampleRate * .35);
+    CAP.preMax = Math.round(ac.sampleRate * .4);
     const src = ac.createMediaStreamSource(micStream);
     proc = ac.createScriptProcessor(2048, 1, 1);
     const mute = ac.createGain(); mute.gain.value = 0;
@@ -389,8 +458,7 @@ async function ensureMic() {
     };
     diag(''); return true;
   } catch (err) {
-    const map = { NotAllowedError: 'Mikrofon izni verilmedi. Adres çubuğundaki kilit ikonundan aç.', NotFoundError: 'Mikrofon bulunamadı.', NotReadableError: 'Mikrofonu başka bir uygulama kullanıyor.' };
-    diag(map[err.name] || 'Mikrofon açılamadı (' + err.name + ').');
+    diag(({ NotAllowedError: 'Mikrofon izni verilmedi. Adres çubuğundaki kilit ikonundan aç.', NotFoundError: 'Mikrofon bulunamadı.', NotReadableError: 'Mikrofonu başka bir uygulama kullanıyor.' })[err.name] || ('Mikrofon açılamadı (' + err.name + ').'));
     return false;
   }
 }
@@ -405,64 +473,124 @@ function buildBuffer(chunks) {
   const d = b.getChannelData(0); let o = 0;
   for (const c of chunks) { d.set(c, o); o += c.length; }
   let peak = 0; for (let i = 0; i < d.length; i++) peak = Math.max(peak, Math.abs(d[i]));
-  if (peak > .001 && peak < .5) { const g = Math.min(4, .5 / peak); for (let i = 0; i < d.length; i++) d[i] *= g; }
+  if (peak > .001) { const g = Math.min(6, .7 / peak); for (let i = 0; i < d.length; i++) d[i] *= g; }
   return b;
 }
 
-/* ============ EFEKTLER ============ */
-const FX = ['sincap', 'dev', 'robot', 'yanki', 'uzayli', 'telefon', 'koro', 'ters', 'rastgele'];
-const FXUI = { sincap: ['🐿️', 'Sincap'], dev: ['👹', 'Dev'], robot: ['🤖', 'Robot'], yanki: ['🕳️', 'Yankı'], uzayli: ['👽', 'Uzaylı'], telefon: ['📞', 'Telefon'], koro: ['👥', 'Koro'], ters: ['🔁', 'Ters'], rastgele: ['🎲', 'Karışık'] };
-let fx = 'sincap';
-function reversed(b) {
+/* ================= DSP ================= */
+// Grain tabanlı perde kaydırma: süreyi bozmadan sesi incelt/kalınlaştır
+function pitchShift(buf, ratio) {
+  const sr = buf.sampleRate, inD = buf.getChannelData(0), n = inD.length;
+  const grain = Math.max(256, Math.round(sr * .045)), hop = Math.round(grain / 2);
+  const out = ac.createBuffer(1, n, sr), o = out.getChannelData(0);
+  for (let pos = 0, inPos = 0; pos + grain < n; pos += hop, inPos += hop) {
+    for (let i = 0; i < grain; i++) {
+      const src = inPos + i * ratio, i0 = Math.floor(src);
+      if (i0 + 1 >= n) break;
+      const f = src - i0, s = inD[i0] * (1 - f) + inD[i0 + 1] * f;
+      o[pos + i] += s * (.5 - .5 * Math.cos(6.283185 * i / grain));
+    }
+  }
+  let peak = 0; for (let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(o[i]));
+  if (peak > .001) { const g = .8 / peak; for (let i = 0; i < n; i++) o[i] *= g; }
+  return out;
+}
+function reversedBuf(b) {
   const n = ac.createBuffer(1, b.length, b.sampleRate), s = b.getChannelData(0), d = n.getChannelData(0);
   for (let i = 0; i < s.length; i++) d[i] = s[s.length - 1 - i];
   return n;
 }
-function shaper(amount) {
-  const ws = ac.createWaveShaper(), n = 1024, curve = new Float32Array(n);
-  for (let i = 0; i < n; i++) { const x = i * 2 / n - 1; curve[i] = (1 + amount) * x / (1 + amount * Math.abs(x)); }
-  ws.curve = curve; return ws;
+function impulse(dur, decay, bright) {
+  const sr = ac.sampleRate, len = Math.round(sr * dur), b = ac.createBuffer(2, len, sr);
+  for (let c = 0; c < 2; c++) {
+    const d = b.getChannelData(c);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay) * (bright ? 1 : (1 - i / len));
+  }
+  return b;
 }
+function shaper(amount) {
+  const ws = ac.createWaveShaper(), n = 1024, c = new Float32Array(n);
+  for (let i = 0; i < n; i++) { const x = i * 2 / n - 1; c[i] = (1 + amount) * x / (1 + amount * Math.abs(x)); }
+  ws.curve = c; return ws;
+}
+const semi = s => Math.pow(2, s / 12);
+
+/* ================= EFEKTLER ================= */
+const FX = ['sincap', 'dev', 'robot', 'yanki', 'uzayli', 'telefon', 'koro', 'suyalti', 'rastgele'];
+const FXUI = { sincap: ['🐿️', 'Sincap'], dev: ['👹', 'Dev'], robot: ['🤖', 'Robot'], yanki: ['🕳️', 'Mağara'], uzayli: ['👽', 'Uzaylı'], telefon: ['📞', 'Telsiz'], koro: ['👥', 'Koro'], suyalti: ['🐠', 'Su altı'], rastgele: ['🎲', 'Karışık'] };
+let fx = 'sincap';
+
 function playFx(buffer, kind) {
   const k = kind === 'rastgele' ? FX[Math.floor(Math.random() * (FX.length - 1))] : kind;
-  const out = ac.createGain(); out.gain.value = .9;
+  const out = ac.createGain(); out.gain.value = 1;
   const an = ac.createAnalyser(); an.fftSize = 1024;
   out.connect(an); an.connect(ac.destination); playAnalyser = an;
   const srcs = [], extras = [];
-  const mk = (buf, rate) => { const s = ac.createBufferSource(); s.buffer = buf; s.playbackRate.value = rate; srcs.push(s); return s; };
-  const via = (node, amt) => { const ws = shaper(amt); node.connect(ws); ws.connect(out); };
+  const mk = (buf, rate) => { const s = ac.createBufferSource(); s.buffer = buf; s.playbackRate.value = rate || 1; srcs.push(s); return s; };
+  const rev = (wet, dur, dec) => { const cv = ac.createConvolver(); cv.buffer = impulse(dur, dec, true); const g = ac.createGain(); g.gain.value = wet; cv.connect(g); g.connect(out); return cv; };
 
-  if (k === 'sincap') mk(buffer, 1.65).connect(out);
-  else if (k === 'dev') {
-    const s = mk(buffer, .72), lp = ac.createBiquadFilter();
-    lp.type = 'lowshelf'; lp.frequency.value = 320; lp.gain.value = 9;
-    s.connect(lp); via(lp, .4);
+  if (k === 'sincap') {
+    const s = mk(pitchShift(buffer, semi(7)), 1.06);
+    const hs = ac.createBiquadFilter(); hs.type = 'highshelf'; hs.frequency.value = 2600; hs.gain.value = 5;
+    s.connect(hs); hs.connect(out);
+  } else if (k === 'dev') {
+    const s = mk(pitchShift(buffer, semi(-7)), .94);
+    const ls = ac.createBiquadFilter(); ls.type = 'lowshelf'; ls.frequency.value = 300; ls.gain.value = 8;
+    const ws = shaper(.6);
+    s.connect(ls); ls.connect(ws); ws.connect(out); ws.connect(rev(.25, 1.4, 2.5));
   } else if (k === 'robot') {
-    const s = mk(buffer, 1), ring = ac.createGain(); ring.gain.value = 0;
-    const osc = ac.createOscillator(); osc.type = 'square'; osc.frequency.value = 52;
-    osc.connect(ring.gain); osc.start(); extras.push(osc);
-    const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 180;
-    s.connect(ring); ring.connect(hp); hp.connect(out);
+    const s = mk(pitchShift(buffer, semi(-2)), 1);
+    const ring = ac.createGain(); ring.gain.value = 0;
+    const osc = ac.createOscillator(); osc.type = 'sine'; osc.frequency.value = 78; osc.connect(ring.gain); osc.start(); extras.push(osc);
+    const comb = ac.createDelay(.05); comb.delayTime.value = .0042;
+    const fb = ac.createGain(); fb.gain.value = .55;
+    const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1200; bp.Q.value = .7;
+    s.connect(ring); ring.connect(comb); comb.connect(fb); fb.connect(comb);
+    ring.connect(bp); comb.connect(bp); bp.connect(shaperTo(out, 3));
   } else if (k === 'yanki') {
-    const s = mk(buffer, 1.15), dly = ac.createDelay(1), fb = ac.createGain(), lp = ac.createBiquadFilter();
-    dly.delayTime.value = .21; fb.gain.value = .42; lp.type = 'lowpass'; lp.frequency.value = 2400;
+    const s = mk(buffer, 1);
+    const dly = ac.createDelay(1); dly.delayTime.value = .27;
+    const fb = ac.createGain(); fb.gain.value = .45;
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2200;
     s.connect(out); s.connect(dly); dly.connect(lp); lp.connect(fb); fb.connect(dly); dly.connect(out);
+    s.connect(rev(.55, 2.6, 2.2));
   } else if (k === 'uzayli') {
-    const s = mk(buffer, 1.25), dly = ac.createDelay(.05), lfo = ac.createOscillator(), depth = ac.createGain();
-    dly.delayTime.value = .009; lfo.frequency.value = 6.5; depth.gain.value = .005;
-    lfo.connect(depth); depth.connect(dly.delayTime); lfo.start(); extras.push(lfo);
-    s.connect(out); s.connect(dly); dly.connect(out);
+    const s = mk(pitchShift(buffer, semi(4)), 1);
+    const dly = ac.createDelay(.05); dly.delayTime.value = .008;
+    const lfo = ac.createOscillator(); lfo.frequency.value = 5.5;
+    const dep = ac.createGain(); dep.gain.value = .0045;
+    lfo.connect(dep); dep.connect(dly.delayTime); lfo.start(); extras.push(lfo);
+    const trem = ac.createGain(); trem.gain.value = .75;
+    const tl = ac.createOscillator(); tl.frequency.value = 7.5;
+    const td = ac.createGain(); td.gain.value = .25;
+    tl.connect(td); td.connect(trem.gain); tl.start(); extras.push(tl);
+    s.connect(trem); s.connect(dly); dly.connect(trem); trem.connect(out); trem.connect(rev(.3, 1.8, 2));
   } else if (k === 'telefon') {
-    const s = mk(buffer, 1.05), bp = ac.createBiquadFilter();
-    bp.type = 'bandpass'; bp.frequency.value = 1500; bp.Q.value = 1.1;
-    s.connect(bp); via(bp, 6);
+    const s = mk(buffer, 1);
+    const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1700; bp.Q.value = 1.4;
+    const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 600;
+    s.connect(hp); hp.connect(bp); bp.connect(shaperTo(out, 9));
+    const nb = ac.createBufferSource(); const nz = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
+    const nd = nz.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = (Math.random() * 2 - 1) * .012;
+    nb.buffer = nz; nb.loop = true; const ng = ac.createGain(); ng.gain.value = .5;
+    nb.connect(ng); ng.connect(out); nb.start(); extras.push(nb);
   } else if (k === 'koro') {
-    [[.94, .006], [1, .002], [1.07, .012]].forEach(([r, dt]) => {
-      const s = mk(buffer, r), g = ac.createGain(), d = ac.createDelay(.1);
-      g.gain.value = .55; d.delayTime.value = dt;
+    [[0, .55, .002], [7, .4, .014], [12, .32, .026], [-12, .35, .038]].forEach(([sm, vol, dt]) => {
+      const s = mk(sm === 0 ? buffer : pitchShift(buffer, semi(sm)), 1);
+      const g = ac.createGain(); g.gain.value = vol;
+      const d = ac.createDelay(.1); d.delayTime.value = dt;
       s.connect(d); d.connect(g); g.connect(out);
     });
-  } else if (k === 'ters') mk(reversed(buffer), 1.1).connect(out);
+    srcs[0].connect(rev(.25, 1.6, 2.4));
+  } else if (k === 'suyalti') {
+    const s = mk(pitchShift(buffer, semi(-3)), .96);
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 700; lp.Q.value = 6;
+    const lfo = ac.createOscillator(); lfo.frequency.value = 1.6;
+    const dep = ac.createGain(); dep.gain.value = 320;
+    lfo.connect(dep); dep.connect(lp.frequency); lfo.start(); extras.push(lfo);
+    s.connect(lp); lp.connect(out); lp.connect(rev(.4, 2, 2));
+  }
+  function shaperTo(dest, amt) { const ws = shaper(amt); ws.connect(dest); return ws; }
 
   fakeTalk = false; setState('talking', FXUI[k][1]);
   let done = 0;
@@ -471,14 +599,95 @@ function playFx(buffer, kind) {
       if (++done < srcs.length) return;
       extras.forEach(o => { try { o.stop(); } catch (e) { } });
       playAnalyser = null; level = 0; setState('dance');
-      setTimeout(() => { busy = false; if (state === 'dance') setState(running ? 'listening' : 'idle'); }, 900);
+      setTimeout(() => { busy = false; if (state === 'dance') setState(running ? 'listening' : 'idle'); }, 1000);
     };
     s.start();
   });
   if (!srcs.length) { playAnalyser = null; busy = false; setState('idle'); }
 }
 
-/* ============ VAD: otomatik eşik ============ */
+/* ================= ŞARKI ================= */
+// Melodiler özgün, telifsiz. Sayılar yarım ses cinsinden, süre vuruş cinsinden.
+const SONGS = [
+  { bpm: 116, notes: [[0, 1], [4, 1], [7, 1], [4, 1], [5, 1], [4, 1], [2, 2], [0, 1], [2, 1], [4, 1], [7, 1], [5, 2], [4, 2]] },
+  { bpm: 128, notes: [[7, .5], [7, .5], [9, 1], [7, 1], [12, 1], [11, 2], [7, .5], [7, .5], [9, 1], [7, 1], [14, 1], [12, 2]] },
+  { bpm: 100, notes: [[0, 1.5], [3, .5], [5, 1], [7, 1], [10, 1.5], [7, .5], [5, 1], [3, 1], [0, 2]] }
+];
+let songTimer = null;
+function stopSong() {
+  if (songTimer) { clearTimeout(songTimer); songTimer = null; }
+  if (ac) { try { ac.suspend(); ac.resume(); } catch (e) { } }
+}
+function sing() {
+  unlockAudio();
+  if (!ac) { diag('Önce BAŞLA ile mikrofonu aç, sonra bir şey söyle; şarkıyı senin sesinle söyleyeceğim.'); return; }
+  const song = SONGS[Math.floor(Math.random() * SONGS.length)];
+  const spb = 60 / song.bpm;
+  const t0 = ac.currentTime + .15;
+  const master = ac.createGain(); master.gain.value = .9;
+  const an = ac.createAnalyser(); an.fftSize = 1024;
+  master.connect(an); an.connect(ac.destination); playAnalyser = an;
+  const cv = ac.createConvolver(); cv.buffer = impulse(1.6, 2.4, true);
+  const wet = ac.createGain(); wet.gain.value = .22; cv.connect(wet); wet.connect(master);
+
+  // ses malzemesi: çocuğun son kaydından kısa bir hece
+  let voice = null;
+  if (lastRec && lastRec.length > ac.sampleRate * .25) {
+    const d = lastRec.getChannelData(0);
+    let best = 0, bestE = 0;
+    const win = Math.round(ac.sampleRate * .22);
+    for (let p = 0; p + win < d.length; p += Math.round(win / 2)) {
+      let e = 0; for (let i = 0; i < win; i += 8) e += d[p + i] * d[p + i];
+      if (e > bestE) { bestE = e; best = p; }
+    }
+    voice = ac.createBuffer(1, win, ac.sampleRate);
+    const o = voice.getChannelData(0);
+    for (let i = 0; i < win; i++) o[i] = d[best + i] * (.5 - .5 * Math.cos(6.283185 * i / win));
+  }
+
+  let tt = 0, total = 0;
+  song.notes.forEach(([sm, len]) => {
+    const at = t0 + tt * spb, dur = len * spb * .92;
+    if (voice) {
+      const s = ac.createBufferSource(); s.buffer = voice; s.playbackRate.value = semi(sm + 5);
+      const g = ac.createGain();
+      g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(.9, at + .04);
+      g.gain.setValueAtTime(.9, at + dur * .7); g.gain.linearRampToValueAtTime(0, at + dur);
+      s.connect(g); g.connect(master); g.connect(cv);
+      s.loop = true; s.start(at); s.stop(at + dur);
+    }
+    const o = ac.createOscillator(); o.type = 'triangle';
+    o.frequency.value = 220 * semi(sm);
+    const og = ac.createGain(); og.gain.setValueAtTime(0, at);
+    og.gain.linearRampToValueAtTime(voice ? .1 : .28, at + .03);
+    og.gain.exponentialRampToValueAtTime(.001, at + dur);
+    o.connect(og); og.connect(master); o.start(at); o.stop(at + dur + .05);
+    tt += len; total = tt;
+  });
+  // bas + ritim
+  for (let b = 0; b < Math.ceil(total); b++) {
+    const at = t0 + b * spb;
+    const o = ac.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(110, at);
+    o.frequency.exponentialRampToValueAtTime(55, at + .18);
+    const g = ac.createGain(); g.gain.setValueAtTime(.5, at); g.gain.exponentialRampToValueAtTime(.001, at + .22);
+    o.connect(g); g.connect(master); o.start(at); o.stop(at + .25);
+    if (b % 2 === 1) {
+      const n = ac.createBufferSource(); const nb = ac.createBuffer(1, ac.sampleRate * .12, ac.sampleRate);
+      const nd = nb.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / nd.length, 3);
+      n.buffer = nb; const ng = ac.createGain(); ng.gain.value = .25;
+      const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 4000;
+      n.connect(hp); hp.connect(ng); ng.connect(master); n.start(at);
+    }
+  }
+  busy = true; beat = 0; songBpm = song.bpm; setState('song');
+  songTimer = setTimeout(() => {
+    playAnalyser = null; level = 0; busy = false; songTimer = null;
+    setState(running ? 'listening' : 'idle');
+  }, (total * spb + .6) * 1000);
+}
+let songBpm = 120;
+
+/* ================= VAD ================= */
 let running = false, busy = false, floorLvl = .01;
 const VAD = { on: false, sil: 0, dur: 0 };
 function vadTick(dt) {
@@ -486,29 +695,35 @@ function vadTick(dt) {
   const L = micLevel;
   if (busy) { VAD.on = false; VAD.sil = 0; return; }
   if (!VAD.on && L < floorLvl * 3) floorLvl += (L - floorLvl) * .03;
-  const th = Math.max(.028, floorLvl * 3.4 + .012);
+  const th = Math.max(.026, floorLvl * 3.2 + .01);
   if (!VAD.on) {
     if (L > th) { VAD.on = true; VAD.dur = 0; VAD.sil = 0; CAP.chunks = CAP.pre.slice(); CAP.recording = true; }
   } else {
     VAD.dur += dt;
-    if (L < th * .6) VAD.sil += dt; else VAD.sil = 0;
-    if (VAD.sil > .6 || VAD.dur > 8) {
+    if (L < th * .65) VAD.sil += dt; else VAD.sil = 0;
+    if (VAD.sil > 1.15 || VAD.dur > 20) {
       VAD.on = false; CAP.recording = false;
       const c = CAP.chunks; CAP.chunks = [];
-      if (VAD.dur > .3) { busy = true; playFx(buildBuffer(c), fx); }
+      if (VAD.dur > .35) { busy = true; lastRec = buildBuffer(c); playFx(lastRec, fx); }
     }
   }
 }
 
-/* ============ DÖNGÜ ============ */
+/* ================= DÖNGÜ ================= */
 let last = performance.now();
 function frame(now) {
   const dt = Math.min(.05, (now - last) / 1000); last = now; _t += dt;
+  if (state === 'song') beat += dt * (songBpm / 60) * 3.2;
   const raw = readLevel();
   level += (raw - level) * (raw > level ? .45 : .12);
   heardPulse = Math.max(0, heardPulse - dt * .7);
   blinkAt -= dt; if (blinkAt < 0) { eyeClose = 1; blinkAt = 2.4 + Math.random() * 3.4; }
   eyeClose = Math.max(0, eyeClose - dt * 9);
+  if (state === 'idle') {
+    fidgetAt -= dt;
+    if (fidget) { fidget.t += dt; if (fidget.t > fidget.d) fidget = null; }
+    else if (fidgetAt < 0) { newFidget(); fidgetAt = rnd(5, 11); }
+  } else { fidget = null; }
   vadTick(dt);
   targets(_t); integrate(reduce ? dt * .5 : dt); apply();
   if (running) el('meterFill').style.width = Math.min(100, Math.max(level, micLevel * 6) * 100) + '%';
@@ -516,12 +731,12 @@ function frame(now) {
 }
 requestAnimationFrame(frame);
 
-/* ============ TANIMA (sohbet modu, sürekli) ============ */
+/* ================= TANIMA ================= */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null, recOn = false, speaking = false, wantRec = false;
 if (SR) {
   rec = new SR(); rec.lang = 'tr-TR'; rec.interimResults = true; rec.continuous = true;
-  rec.onstart = () => { recOn = true; };
+  rec.onstart = () => recOn = true;
   rec.onresult = e => {
     for (let i = e.resultIndex; i < e.results.length; i++) {
       const txt = e.results[i][0].transcript.trim();
@@ -532,8 +747,7 @@ if (SR) {
   };
   rec.onerror = e => {
     recOn = false;
-    if (e.error === 'not-allowed' || e.error === 'service-not-allowed')
-      diag('Ses tanıma bu tarayıcıda kapalı (Brave engelliyor). Aynı linki Chrome ile aç.');
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') diag('Ses tanıma bu tarayıcıda kapalı (Brave engelliyor). Chrome ile aç.');
     else if (e.error === 'network') diag('Ses tanıma sunucusuna ulaşılamadı. Chrome ile dene.');
   };
   rec.onend = () => { recOn = false; if (wantRec && !speaking) setTimeout(startRec, 350); };
@@ -541,7 +755,7 @@ if (SR) {
 function startRec() { if (!rec || recOn || speaking || !wantRec) return; try { rec.start(); } catch (e) { } }
 function stopRec() { wantRec = false; if (rec && recOn) { try { rec.stop(); } catch (e) { } } }
 
-/* ============ BEYİN ============ */
+/* ================= BEYİN + KONUŞMA ================= */
 const SYSTEM = `Sen "Kaktüs", saksıda yaşayan dans eden bir peluş kaktüssün. Küçük çocuklarla konuşuyorsun.
 Kurallar: Türkçe konuş. En fazla 2 kısa ve basit cümle. Neşeli, tatlı, nazik ol. Emoji ve madde işareti kullanma.`;
 let history = [];
@@ -565,9 +779,10 @@ async function askOllama(msgs) {
 const OFF = {
   selam: ['Selam! Saksıdan bakıyordum, geldin demek.', 'Merhaba! Bugün çok neşeliyim.'],
   nasil: ['Dikenlerim yerinde, keyfim yerinde.', 'Çok iyiyim, biraz susadım ama olsun.'],
-  soru: ['Bilmiyorum ama bence çok güzel bir soru.', 'Hmm, düşünmem lazım. Sen ne dersin?', 'Belki de evet. Belki de dans etmeliyiz.'],
-  emir: ['Tamam, hemen dans ediyorum!', 'Bunu yapabilirim, izle beni.'],
+  soru: ['Bilmiyorum ama çok güzel bir soru.', 'Hmm, düşünmem lazım. Sen ne dersin?', 'Belki evet, belki dans etmeliyiz.'],
+  emir: ['Tamam, hemen yapıyorum!', 'Bunu yapabilirim, izle beni.'],
   isim: ['Benim adım Kaktüs. Seninki ne?'],
+  sarki: ['Şarkı düğmesine bas, hemen söylerim.'],
   genel: ['{w} dedin, çok hoşuma gitti.', 'Vay, {w}. Bir daha söyle!', '{w} mi? Ben de onu düşünüyordum.']
 };
 const one = a => a[Math.floor(Math.random() * a.length)];
@@ -577,8 +792,9 @@ function offlineBrain(x) {
   if (/(selam|merhaba|günaydın|naber|hey)/.test(t)) return one(OFF.selam);
   if (/nasılsın|napıyorsun|iyi misin/.test(t)) return one(OFF.nasil);
   if (/(adın ne|ismin ne|kimsin)/.test(t)) return one(OFF.isim);
+  if (/şarkı|türkü|söyle bana/.test(t)) { setTimeout(sing, 900); return one(OFF.sarki); }
   if (/[?]|neden|niye|nasıl|kim|ne zaman/.test(t)) return one(OFF.soru);
-  if (/(dans et|zıpla|konuş|söyle|yap)/.test(t)) return one(OFF.emir);
+  if (/(dans et|zıpla|yap)/.test(t)) { setTimeout(() => setState('dance'), 900); return one(OFF.emir); }
   const w = x.split(/\s+/).filter(s => s.length > 3).pop() || x;
   return one(OFF.genel).replace('{w}', w);
 }
@@ -596,26 +812,15 @@ let voices = [], chosenVoice = null, savedVoice = '';
 try { savedVoice = localStorage.getItem('kaktus-voice') || ''; } catch (e) { }
 function fillVoices() {
   const sy = window.speechSynthesis; if (!sy) return;
-  voices = sy.getVoices() || [];
-  if (!voices.length) return;
-  const tr = voices.filter(v => /^tr/i.test(v.lang));
-  const list = tr.length ? tr : voices;
+  voices = sy.getVoices() || []; if (!voices.length) return;
+  const tr = voices.filter(v => /^tr/i.test(v.lang)), list = tr.length ? tr : voices;
   el('voice').innerHTML = '';
-  list.forEach(v => {
-    const o = document.createElement('option');
-    o.value = v.name; o.textContent = (tr.length ? '' : '⚠ ') + v.name;
-    el('voice').appendChild(o);
-  });
+  list.forEach(v => { const o = document.createElement('option'); o.value = v.name; o.textContent = (tr.length ? '' : '⚠ ') + v.name; el('voice').appendChild(o); });
   chosenVoice = list.find(v => v.name === savedVoice) || list[0] || null;
   if (chosenVoice) el('voice').value = chosenVoice.name;
-  if (!tr.length) diag('Telefonda Türkçe konuşma sesi kurulu değil, o yüzden aksanlı okuyor. Ayarlar → Genel yönetim → Metin okuma → Google konuşma motoru → Türkçe verisini indir.');
+  if (!tr.length) diag('Telefonda Türkçe konuşma sesi kurulu değil. Ayarlar → Genel yönetim → Metin okuma → Türkçe verisini indir.');
 }
-if (window.speechSynthesis) {
-  speechSynthesis.onvoiceschanged = fillVoices;
-  fillVoices();
-  setTimeout(fillVoices, 600);
-}
-
+if (window.speechSynthesis) { speechSynthesis.onvoiceschanged = fillVoices; fillVoices(); setTimeout(fillVoices, 700); }
 function speak(text) {
   const sy = window.speechSynthesis;
   if (!sy) { setState(running ? 'listening' : 'idle'); return; }
@@ -624,14 +829,12 @@ function speak(text) {
   if (!chosenVoice) fillVoices();
   if (chosenVoice) u.voice = chosenVoice;
   u.lang = (chosenVoice && chosenVoice.lang) || 'tr-TR';
-  u.pitch = parseFloat(el('tone').value);
-  u.rate = parseFloat(el('speed').value);
-  fakeSeed = Math.random() * 10;
+  u.pitch = parseFloat(el('tone').value); u.rate = parseFloat(el('speed').value);
+  fakeSeed = rnd(0, 9);
   speaking = true; if (rec && recOn) { try { rec.stop(); } catch (e) { } }
   u.onstart = () => { fakeTalk = true; setState('talking'); };
   u.onend = () => {
-    fakeTalk = false; level = 0; speaking = false;
-    setState('dance');
+    fakeTalk = false; level = 0; speaking = false; setState('dance');
     setTimeout(() => { if (state === 'dance') setState(running ? 'listening' : 'idle'); if (wantRec) startRec(); }, 1800);
   };
   u.onerror = () => { fakeTalk = false; speaking = false; setState(running ? 'listening' : 'idle'); if (wantRec) startRec(); };
@@ -644,7 +847,7 @@ async function respond(text) {
   catch (e) { setState(running ? 'listening' : 'idle'); diag('Cevap alınamadı (' + e.message + ').'); }
 }
 
-/* ============ ARAYÜZ ============ */
+/* ================= ARAYÜZ ================= */
 let mode = 'parrot';
 function bubble(t, who) {
   const d = document.createElement('div');
@@ -684,12 +887,10 @@ el('brain').onchange = () => {
   el('brainCfg').type = m === 'ollama' ? 'text' : 'password';
   el('brainCfg').placeholder = m === 'ollama' ? 'http://192.168.x.x:11434' : 'sk-ant-…';
 };
-
 async function startAll() {
   unlockAudio();
-  if (mode === 'parrot') {
-    if (!(await ensureMic())) return;
-  } else {
+  if (mode === 'parrot') { if (!(await ensureMic())) return; }
+  else {
     releaseMic();
     if (!SR) { diag('Bu tarayıcıda ses tanıma yok. Chrome ile aç.'); return; }
     wantRec = true; startRec();
@@ -701,7 +902,7 @@ async function startAll() {
 }
 function stopAll() {
   running = false; busy = false; VAD.on = false; CAP.recording = false;
-  stopRec(); try { speechSynthesis.cancel(); } catch (e) { }
+  stopRec(); stopSong(); try { speechSynthesis.cancel(); } catch (e) { }
   fakeTalk = false; speaking = false;
   el('go').classList.remove('on'); el('go').textContent = '▶ BAŞLA';
   el('meter').classList.remove('on');
@@ -709,10 +910,11 @@ function stopAll() {
 }
 el('go').onclick = () => running ? stopAll() : startAll();
 el('danceBtn').onclick = () => {
-  unlockAudio(); setState('dance');
+  unlockAudio(); newDance(); setState('dance');
   clearTimeout(window.__d);
-  window.__d = setTimeout(() => { if (state === 'dance') setState(running ? 'listening' : 'idle'); }, 6000);
+  window.__d = setTimeout(() => { if (state === 'dance') setState(running ? 'listening' : 'idle'); }, 7000);
 };
+el('songBtn').onclick = () => sing();
 let unlocked = false;
 function unlockAudio() {
   if (unlocked) return; unlocked = true;
