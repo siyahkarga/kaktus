@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dans Eden Kaktüs — Akıllı Sürüm</title>
+<meta name="theme-color" content="#16123a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kaktüs">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2316123a'/%3E%3Crect x='27' y='12' width='11' height='33' rx='5.5' fill='%2357d07d'/%3E%3Crect x='15' y='24' width='12' height='9' rx='4.5' fill='%2357d07d'/%3E%3Crect x='38' y='19' width='12' height='9' rx='4.5' fill='%2357d07d'/%3E%3Cpath d='M21 44h22l-3 11H24z' fill='%23ff9b52'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2316123a'/%3E%3Crect x='27' y='12' width='11' height='33' rx='5.5' fill='%2357d07d'/%3E%3Crect x='15' y='24' width='12' height='9' rx='4.5' fill='%2357d07d'/%3E%3Crect x='38' y='19' width='12' height='9' rx='4.5' fill='%2357d07d'/%3E%3Cpath d='M21 44h22l-3 11H24z' fill='%23ff9b52'/%3E%3C/svg%3E">
+<link rel="manifest" href='data:application/manifest+json,{"name":"Dans%20Eden%20Kakt%C3%BCs","short_name":"Kakt%C3%BCs","start_url":".","display":"standalone","background_color":"%2316123a","theme_color":"%2316123a"}'>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#16123a;
+    --night-2:#241b57;
+    --panel:rgba(255,255,255,.06);
+    --line:rgba(255,255,255,.14);
+    --cream:#fdf3e3;
+    --dim:#a99ed6;
+    --pink:#ff4d9d;
+    --sun:#ffb03a;
+    --leaf:#57d07d;
+    --r:20px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    min-height:100dvh;
+    background:
+      radial-gradient(120% 70% at 50% 0%, #3a2570 0%, rgba(58,37,112,0) 60%),
+      radial-gradient(90% 60% at 100% 100%, #4a1f5e 0%, rgba(74,31,94,0) 55%),
+      var(--night);
+    color:var(--cream);
+    font-family:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+    display:flex;justify-content:center;
+    padding:16px 14px 32px;
+  }
+  .app{width:100%;max-width:480px}
+
+  header{text-align:center;margin-bottom:6px}
+  .eyebrow{
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);
+    margin:0 0 4px;
+  }
+  h1{
+    font-family:"Baloo 2",system-ui,sans-serif;font-weight:800;
+    font-size:clamp(26px,7.5vw,34px);line-height:1.05;margin:0;
+    color:var(--cream);
+  }
+  h1 span{color:var(--sun)}
+
+  /* --- sahne --- */
+  .stage{
+    position:relative;margin:8px 0 10px;
+    border-radius:26px;
+    background:
+      radial-gradient(80% 55% at 50% 18%, rgba(255,176,58,.18), rgba(255,176,58,0) 70%),
+      linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    border:1px solid var(--line);
+    overflow:hidden;
+  }
+  .stage svg{display:block;width:100%;height:auto}
+  .limb{fill:url(#gBody);stroke:#15532f;stroke-width:5;stroke-linejoin:round}
+  .spike{fill:#15532f}
+  .beam{
+    position:absolute;inset:auto 0 0 0;height:38%;
+    background:linear-gradient(0deg, rgba(255,77,157,.16), transparent);
+    pointer-events:none;
+  }
+  .badge{
+    position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:7px;
+    font-size:12px;font-weight:700;color:var(--dim);
+    background:rgba(0,0,0,.28);border:1px solid var(--line);
+    padding:6px 11px;border-radius:999px;backdrop-filter:blur(4px);
+  }
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--dim);transition:background .2s}
+  .dot.live{background:var(--pink);animation:pulse 1s infinite}
+  .dot.busy{background:var(--sun)}
+  @keyframes pulse{50%{opacity:.25}}
+
+  /* --- konuşma --- */
+  .talk{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+  .bubble{
+    padding:11px 14px;border-radius:16px;font-size:15px;line-height:1.45;
+    max-width:88%;word-wrap:break-word;
+  }
+  .me{align-self:flex-end;background:rgba(255,255,255,.1);border:1px solid var(--line);border-bottom-right-radius:6px}
+  .cactus{
+    align-self:flex-start;background:linear-gradient(135deg,#2f9d5c,#1f7a45);
+    border-bottom-left-radius:6px;font-weight:700;
+  }
+  .bubble.ghost{opacity:.5;font-style:italic}
+
+  /* --- kontroller --- */
+  .modes{display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);padding:5px;border-radius:999px}
+  .modes button{
+    flex:1;border:0;background:transparent;color:var(--dim);
+    font-family:inherit;font-size:14px;font-weight:700;padding:10px 6px;border-radius:999px;cursor:pointer;
+    transition:.18s;
+  }
+  .modes button[aria-pressed="true"]{background:var(--cream);color:#2b1a4d}
+
+  .row{display:flex;gap:10px;align-items:center;margin-top:12px}
+  .mic{
+    flex:1;border:0;cursor:pointer;font-family:"Baloo 2",sans-serif;font-weight:800;font-size:19px;
+    color:#2b1a4d;background:linear-gradient(180deg,#ffd07a,var(--sun));
+    padding:17px 12px;border-radius:var(--r);
+    box-shadow:0 6px 0 #c07615, 0 12px 22px rgba(0,0,0,.35);
+    transition:transform .08s, box-shadow .08s;
+  }
+  .mic:active{transform:translateY(4px);box-shadow:0 2px 0 #c07615,0 6px 12px rgba(0,0,0,.3)}
+  .mic.rec{background:linear-gradient(180deg,#ff85bb,var(--pink));box-shadow:0 6px 0 #b02e6b,0 12px 22px rgba(0,0,0,.35)}
+  .ghost-btn{
+    border:1px solid var(--line);background:var(--panel);color:var(--cream);
+    font-family:"Baloo 2",sans-serif;font-weight:800;font-size:17px;
+    padding:17px 18px;border-radius:var(--r);cursor:pointer;
+  }
+  .ghost-btn:active{transform:translateY(2px)}
+
+  .field{display:flex;gap:8px;margin-top:10px}
+  .field input{
+    flex:1;background:rgba(0,0,0,.25);border:1px solid var(--line);color:var(--cream);
+    font-family:inherit;font-size:15px;padding:13px 14px;border-radius:14px;
+  }
+  .field input::placeholder{color:#7a6fa8}
+  .field button{
+    border:1px solid var(--line);background:var(--panel);color:var(--cream);
+    padding:0 16px;border-radius:14px;font-family:inherit;font-weight:700;cursor:pointer;
+  }
+
+  .slider{margin-top:14px;display:none}
+  .slider.on{display:block}
+  .slider label{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);
+    letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  input[type=range]{width:100%;accent-color:var(--pink)}
+
+  .settings{display:none;gap:8px;margin-top:12px}
+  .settings.on{display:flex;flex-direction:column}
+  .settings select,.settings input{
+    background:rgba(0,0,0,.25);border:1px solid var(--line);color:var(--cream);
+    font-family:inherit;font-size:14px;padding:11px 12px;border-radius:12px;
+  }
+  .settings select{flex:0 0 auto}
+  .settings input{flex:1;min-width:0}
+  .diag{
+    margin-top:12px;font-size:12.5px;line-height:1.5;color:var(--sun);
+    background:rgba(255,176,58,.1);border:1px solid rgba(255,176,58,.3);
+    padding:10px 12px;border-radius:12px;display:none;
+  }
+  .diag.on{display:block}
+  .note{margin-top:14px;font-size:12.5px;line-height:1.5;color:var(--dim);text-align:center}
+  button:focus-visible,input:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+  @media (prefers-reduced-motion: reduce){.dot.live{animation:none}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <p class="eyebrow">Blobidea oyuncak tezgâhı</p>
+    <h1>Dans Eden <span>Kaktüs</span></h1>
+  </header>
+
+  <div class="stage">
+    <div class="badge"><i class="dot" id="dot"></i><span id="status">Uyukluyor</span></div>
+
+    <svg id="stage" viewBox="0 0 400 590" role="img" aria-label="Saksıda dans eden kaktüs karakteri">
+      <defs>
+        <linearGradient id="gBody" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#2f9d5c"/>
+          <stop offset=".45" stop-color="#5fd985"/>
+          <stop offset="1" stop-color="#268a4c"/>
+        </linearGradient>
+        <linearGradient id="gPot" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffb774"/>
+          <stop offset="1" stop-color="#d05f24"/>
+        </linearGradient>
+        <linearGradient id="gMask" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffd15c"/>
+          <stop offset="1" stop-color="#ff9a2e"/>
+        </linearGradient>
+      </defs>
+
+      <ellipse cx="200" cy="556" rx="118" ry="15" fill="rgba(0,0,0,.35)"/>
+
+      <g transform="translate(200,400)">
+        <g id="rootBob">
+          <!-- gövde zinciri: 3 omur + kafa (ileri kinematik) -->
+          <g id="s1">
+            <rect class="limb" x="-27" y="-58" width="54" height="64" rx="25"/>
+            <path class="spike" d="M-27,-38 l-10,-3 l10,-4z"/>
+            <path class="spike" d="M27,-22 l10,-3 l-10,-4z"/>
+            <g transform="translate(0,-55)">
+              <g id="s2">
+                <rect class="limb" x="-27" y="-58" width="54" height="64" rx="25"/>
+                <path class="spike" d="M-27,-30 l-10,-3 l10,-4z"/>
+                <path class="spike" d="M27,-44 l10,-3 l-10,-4z"/>
+                <g transform="translate(0,-55)">
+                  <g id="s3">
+                    <rect class="limb" x="-30" y="-60" width="60" height="66" rx="27"/>
+
+                    <!-- sol kol -->
+                    <g transform="translate(-24,-26)">
+                      <g id="armL">
+                        <rect class="limb" x="-16" y="-54" width="32" height="60" rx="16"/>
+                        <g transform="translate(0,-50)">
+                          <g id="armLF">
+                            <rect class="limb" x="-15" y="-48" width="30" height="54" rx="15"/>
+                            <path class="spike" d="M-15,-30 l-9,-3 l9,-4z"/>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+
+                    <!-- sağ kol -->
+                    <g transform="translate(24,-26)">
+                      <g id="armR">
+                        <rect class="limb" x="-16" y="-54" width="32" height="60" rx="16"/>
+                        <g transform="translate(0,-50)">
+                          <g id="armRF">
+                            <rect class="limb" x="-15" y="-48" width="30" height="54" rx="15"/>
+                            <path class="spike" d="M15,-30 l9,-3 l-9,-4z"/>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+
+                    <!-- kafa -->
+                    <g transform="translate(0,-48)">
+                      <g id="head">
+                        <g id="flower" transform="translate(0,-140)">
+                          <circle cx="0" cy="-11" r="9" fill="#ff4d9d"/>
+                          <circle cx="10" cy="-3" r="9" fill="#ff4d9d"/>
+                          <circle cx="6" cy="9" r="9" fill="#ff4d9d"/>
+                          <circle cx="-6" cy="9" r="9" fill="#ff4d9d"/>
+                          <circle cx="-10" cy="-3" r="9" fill="#ff4d9d"/>
+                          <circle cx="0" cy="0" r="7" fill="#ffd15c"/>
+                        </g>
+                        <ellipse class="limb" cx="0" cy="-66" rx="64" ry="74"/>
+                        <path d="M-62,-98 Q0,-120 62,-98 L62,-62 Q0,-44 -62,-62 Z" fill="url(#gMask)" stroke="#15532f" stroke-width="4" stroke-linejoin="round"/>
+                        <g transform="translate(0,-80)">
+                          <g id="eyeScale">
+                            <ellipse cx="-26" cy="0" rx="20" ry="23" fill="#fdf3e3" stroke="#15532f" stroke-width="4"/>
+                            <ellipse cx="26" cy="0" rx="20" ry="23" fill="#fdf3e3" stroke="#15532f" stroke-width="4"/>
+                            <g id="pupils">
+                              <circle cx="-26" cy="0" r="8.5" fill="#1a1330"/>
+                              <circle cx="26" cy="0" r="8.5" fill="#1a1330"/>
+                            </g>
+                          </g>
+                        </g>
+                        <g transform="translate(0,-30)">
+                          <ellipse id="mouth" cx="0" cy="0" rx="17" ry="4" fill="#3d1030" stroke="#15532f" stroke-width="3"/>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+
+      <!-- saksı en son: gövdenin dibini kapatır -->
+      <g id="pot" transform="translate(200,548)">
+        <path d="M-78,-128 L78,-128 L60,0 L-60,0 Z" fill="url(#gPot)" stroke="#8f3d12" stroke-width="5" stroke-linejoin="round"/>
+        <rect x="-92" y="-146" width="184" height="34" rx="14" fill="#ffc48c" stroke="#8f3d12" stroke-width="5"/>
+        <path d="M-52,-104 L-40,-14" stroke="rgba(255,255,255,.35)" stroke-width="7" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <div class="beam"></div>
+  </div>
+
+  <div class="modes" role="group" aria-label="Mod seçimi">
+    <button id="mParrot" aria-pressed="true">🦜 Papağan</button>
+    <button id="mSmart" aria-pressed="false">🧠 Akıllı</button>
+  </div>
+
+  <div class="talk" id="talk">
+    <div class="bubble cactus">Selam! Mikrofona bas, konuş. Papağan modunda seni taklit ederim, Akıllı modda kendi cevabımı veririm.</div>
+  </div>
+
+  <div class="row">
+    <button class="mic" id="micBtn">🎤 Bas ve konuş</button>
+    <button class="ghost-btn" id="danceBtn" title="Dans et">💃</button>
+  </div>
+
+  <div class="field">
+    <input id="txt" type="text" placeholder="Ya da buraya yaz…" autocomplete="off">
+    <button id="sendBtn">Gönder</button>
+  </div>
+
+  <div class="slider" id="pitchWrap">
+    <label><span>Ses efekti</span><span id="pitchVal">1.55×</span></label>
+    <input id="pitch" type="range" min="1" max="2.2" step="0.05" value="1.55">
+  </div>
+
+  <div class="settings" id="settings">
+    <select id="brain" aria-label="Cevap kaynağı">
+      <option value="auto">Beyin: otomatik</option>
+      <option value="claude">Claude (kendi API anahtarım)</option>
+      <option value="ollama">Ollama (yerel ağ)</option>
+      <option value="offline">Kaktüs beyni (çevrimdışı)</option>
+    </select>
+    <input id="brainCfg" type="password" placeholder="sk-ant-… anahtarın (isteğe bağlı)" aria-label="Beyin ayarı" autocomplete="off">
+  </div>
+
+  <p class="diag" id="diag"></p>
+
+  <p class="note">Mikrofon çalışmazsa yazarak da oynayabilirsin. Karakter tamamen orijinal — lisanslı bir kahraman değil.</p>
+</div>
+
+<script>
+/* =========================================================
+   1) RIG — omur zinciri + yay (spring) yumuşatma
+   ========================================================= */
+const el = id => document.getElementById(id);
+const N = {
+  root: el('rootBob'), s1: el('s1'), s2: el('s2'), s3: el('s3'), head: el('head'),
+  armL: el('armL'), armLF: el('armLF'), armR: el('armR'), armRF: el('armRF'),
+  pot: el('pot'), mouth: el('mouth'), eye: el('eyeScale'), pupils: el('pupils'), flower: el('flower')
+};
+
+// her kanal: mevcut değer + hız (kritik sönümlü yay)
+function ch(v, k = 120, d = 14) { return { x: v, v: 0, t: v, k, d }; }
+const C = {
+  s1: ch(0), s2: ch(0), s3: ch(0), head: ch(0),
+  armL: ch(-78, 90, 12), armLF: ch(-22, 90, 12),
+  armR: ch(78, 90, 12), armRF: ch(22, 90, 12),
+  bobY: ch(0, 200, 16), rootRot: ch(0),
+  sx: ch(1, 160, 15), sy: ch(1, 160, 15),
+  potSy: ch(1, 220, 18),
+  mouth: ch(0.1, 260, 20), eye: ch(1, 200, 16),
+  pupX: ch(0, 80, 12), pupY: ch(0, 80, 12),
+  flower: ch(0, 60, 10)
+};
+
+let state = 'idle';       // idle | listening | thinking | talking | dance
+let level = 0;            // 0..1 anlık ses seviyesi
+let blinkAt = 2, eyeClose = 0;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function setState(s, label) {
+  state = s;
+  const dot = el('dot');
+  dot.className = 'dot' + (s === 'listening' ? ' live' : (s === 'thinking' ? ' busy' : ''));
+  el('status').textContent = label || ({
+    idle: 'Uyukluyor', listening: 'Dinliyor', thinking: 'Düşünüyor',
+    talking: 'Konuşuyor', dance: 'Dans ediyor'
+  })[s];
+}
+
+function targets(t) {
+  const T = C, a = level;
+  if (state === 'idle') {
+    const s = Math.sin(t * 1.1);
+    T.s1.t = s * 2.2; T.s2.t = Math.sin(t * 1.1 - .5) * 3; T.s3.t = Math.sin(t * 1.1 - 1) * 3.5;
+    T.head.t = -s * 3;
+    T.armL.t = -78 + Math.sin(t * .9) * 4; T.armLF.t = -22 + Math.sin(t * 1.3) * 5;
+    T.armR.t = 78 - Math.sin(t * .9 + .5) * 4; T.armRF.t = 22 - Math.sin(t * 1.3 + .5) * 5;
+    T.bobY.t = Math.sin(t * 1.1) * 2; T.rootRot.t = s * .8;
+    T.sx.t = 1; T.sy.t = 1; T.potSy.t = 1;
+    T.mouth.t = .12; T.eye.t = 1;
+  } else if (state === 'listening') {
+    const w = Math.sin(t * 9) * a;
+    T.s1.t = w * 2; T.s2.t = w * 3; T.s3.t = w * 4 + 3;
+    T.head.t = -w * 4;
+    T.armL.t = -108 - a * 22; T.armLF.t = -50 - a * 20;
+    T.armR.t = 108 + a * 22; T.armRF.t = 50 + a * 20;
+    T.bobY.t = -a * 5; T.rootRot.t = w * 1.5;
+    T.sx.t = 1 - a * .03; T.sy.t = 1 + a * .07; T.potSy.t = 1;
+    T.mouth.t = .1 + a * .2; T.eye.t = 1.15 + a * .15;
+    T.pupX.t = 0; T.pupY.t = -3;
+  } else if (state === 'thinking') {
+    T.s1.t = -2; T.s2.t = -4; T.s3.t = -7 + Math.sin(t * 1.6) * 2;
+    T.head.t = 13 + Math.sin(t * 1.6) * 2;
+    T.armL.t = -70; T.armLF.t = -16;
+    T.armR.t = 46 + Math.sin(t * 3.4) * 5; T.armRF.t = 96;
+    T.bobY.t = 0; T.rootRot.t = -2;
+    T.sx.t = 1; T.sy.t = 1; T.potSy.t = 1;
+    T.mouth.t = .06; T.eye.t = .85;
+    T.pupX.t = -5; T.pupY.t = -6;
+  } else if (state === 'talking') {
+    const g = .35 + a;
+    T.s1.t = Math.sin(t * 3.4) * 3 * g; T.s2.t = Math.sin(t * 3.4 - .5) * 5 * g; T.s3.t = Math.sin(t * 3.4 - 1) * 7 * g;
+    T.head.t = Math.sin(t * 7) * 5 * g;
+    T.armL.t = -84 - a * 26 + Math.sin(t * 5) * 8;
+    T.armLF.t = -26 - a * 24;
+    T.armR.t = 84 + a * 26 - Math.sin(t * 5 + 1) * 8;
+    T.armRF.t = 26 + a * 24;
+    T.bobY.t = -Math.abs(Math.sin(t * 4)) * 5 * g; T.rootRot.t = Math.sin(t * 3.4) * 1.5;
+    T.sx.t = 1 - a * .04; T.sy.t = 1 + a * .06;
+    T.potSy.t = 1 - Math.max(0, Math.sin(t * 4)) * .03;
+    T.mouth.t = .12 + a * .95; T.eye.t = 1 + a * .1;
+    T.pupX.t = Math.sin(t * 1.7) * 4; T.pupY.t = 0;
+  } else { // dance
+    const b = t * 5.2;
+    T.s1.t = Math.sin(b) * 7; T.s2.t = Math.sin(b - .7) * 11; T.s3.t = Math.sin(b - 1.4) * 15;
+    T.head.t = Math.sin(b - 2) * 12;
+    T.armL.t = -100 + Math.sin(b) * 42; T.armLF.t = -40 + Math.sin(b * 2) * 34;
+    T.armR.t = 100 + Math.sin(b + Math.PI) * 42; T.armRF.t = 40 + Math.sin(b * 2 + 1) * 34;
+    T.bobY.t = -Math.abs(Math.sin(b)) * 12; T.rootRot.t = Math.sin(b * .5) * 5;
+    T.sx.t = 1 + Math.sin(b) * .04; T.sy.t = 1 - Math.sin(b) * .05;
+    T.potSy.t = 1 - Math.max(0, Math.sin(b)) * .06;
+    T.mouth.t = .55 + Math.abs(Math.sin(b)) * .4; T.eye.t = 1.1;
+    T.pupX.t = Math.sin(b * .5) * 6; T.pupY.t = -2;
+  }
+  T.flower.t = -C.s3.x * 1.6 - C.head.x * .8;
+}
+
+function integrate(dt) {
+  for (const k in C) {
+    const c = C[k];
+    c.v += ((c.t - c.x) * c.k - c.v * c.d) * dt;
+    c.x += c.v * dt;
+  }
+}
+
+function apply() {
+  const R = a => 'rotate(' + a.toFixed(2) + ')';
+  N.root.setAttribute('transform',
+    'translate(0,' + C.bobY.x.toFixed(2) + ') rotate(' + C.rootRot.x.toFixed(2) + ') scale(' + C.sx.x.toFixed(3) + ',' + C.sy.x.toFixed(3) + ')');
+  N.s1.setAttribute('transform', R(C.s1.x));
+  N.s2.setAttribute('transform', R(C.s2.x));
+  N.s3.setAttribute('transform', R(C.s3.x));
+  N.head.setAttribute('transform', R(C.head.x));
+  N.armL.setAttribute('transform', R(C.armL.x));
+  N.armLF.setAttribute('transform', R(C.armLF.x));
+  N.armR.setAttribute('transform', R(C.armR.x));
+  N.armRF.setAttribute('transform', R(C.armRF.x));
+  N.pot.setAttribute('transform', 'translate(200,548) scale(1,' + C.potSy.x.toFixed(3) + ')');
+  N.mouth.setAttribute('ry', (3 + C.mouth.x * 15).toFixed(2));
+  N.eye.setAttribute('transform', 'scale(1,' + Math.max(.06, C.eye.x * (1 - eyeClose)).toFixed(3) + ')');
+  N.pupils.setAttribute('transform', 'translate(' + C.pupX.x.toFixed(2) + ',' + C.pupY.x.toFixed(2) + ')');
+  N.flower.setAttribute('transform', 'translate(0,-140) rotate(' + (C.flower.x * .5).toFixed(2) + ')');
+}
+
+let last = performance.now(), tm = 0;
+function frame(now) {
+  let dt = Math.min(.05, (now - last) / 1000); last = now; tm += dt;
+  // seviye: mikrofon / oynatma / sahte TTS zarfı
+  const raw = fakeTalk ? fakeLevel(tm) : readLevel();
+  level += (raw - level) * (raw > level ? .45 : .12);
+  // göz kırpma
+  blinkAt -= dt;
+  if (blinkAt < 0) { eyeClose = 1; blinkAt = 2.4 + Math.random() * 3.4; }
+  eyeClose = Math.max(0, eyeClose - dt * 9);
+  targets(tm);
+  integrate(reduce ? dt * .5 : dt);
+  apply();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// fare/parmak takibi — gözler imleci izler
+addEventListener('pointermove', e => {
+  const r = el('stage').getBoundingClientRect();
+  const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+  const dy = (e.clientY - (r.top + r.height * .35)) / (r.height / 2);
+  if (state === 'idle' || state === 'listening') {
+    C.pupX.t = Math.max(-7, Math.min(7, dx * 7));
+    C.pupY.t = Math.max(-7, Math.min(7, dy * 7));
+  }
+});
+
+/* =========================================================
+   2) SES — mikrofon, seviye ölçümü, kayıt, efektli oynatma
+   ========================================================= */
+let ac = null, micStream = null, micAnalyser = null, playAnalyser = null, buf = null;
+let recorder = null, chunks = [], fakeTalk = false, fakeSeed = 0;
+
+function readLevel() {
+  const an = playAnalyser || micAnalyser;
+  if (!an) return 0;
+  if (!buf || buf.length !== an.fftSize) buf = new Float32Array(an.fftSize);
+  an.getFloatTimeDomainData(buf);
+  let s = 0; for (let i = 0; i < buf.length; i++) s += buf[i] * buf[i];
+  return Math.min(1, Math.sqrt(s / buf.length) * 9);
+}
+function fakeLevel(t) {
+  // TTS sırasında gerçek analiz yok — inandırıcı bir konuşma zarfı üret
+  return Math.min(1, .35 + Math.abs(Math.sin(t * 11 + fakeSeed)) * .4 + Math.abs(Math.sin(t * 27)) * .2);
+}
+
+function diag(msg) {
+  const d = el('diag');
+  d.textContent = msg;
+  d.classList.toggle('on', !!msg);
+}
+
+// Ortamı kontrol et: neyin çalışıp neyin çalışmadığını açıkça söyle.
+function checkEnv() {
+  const inFrame = window.self !== window.top;
+  if (!window.isSecureContext)
+    return 'Sayfa güvenli bağlamda değil (https ya da localhost gerekiyor). Mikrofon kapalı — yazarak oyna.';
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+    return inFrame
+      ? 'Bu çerçeve mikrofon iznini hiç taşımıyor (iframe allow="microphone" yok). Dosyayı indirip localhost üzerinden açarsan mikrofon açılır.'
+      : 'Bu tarayıcı mikrofon API\'sini vermiyor. Yazarak oyna.';
+  return '';
+}
+
+async function ensureMic() {
+  if (micStream) { if (ac.state === 'suspended') await ac.resume(); return true; }
+  const envErr = checkEnv();
+  if (envErr) { diag(envErr); return false; }
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    if (ac.state === 'suspended') await ac.resume();
+    const src = ac.createMediaStreamSource(micStream);
+    micAnalyser = ac.createAnalyser(); micAnalyser.fftSize = 1024;
+    src.connect(micAnalyser);
+    diag('');
+    return true;
+  } catch (err) {
+    const n = err && err.name;
+    const map = {
+      NotAllowedError: 'Mikrofon izni verilmedi. Sayfa bir çerçeve içindeyse tarayıcı izin kutusunu hiç göstermez; dosyayı indirip localhost üzerinden aç.',
+      PermissionDeniedError: 'Mikrofon izni reddedildi. Adres çubuğundaki kilit ikonundan izni aç.',
+      NotFoundError: 'Bağlı bir mikrofon bulunamadı.',
+      NotReadableError: 'Mikrofonu başka bir uygulama kullanıyor.',
+      SecurityError: 'Tarayıcı güvenlik politikası mikrofonu engelledi.'
+    };
+    diag((map[n] || 'Mikrofon açılamadı (' + n + ').') + ' Metin kutusu her modda çalışmaya devam ediyor.');
+    return false;
+  }
+}
+
+function pickMime() {
+  const list = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'];
+  for (const m of list) if (window.MediaRecorder && MediaRecorder.isTypeSupported(m)) return m;
+  return '';
+}
+
+async function playParrot(blob) {
+  try {
+    const arr = await blob.arrayBuffer();
+    const audio = await ac.decodeAudioData(arr);
+    const src = ac.createBufferSource();
+    src.buffer = audio;
+    src.playbackRate.value = parseFloat(el('pitch').value);
+    playAnalyser = ac.createAnalyser(); playAnalyser.fftSize = 1024;
+    src.connect(playAnalyser); playAnalyser.connect(ac.destination);
+    setState('talking');
+    src.onended = () => { playAnalyser = null; setState('dance'); setTimeout(() => setState('idle'), 2600); };
+    src.start();
+  } catch (e) {
+    playAnalyser = null;
+    // Safari WebM'i çözemeyebilir: <audio> ile çal, perdeyi playbackRate ile kaydır.
+    try {
+      const a = new Audio(URL.createObjectURL(blob));
+      a.preservesPitch = false; a.mozPreservesPitch = false; a.webkitPreservesPitch = false;
+      a.playbackRate = parseFloat(el('pitch').value);
+      fakeSeed = Math.random() * 10; fakeTalk = true;
+      setState('talking');
+      a.onended = () => { fakeTalk = false; level = 0; setState('dance'); setTimeout(() => setState('idle'), 2400); };
+      await a.play();
+    } catch (e2) {
+      fakeTalk = false; setState('idle');
+      diag('Kaydı çalamadım (' + (e2.name || e2.message) + '). Yazarak konuşmayı dene.');
+    }
+  }
+}
+
+/* =========================================================
+   3) KONUŞMA TANIMA
+   ========================================================= */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, heard = '', recognizing = false;
+if (SR) {
+  rec = new SR();
+  rec.lang = 'tr-TR'; rec.interimResults = true; rec.continuous = false;
+  rec.onstart = () => recognizing = true;
+  rec.onresult = e => {
+    let txt = '';
+    for (let i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript;
+    heard = txt.trim();
+    ghost(heard);
+  };
+  rec.onerror = e => {
+    const k = e.error;
+    if (k === 'not-allowed' || k === 'service-not-allowed')
+      diag('Ses tanıma servisi bu tarayıcıda kapalı. Brave, Google konuşma servisini engelliyor — aynı linki Chrome ile aç ya da yazarak konuş. Papağan modu burada da çalışır.');
+    else if (k === 'network')
+      diag('Ses tanıma sunucusuna ulaşılamadı (Brave kalkanları ya da bağlantı). Chrome ile dene veya yazarak konuş.');
+    else if (k === 'no-speech')
+      diag('Seni duyamadım, biraz daha yüksek sesle dene.');
+    recognizing = false;
+  };
+  rec.onend = () => { recognizing = false; };
+}
+
+/* =========================================================
+   4) KAKTÜSÜN KENDİ CEVABI (Claude API)
+   ========================================================= */
+const SYSTEM = `Sen "Kaktüs", saksıda yaşayan, dans eden, konuşkan bir oyuncak kaktüssün.
+Kurallar:
+- Her zaman Türkçe cevap ver.
+- En fazla 2 kısa cümle. Kısa ve tempolu konuş.
+- Neşeli, hafif ukala, sevimli bir tonun var. Sesli okunacağı için sade kelimeler kullan.
+- Emoji ve madde işareti kullanma, düz cümle kur.
+- Kullanıcı saçmalarsa sen de oyuna gir.`;
+let history = [];
+
+/* --- beyin ayarı: anahtar telefonda kalır, dosyaya gömülmez --- */
+let cfgValue = '';
+try { cfgValue = localStorage.getItem('kaktus-cfg') || ''; } catch (e) { }
+
+function cfg() { return (el('brainCfg').value || cfgValue).trim(); }
+
+async function askClaude(msgs) {
+  const key = cfg();
+  const headers = { 'Content-Type': 'application/json' };
+  if (key.startsWith('sk-')) {
+    headers['x-api-key'] = key;
+    headers['anthropic-version'] = '2023-06-01';
+    headers['anthropic-dangerous-direct-browser-access'] = 'true';
+  }
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST', headers,
+    body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, system: SYSTEM, messages: msgs })
+  });
+  if (!res.ok) throw new Error('claude ' + res.status);
+  const data = await res.json();
+  return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join(' ').trim();
+}
+
+async function askOllama(msgs) {
+  const host = cfg().startsWith('http') ? cfg() : 'http://localhost:11434';
+  const res = await fetch(host + '/api/chat', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'llama3.2', stream: false,
+      options: { temperature: .8, num_predict: 120 },
+      messages: [{ role: 'system', content: SYSTEM }, ...msgs]
+    })
+  });
+  if (!res.ok) throw new Error('ollama ' + res.status);
+  const data = await res.json();
+  return ((data.message && data.message.content) || '').trim();
+}
+
+/* --- çevrimdışı kaktüs beyni: ağ yok, izin yok, her zaman cevap var --- */
+const OFF = {
+  selam: ['Selam! Saksıdan bakıyordum, geldin demek.', 'Hoş geldin. Toprak kuru ama moral yüksek.'],
+  nasil: ['Dikenlerim yerinde, keyfim yerinde.', 'Fena değilim, biraz susadım ama şikayet etmem.'],
+  soru: ['Ben bir kaktüsüm, cevabı sen biliyorsun aslında.', 'Bunu düşünmem lazım. Düşündüm, hâlâ bilmiyorum.', 'Kesin bir şey söyleyeyim mi: belki.'],
+  emir: ['Tamam patron, ama önce bir dans.', 'Olur da nazlanırım, önce su.'],
+  bos: ['Bir şey demedin ama ben yine de salladım.'],
+  genel: ['"{w}" dedin, bayıldım. Bir daha söyle.', 'Vay be, {w}. Bunu saksıya yazdırırım.', '{w} mi? Ben de tam onu düşünüyordum.', 'Anladım: {w}. Şimdi dans zamanı.']
+};
+function pickOne(a) { return a[Math.floor(Math.random() * a.length)]; }
+function offlineBrain(text) {
+  const t = text.toLowerCase();
+  if (!t) return pickOne(OFF.bos);
+  if (/(selam|merhaba|günaydın|naber|hey)/.test(t)) return pickOne(OFF.selam);
+  if (/nasılsın|napıyorsun|iyi misin/.test(t)) return pickOne(OFF.nasil);
+  if (/[?]|neden|niye|nasıl|kim|ne zaman/.test(t)) return pickOne(OFF.soru);
+  if (/(dans et|zıpla|konuş|söyle|yap)/.test(t)) return pickOne(OFF.emir);
+  const words = text.split(/\s+/).filter(w => w.length > 3);
+  const w = words.length ? words[words.length - 1] : text;
+  return pickOne(OFF.genel).replace('{w}', w);
+}
+
+async function ask(text) {
+  const msgs = [...history, { role: 'user', content: text }];
+  const mode = el('brain').value;
+  let out = '';
+  if (mode === 'offline') {
+    out = offlineBrain(text);
+  } else if (mode === 'ollama') {
+    out = await askOllama(msgs);
+  } else if (mode === 'claude') {
+    out = await askClaude(msgs);
+  } else {
+    try { out = await askClaude(msgs); }
+    catch (e1) {
+      try { out = await askOllama(msgs); }
+      catch (e2) {
+        out = offlineBrain(text);
+        diag('Ağ beyni yok, çevrimdışı kaktüs beyni devrede. Gerçek cevap için ayarlardan kendi Claude anahtarını yapıştır.');
+      }
+    }
+  }
+  history = [...msgs, { role: 'assistant', content: out }].slice(-10);
+  return out || 'Kafam karıştı, bir daha söyler misin?';
+}
+
+function speak(text) {
+  const synth = window.speechSynthesis;
+  if (!synth) { setState('idle'); return; }
+  synth.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  const tr = synth.getVoices().find(v => /tr/i.test(v.lang));
+  if (tr) u.voice = tr;
+  u.lang = 'tr-TR'; u.pitch = 1.9; u.rate = 1.05;
+  fakeSeed = Math.random() * 10;
+  u.onstart = () => { fakeTalk = true; setState('talking'); };
+  u.onend = () => {
+    fakeTalk = false; level = 0;
+    setState('dance'); setTimeout(() => { if (state === 'dance') setState('idle'); }, 2600);
+  };
+  u.onerror = () => { fakeTalk = false; setState('idle'); };
+  synth.speak(u);
+  // bazı tarayıcılar onstart'ı geciktirir
+  setTimeout(() => { if (!fakeTalk && synth.speaking) { fakeTalk = true; setState('talking'); } }, 400);
+}
+
+/* =========================================================
+   5) ARAYÜZ
+   ========================================================= */
+let mode = 'parrot', recording = false, ghostEl = null;
+
+function bubble(text, who) {
+  const d = document.createElement('div');
+  d.className = 'bubble ' + (who === 'me' ? 'me' : 'cactus');
+  d.textContent = text;
+  el('talk').appendChild(d);
+  const t = el('talk'); t.scrollTop = t.scrollHeight;
+  while (t.children.length > 8) t.removeChild(t.firstChild);
+  return d;
+}
+function say(t) { bubble(t, 'cactus'); }
+function ghost(t) {
+  if (!t) return;
+  if (!ghostEl) { ghostEl = bubble(t, 'me'); ghostEl.classList.add('ghost'); }
+  else ghostEl.textContent = t;
+}
+
+function setMode(m) {
+  mode = m;
+  el('mParrot').setAttribute('aria-pressed', m === 'parrot');
+  el('mSmart').setAttribute('aria-pressed', m === 'smart');
+  el('pitchWrap').classList.toggle('on', m === 'parrot');
+  el('settings').classList.toggle('on', m === 'smart');
+}
+el('mParrot').onclick = () => setMode('parrot');
+el('mSmart').onclick = () => setMode('smart');
+setMode('parrot');
+
+el('pitch').oninput = e => el('pitchVal').textContent = parseFloat(e.target.value).toFixed(2) + '×';
+
+el('brainCfg').value = cfgValue;
+el('brainCfg').onchange = () => {
+  cfgValue = el('brainCfg').value.trim();
+  try { localStorage.setItem('kaktus-cfg', cfgValue); } catch (e) { }
+};
+el('brain').onchange = () => {
+  const m = el('brain').value;
+  el('brainCfg').placeholder = m === 'ollama'
+    ? 'http://192.168.x.x:11434 (boşsa localhost)'
+    : 'sk-ant-… anahtarın (isteğe bağlı)';
+  el('brainCfg').type = m === 'ollama' ? 'text' : 'password';
+};
+
+// iOS: ses motoru ilk dokunuşta açılmalı, yoksa sessiz kalır.
+let unlocked = false;
+function unlockAudio() {
+  if (unlocked) return;
+  unlocked = true;
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    if (ac.state === 'suspended') ac.resume();
+  } catch (e) { }
+  try {
+    const u = new SpeechSynthesisUtterance(' ');
+    u.volume = 0; speechSynthesis.speak(u);
+  } catch (e) { }
+}
+addEventListener('pointerdown', unlockAudio, { once: true });
+addEventListener('touchstart', unlockAudio, { once: true });
+
+async function startRec() {
+  if (!(await ensureMic())) return;
+  heard = ''; ghostEl = null; chunks = [];
+  const mime = pickMime();
+  if (mode === 'parrot' && window.MediaRecorder) {
+    try {
+      recorder = new MediaRecorder(micStream, mime ? { mimeType: mime } : undefined);
+      recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+      recorder.start();
+    } catch (e) { recorder = null; }
+  }
+  if (rec && !recognizing) { try { rec.start(); } catch (e) { } }
+  recording = true;
+  el('micBtn').textContent = '⏹ Bitir';
+  el('micBtn').classList.add('rec');
+  setState('listening');
+}
+
+function stopRec() {
+  recording = false;
+  el('micBtn').textContent = '🎤 Bas ve konuş';
+  el('micBtn').classList.remove('rec');
+  if (rec && recognizing) { try { rec.stop(); } catch (e) { } }
+  if (recorder && recorder.state === 'recording') {
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
+      if (blob.size > 800) playParrot(blob); else setState('idle');
+    };
+    recorder.stop();
+  }
+  if (mode === 'smart') {
+    setState('thinking');
+    setTimeout(() => {
+      const text = heard.trim();
+      if (ghostEl) ghostEl.classList.remove('ghost');
+      if (!text) { setState('idle'); say('Seni duyamadım. Yazarak dener misin?'); return; }
+      respond(text);
+    }, 700); // tanıma sonucunun gelmesini bekle
+  }
+}
+
+async function respond(text) {
+  setState('thinking');
+  try {
+    const answer = await ask(text);
+    say(answer);
+    speak(answer);
+  } catch (e) {
+    setState('idle');
+    say('Cevap alamadım.');
+    diag('Beyin bağlantısı kurulamadı (' + e.message + '). Ollama seçtiysen sunucunun açık olduğundan emin ol: ollama serve — ve gerekirse OLLAMA_ORIGINS="*" ile başlat.');
+  }
+}
+
+el('micBtn').onclick = () => recording ? stopRec() : startRec();
+
+el('sendBtn').onclick = () => {
+  const v = el('txt').value.trim();
+  if (!v) return;
+  el('txt').value = '';
+  bubble(v, 'me');
+  if (mode === 'smart') respond(v);
+  else { setState('dance'); speak(v); }
+};
+el('txt').addEventListener('keydown', e => { if (e.key === 'Enter') el('sendBtn').click(); });
+
+el('danceBtn').onclick = () => {
+  setState('dance');
+  clearTimeout(window.__d);
+  window.__d = setTimeout(() => { if (state === 'dance') setState('idle'); }, 6000);
+};
+
+// Açılışta ortamı yokla, kısıtları önceden söyle.
+(async function startupCheck() {
+  const envErr = checkEnv();
+  const parts = [];
+  if (envErr) parts.push(envErr);
+  else if (navigator.permissions) {
+    try {
+      const p = await navigator.permissions.query({ name: 'microphone' });
+      if (p.state === 'denied') parts.push('Mikrofon izni bu site için reddedilmiş. Adres çubuğundaki kilit ikonundan aç.');
+    } catch (e) { }
+  }
+  if (!SR) parts.push('Ses tanıma yok (Chrome dışı tarayıcılarda normal). Papağan modu çalışır, Akıllı modda yaz.');
+  if (parts.length) diag(parts.join(' '));
+})();
+</script>
+</body>
+</html>
