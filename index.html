@@ -15,7 +15,7 @@
   :root{--night:#0f1230;--panel:rgba(255,255,255,.07);--line:rgba(255,255,255,.16);
     --cream:#f4f6ff;--dim:#98a0d8;--hot:#ff5c8a;--sun:#ffc14d;--aqua:#40c4dd;--leaf:#4fd07f}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
-  html,body{margin:0;padding:0}
+  html,body{margin:0;padding:0;overscroll-behavior-x:none}
   body{min-height:100dvh;background:radial-gradient(120% 65% at 50% 0%,#2a2570 0%,rgba(42,37,112,0) 62%),var(--night);
     color:var(--cream);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     display:flex;justify-content:center;padding:10px 12px 26px}
@@ -24,19 +24,21 @@
   .top h1{font-size:19px;font-weight:800;margin:0}
   .top h1 span{color:var(--leaf)}
   .gear{position:absolute;right:0;top:0;width:34px;height:34px;border:0;background:transparent;color:rgba(255,255,255,.28);font-size:17px;cursor:pointer}
-  .skin{position:absolute;left:0;top:0;width:34px;height:34px;border:0;background:transparent;font-size:18px;cursor:pointer;opacity:.85}
 
-  .stage{position:relative;margin:4px 0 12px;border-radius:24px;overflow:hidden;
+  .stage{position:relative;margin:4px 0 12px;border-radius:24px;overflow:hidden;touch-action:pan-y;cursor:pointer;
     background:radial-gradient(75% 50% at 50% 20%,rgba(64,196,221,.16),rgba(64,196,221,0) 70%),
       linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--line)}
-  .stage svg{display:block;width:100%;height:auto}
+  .stage svg{display:block;width:100%;height:auto;pointer-events:none}
   .badge{position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;
-    color:var(--dim);background:rgba(0,0,0,.32);border:1px solid var(--line);padding:7px 13px;border-radius:999px}
+    color:var(--dim);background:rgba(0,0,0,.32);border:1px solid var(--line);padding:7px 13px;border-radius:999px;pointer-events:none}
+  .who{position:absolute;top:10px;right:12px;font-size:12px;font-weight:700;color:var(--dim);
+    background:rgba(0,0,0,.32);border:1px solid var(--line);padding:7px 12px;border-radius:999px;pointer-events:none}
   .dot{width:9px;height:9px;border-radius:50%;background:var(--dim)}
   .dot.live{background:var(--hot);animation:pulse 1s infinite}
   .dot.busy{background:var(--sun)}
   @keyframes pulse{50%{opacity:.25}}
-  .meter{position:absolute;left:12px;right:12px;bottom:10px;height:8px;border-radius:99px;background:rgba(0,0,0,.4);overflow:hidden;display:none}
+  .hint{position:absolute;left:0;right:0;bottom:26px;text-align:center;font-size:12px;color:rgba(255,255,255,.35);pointer-events:none}
+  .meter{position:absolute;left:12px;right:12px;bottom:10px;height:8px;border-radius:99px;background:rgba(0,0,0,.4);overflow:hidden;display:none;pointer-events:none}
   .meter.on{display:block}
   .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--aqua),var(--hot))}
 
@@ -62,7 +64,6 @@
   .pair{display:flex;gap:9px;margin-top:10px}
   .pair button{flex:1;border:2px solid var(--line);background:var(--panel);color:var(--cream);font:inherit;font-weight:800;
     font-size:18px;padding:15px 6px;border-radius:20px;cursor:pointer}
-  .pair button:active{transform:translateY(2px)}
 
   .talk{display:flex;flex-direction:column;gap:8px;margin-top:12px}
   .bubble{padding:12px 15px;border-radius:16px;font-size:16px;line-height:1.4;max-width:90%;-webkit-user-select:text;user-select:text}
@@ -87,15 +88,15 @@
 <div class="app">
 
 <div class="top">
-  <button class="skin" id="skinBtn" aria-label="Görünüm değiştir">🎨</button>
-  <h1>Dans Eden <span>Kaktüs</span></h1>
+  <h1 id="title">Dans Eden <span>Kaktüs</span></h1>
   <button class="gear" id="gear" aria-label="Ayarlar">⚙</button>
 </div>
 
-<div class="stage">
+<div class="stage" id="pad">
   <div class="badge"><i class="dot" id="dot"></i><span id="status">Uyukluyor</span></div>
+  <div class="who" id="who">Kaktüs</div>
 
-  <svg id="stage" viewBox="0 0 400 640" role="img" aria-label="Saksıda duran peluş kaktüs">
+  <svg id="stage" viewBox="0 0 400 640" role="img" aria-label="Saksıda duran peluş oyuncak">
     <defs>
       <linearGradient id="gBody" x1="0" y1="0" x2="1" y2="0">
         <stop id="bodyA" offset="0" stop-color="#2f9d5c"/><stop id="bodyB" offset=".42" stop-color="#59dc87"/><stop id="bodyC" offset="1" stop-color="#238a4c"/>
@@ -106,9 +107,7 @@
       <linearGradient id="gPot" x1="0" y1="0" x2="1" y2="0">
         <stop id="potA" offset="0" stop-color="#2ea6c2"/><stop id="potB" offset=".4" stop-color="#6fe0f0"/><stop id="potC" offset="1" stop-color="#1c88a4"/>
       </linearGradient>
-      <linearGradient id="gLens" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#d8e6ef"/>
-      </linearGradient>
+      <linearGradient id="gLens" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#d8e6ef"/></linearGradient>
       <clipPath id="faceClip"><path d="M-70,-58 C-76,-152 -42,-192 0,-192 C42,-192 76,-152 70,-58 C46,-22 -46,-22 -70,-58 Z"/></clipPath>
       <clipPath id="potClip"><path d="M-96,-170 C-104,-104 -88,-32 -74,-6 C-38,10 38,10 74,-6 C88,-32 104,-104 96,-170 Z"/></clipPath>
     </defs>
@@ -118,70 +117,106 @@
     <g transform="translate(200,440)">
       <g id="rootBob">
         <g id="s1">
-          <rect class="limb" x="-25" y="-56" width="50" height="62" rx="24"/>
+          <rect class="limb seg" x="-25" y="-56" width="50" height="62" rx="24"/>
           <path class="twist" d="M-19,-48 C4,-40 -4,-22 18,-14"/>
+          <g class="ex-spike"><path d="M-25,-40 l-11,-4 l11,-4z"/><path d="M25,-20 l11,-4 l-11,-4z"/></g>
+          <g class="ex-bolt"><circle cx="-16" cy="-42" r="4"/><circle cx="16" cy="-42" r="4"/><circle cx="-16" cy="-14" r="4"/><circle cx="16" cy="-14" r="4"/></g>
+          <g class="ex-back"><path d="M25,-46 l16,-8 l-4,16z"/><path d="M25,-18 l16,-8 l-4,16z"/></g>
           <g transform="translate(0,-52)"><g id="s2">
-            <rect class="limb" x="-25" y="-56" width="50" height="62" rx="24"/>
+            <rect class="limb seg" x="-25" y="-56" width="50" height="62" rx="24"/>
             <path class="twist" d="M18,-48 C-4,-40 4,-22 -18,-14"/>
+            <g class="ex-spike"><path d="M-25,-24 l-11,-4 l11,-4z"/><path d="M25,-44 l11,-4 l-11,-4z"/></g>
+            <g class="ex-bolt"><circle cx="-16" cy="-44" r="4"/><circle cx="16" cy="-44" r="4"/><circle cx="-16" cy="-16" r="4"/><circle cx="16" cy="-16" r="4"/></g>
+            <g class="ex-back"><path d="M25,-48 l16,-8 l-4,16z"/><path d="M25,-20 l16,-8 l-4,16z"/></g>
             <g transform="translate(0,-52)"><g id="s3">
-              <rect class="limb" x="-31" y="-62" width="62" height="70" rx="29"/>
+              <rect class="limb seg" x="-31" y="-62" width="62" height="70" rx="29"/>
               <path class="twist" d="M-22,-52 C6,-42 -6,-24 22,-14"/>
+              <ellipse class="ex-belly" cx="0" cy="-24" rx="22" ry="26"/>
+              <g class="ex-spike"><path d="M-31,-48 l-11,-4 l11,-4z"/><path d="M31,-30 l11,-4 l-11,-4z"/></g>
+              <g class="ex-bolt"><circle cx="-20" cy="-48" r="4"/><circle cx="20" cy="-48" r="4"/><circle cx="0" cy="-12" r="5"/></g>
+              <g class="ex-back"><path d="M31,-52 l17,-9 l-4,17z"/><path d="M31,-24 l17,-9 l-4,17z"/></g>
 
               <g transform="translate(-27,-30)"><g id="armL">
-                <rect class="limb" x="-20" y="-58" width="40" height="66" rx="20"/>
+                <rect class="limb arm" x="-20" y="-58" width="40" height="66" rx="20"/>
                 <path class="side" d="M-14,-48 C-19,-30 -19,-12 -14,2"/>
                 <g transform="translate(0,-54)"><g id="armLF">
-                  <rect class="limb" x="-19" y="-56" width="38" height="64" rx="19"/>
+                  <rect class="limb arm" x="-19" y="-56" width="38" height="64" rx="19"/>
                   <path class="side" d="M-13,-46 C-18,-28 -18,-12 -13,0"/>
                   <path class="stitch" d="M-10,-40 L10,-40 M-11,-24 L11,-24 M-10,-8 L10,-8"/>
                 </g></g>
               </g></g>
 
               <g transform="translate(27,-30)"><g id="armR">
-                <rect class="limb" x="-20" y="-58" width="40" height="66" rx="20"/>
+                <rect class="limb arm" x="-20" y="-58" width="40" height="66" rx="20"/>
                 <path class="side" d="M14,-48 C19,-30 19,-12 14,2"/>
                 <g transform="translate(0,-54)"><g id="armRF">
-                  <rect class="limb" x="-19" y="-56" width="38" height="64" rx="19"/>
+                  <rect class="limb arm" x="-19" y="-56" width="38" height="64" rx="19"/>
                   <path class="side" d="M13,-46 C18,-28 18,-12 13,0"/>
                   <path class="stitch" d="M-10,-40 L10,-40 M-11,-24 L11,-24 M-10,-8 L10,-8"/>
                 </g></g>
               </g></g>
 
               <g transform="translate(0,-50)"><g id="head">
-                <path id="hoodShape" d="M-88,-54 C-98,-164 -52,-214 0,-214 C52,-214 98,-164 88,-54 C58,-14 -58,-14 -88,-54 Z"
-                      fill="url(#gHood)" stroke="#0e5f72" stroke-width="5" stroke-linejoin="round"/>
-                <g id="hoodTip">
-                  <path id="tipLeaf" d="M-16,-206 C-6,-232 6,-232 16,-206 C8,-214 -8,-214 -16,-206 Z" fill="#5fdcee" stroke="#0e5f72" stroke-width="4"/>
-                  <path id="tipStar" d="M0,-244 L7,-224 L28,-222 L12,-209 L17,-190 L0,-201 L-17,-190 L-12,-209 L-28,-222 L-7,-224 Z" fill="#ffd66b" stroke="#8a6410" stroke-width="4" stroke-linejoin="round" style="display:none"/>
-                  <g id="tipAnt" style="display:none">
-                    <path d="M0,-206 C-4,-232 -14,-238 -18,-250" fill="none" stroke="#0e5f72" stroke-width="6" stroke-linecap="round"/>
-                    <circle cx="-19" cy="-254" r="11" fill="#ff8fb0" stroke="#0e5f72" stroke-width="4"/>
-                  </g>
+                <g id="hEars">
+                  <circle cx="-62" cy="-176" r="30" fill="url(#gBody)" stroke="#15532f" stroke-width="5"/>
+                  <circle cx="62" cy="-176" r="30" fill="url(#gBody)" stroke="#15532f" stroke-width="5"/>
+                  <circle cx="-62" cy="-176" r="15" fill="url(#gHood)"/><circle cx="62" cy="-176" r="15" fill="url(#gHood)"/>
                 </g>
-                <path d="M-70,-58 C-76,-152 -42,-192 0,-192 C42,-192 76,-152 70,-58 C46,-22 -46,-22 -70,-58 Z"
+                <g id="hHorns">
+                  <path d="M-46,-176 C-58,-206 -50,-224 -34,-228 C-40,-212 -40,-194 -34,-184 Z" fill="url(#gHood)" stroke="#15532f" stroke-width="5" stroke-linejoin="round"/>
+                  <path d="M46,-176 C58,-206 50,-224 34,-228 C40,-212 40,-194 34,-184 Z" fill="url(#gHood)" stroke="#15532f" stroke-width="5" stroke-linejoin="round"/>
+                </g>
+                <g id="hAnt">
+                  <path d="M0,-196 L0,-238" stroke="#9aa6c8" stroke-width="7" stroke-linecap="round"/>
+                  <circle cx="0" cy="-246" r="13" fill="#ff5c8a" stroke="#3a4463" stroke-width="4"/>
+                </g>
+                <g id="hHood">
+                  <path id="hoodShape" d="M-88,-54 C-98,-164 -52,-214 0,-214 C52,-214 98,-164 88,-54 C58,-14 -58,-14 -88,-54 Z"
+                        fill="url(#gHood)" stroke="#0e5f72" stroke-width="5" stroke-linejoin="round"/>
+                  <path id="tipLeaf" d="M-16,-206 C-6,-232 6,-232 16,-206 C8,-214 -8,-214 -16,-206 Z" fill="#5fdcee" stroke="#0e5f72" stroke-width="4"/>
+                </g>
+
+                <path id="faceRound" d="M-70,-58 C-76,-152 -42,-192 0,-192 C42,-192 76,-152 70,-58 C46,-22 -46,-22 -70,-58 Z"
                       fill="url(#gBody)" stroke="#15532f" stroke-width="5" stroke-linejoin="round"/>
+                <rect id="faceSquare" x="-72" y="-196" width="144" height="150" rx="18" fill="url(#gBody)" stroke="#15532f" stroke-width="5"/>
+
                 <g clip-path="url(#faceClip)">
                   <g id="patQuilt" stroke="#1a6b3f" stroke-width="2.4" fill="none" opacity=".5">
                     <path d="M-120,-40 L40,-220 M-120,10 L90,-220 M-70,40 L140,-190 M-20,40 L160,-150 M30,40 L170,-100"/>
                     <path d="M120,-40 L-40,-220 M120,10 L-90,-220 M70,40 L-140,-190 M20,40 L-160,-150 M-30,40 L-170,-100"/>
                   </g>
-                  <g id="patDots" fill="#1a6b3f" opacity=".38" style="display:none">
+                  <g id="patDots" fill="#1a6b3f" opacity=".38">
                     <circle cx="-46" cy="-168" r="6"/><circle cx="-8" cy="-182" r="6"/><circle cx="30" cy="-170" r="6"/>
                     <circle cx="-58" cy="-120" r="6"/><circle cx="56" cy="-118" r="6"/>
-                    <circle cx="-52" cy="-72" r="6"/><circle cx="-14" cy="-56" r="6"/><circle cx="24" cy="-60" r="6"/><circle cx="54" cy="-78" r="6"/>
-                  </g>
-                  <g id="patStripe" stroke="#1a6b3f" stroke-width="9" fill="none" opacity=".3" style="display:none">
-                    <path d="M-100,-150 C-40,-134 40,-134 100,-150"/>
-                    <path d="M-100,-104 C-40,-88 40,-88 100,-104"/>
-                    <path d="M-100,-58 C-40,-42 40,-42 100,-58"/>
+                    <circle cx="-52" cy="-72" r="6"/><circle cx="-14" cy="-56" r="6"/><circle cx="24" cy="-60" r="6"/>
                   </g>
                 </g>
+
+                <g id="mMuzzle">
+                  <ellipse cx="0" cy="-58" rx="40" ry="30" fill="#ffe8c9" stroke="#15532f" stroke-width="4"/>
+                  <ellipse cx="0" cy="-76" rx="13" ry="9" fill="#3a2418"/>
+                </g>
+                <g id="mGrill">
+                  <rect x="-42" y="-76" width="84" height="34" rx="10" fill="#2a3050" stroke="#9aa6c8" stroke-width="4"/>
+                  <path d="M-30,-72 L-30,-46 M-14,-72 L-14,-46 M2,-72 L2,-46 M18,-72 L18,-46 M32,-72 L32,-46" stroke="#9aa6c8" stroke-width="4"/>
+                </g>
+
                 <g transform="translate(0,-124)"><g id="eyeScale">
-                  <ellipse cx="-34" cy="0" rx="28" ry="20" transform="rotate(-15,-34,0)" fill="url(#gLens)" stroke="#14322a" stroke-width="6"/>
-                  <ellipse cx="34" cy="0" rx="28" ry="20" transform="rotate(15,34,0)" fill="url(#gLens)" stroke="#14322a" stroke-width="6"/>
-                  <g id="pupils" opacity=".85"><circle cx="-32" cy="1" r="6" fill="#14322a"/><circle cx="32" cy="1" r="6" fill="#14322a"/></g>
+                  <g id="eLens">
+                    <ellipse cx="-34" cy="0" rx="28" ry="20" transform="rotate(-15,-34,0)" fill="url(#gLens)" stroke="#14322a" stroke-width="6"/>
+                    <ellipse cx="34" cy="0" rx="28" ry="20" transform="rotate(15,34,0)" fill="url(#gLens)" stroke="#14322a" stroke-width="6"/>
+                  </g>
+                  <g id="eGoogly">
+                    <circle cx="-32" cy="0" r="26" fill="#fff" stroke="#14322a" stroke-width="5"/>
+                    <circle cx="32" cy="0" r="26" fill="#fff" stroke="#14322a" stroke-width="5"/>
+                  </g>
+                  <g id="eSquare">
+                    <rect x="-58" y="-18" width="46" height="36" rx="8" fill="#8ef0ff" stroke="#3a4463" stroke-width="5"/>
+                    <rect x="12" y="-18" width="46" height="36" rx="8" fill="#8ef0ff" stroke="#3a4463" stroke-width="5"/>
+                  </g>
+                  <g id="pupils" opacity=".9"><circle cx="-32" cy="1" r="8" fill="#14322a"/><circle cx="32" cy="1" r="8" fill="#14322a"/></g>
                 </g></g>
-                <ellipse id="mouth" cx="0" cy="-58" rx="15" ry="4" fill="#2c0f22" stroke="#15532f" stroke-width="3"/>
+                <ellipse id="mouth" cx="0" cy="-50" rx="15" ry="4" fill="#2c0f22" stroke="#15532f" stroke-width="3"/>
               </g></g>
             </g></g>
           </g></g>
@@ -195,20 +230,23 @@
       <g clip-path="url(#potClip)" stroke="rgba(8,60,74,.35)" stroke-width="4" fill="none" stroke-linecap="round">
         <path d="M-52,-160 C-58,-100 -54,-46 -46,-10"/><path d="M-8,-166 C-14,-100 -12,-44 -6,-4"/><path d="M40,-162 C34,-104 38,-48 44,-10"/>
       </g>
-      <path d="M-100,-186 C-58,-206 58,-206 100,-186 C104,-168 96,-154 90,-150 C56,-166 -56,-166 -90,-150 C-96,-156 -104,-170 -100,-186 Z"
-            fill="#7fe6f4" stroke="#0e5f72" stroke-width="5" stroke-linejoin="round" id="potRim"/>
+      <path id="potRim" d="M-100,-186 C-58,-206 58,-206 100,-186 C104,-168 96,-154 90,-150 C56,-166 -56,-166 -90,-150 C-96,-156 -104,-170 -100,-186 Z"
+            fill="#7fe6f4" stroke="#0e5f72" stroke-width="5" stroke-linejoin="round"/>
     </g>
-
-    <g id="notes" opacity="0"></g>
 
     <style>
       .limb{fill:url(#gBody);stroke:#15532f;stroke-width:5;stroke-linejoin:round}
       .twist{fill:none;stroke:#3fc9e0;stroke-width:9;stroke-linecap:round;opacity:.75}
       .side{fill:none;stroke:#3fc9e0;stroke-width:10;stroke-linecap:round;opacity:.8}
       .stitch{fill:none;stroke:#15532f;stroke-width:2.4;stroke-linecap:round;opacity:.45;stroke-dasharray:5 6}
+      .ex-spike{fill:#15532f}
+      .ex-bolt{fill:#c6d0ea;stroke:#3a4463;stroke-width:2}
+      .ex-back{fill:#ffd66b;stroke:#8a6410;stroke-width:3;stroke-linejoin:round}
+      .ex-belly{fill:#ffe8c9;stroke:#15532f;stroke-width:4;opacity:.9}
     </style>
   </svg>
 
+  <div class="hint" id="hint">dürt · sağa sola kaydır</div>
   <div class="meter" id="meter"><i id="meterFill"></i></div>
 </div>
 
@@ -253,12 +291,14 @@
 <script>
 const el = id => document.getElementById(id);
 const rnd = (a, b) => a + Math.random() * (b - a);
+const one = a => a[Math.floor(Math.random() * a.length)];
+const semi = s => Math.pow(2, s / 12);
 
 /* ================= RIG ================= */
 const N = {
   root: el('rootBob'), s1: el('s1'), s2: el('s2'), s3: el('s3'), head: el('head'),
   armL: el('armL'), armLF: el('armLF'), armR: el('armR'), armRF: el('armRF'),
-  pot: el('pot'), mouth: el('mouth'), eye: el('eyeScale'), pupils: el('pupils'), tip: el('hoodTip')
+  pot: el('pot'), mouth: el('mouth'), eye: el('eyeScale'), pupils: el('pupils'), tip: el('hHood')
 };
 function ch(v, k = 120, d = 14) { return { x: v, v: 0, t: v, k, d }; }
 const C = {
@@ -266,7 +306,7 @@ const C = {
   armL: ch(-76, 90, 12), armLF: ch(-20, 90, 12), armR: ch(76, 90, 12), armRF: ch(20, 90, 12),
   bobY: ch(0, 200, 16), rootRot: ch(0), sx: ch(1, 160, 15), sy: ch(1, 160, 15),
   potSy: ch(1, 220, 18), mouth: ch(.1, 260, 20), eye: ch(1, 200, 16),
-  pupX: ch(0, 80, 12), pupY: ch(0, 80, 12), tip: ch(0, 70, 9)
+  pupX: ch(0, 80, 12), pupY: ch(0, 80, 12)
 };
 let state = 'idle', level = 0, blinkAt = 2, eyeClose = 0, _t = 0;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -277,59 +317,65 @@ function setState(s, label) {
   el('dot').className = 'dot' + (s === 'listening' ? ' live' : (s === 'thinking' ? ' busy' : ''));
   el('status').textContent = label || ({ idle: 'Uyukluyor', listening: 'Seni dinliyorum', thinking: 'Düşünüyor', talking: 'Konuşuyor', dance: 'Dans ediyor', song: 'Şarkı söylüyor' })[s] || '';
 }
-
-/* --- hareket çeşitliliği --- */
-let danceId = 0, danceSpd = 5.2, danceSeed = 0, talkSeed = 0, beat = 0;
+let danceId = 0, danceSpd = 5.2, danceSeed = 0, talkSeed = 0, beat = 0, songBpm = 120;
 function newDance() { danceId = Math.floor(Math.random() * 5); danceSpd = rnd(4.2, 6.4); danceSeed = rnd(0, 9); }
 let fidget = null, fidgetAt = 5;
 function newFidget() { fidget = { k: Math.floor(Math.random() * 4), t: 0, d: rnd(1.4, 2.2) }; }
 
-function danceTargets(T, b, a) {
-  const p = danceSeed;
-  if (danceId === 0) { // burgu
-    T.s1.t = Math.sin(b) * 7; T.s2.t = Math.sin(b - .7) * 11; T.s3.t = Math.sin(b - 1.4) * 15;
-    T.head.t = Math.sin(b - 2) * 12;
+function danceTargets(T, b) {
+  if (danceId === 0) {
+    T.s1.t = Math.sin(b) * 7; T.s2.t = Math.sin(b - .7) * 11; T.s3.t = Math.sin(b - 1.4) * 15; T.head.t = Math.sin(b - 2) * 12;
     T.armL.t = -98 + Math.sin(b) * 42; T.armLF.t = -38 + Math.sin(b * 2) * 34;
     T.armR.t = 98 + Math.sin(b + Math.PI) * 42; T.armRF.t = 38 + Math.sin(b * 2 + 1) * 34;
     T.bobY.t = -Math.abs(Math.sin(b)) * 12; T.rootRot.t = Math.sin(b * .5) * 5;
-  } else if (danceId === 1) { // zıplama
-    const hop = Math.abs(Math.sin(b));
-    T.s1.t = Math.sin(b * .5) * 4; T.s2.t = -hop * 6; T.s3.t = -hop * 9;
-    T.head.t = hop * 8;
-    T.armL.t = -120 + hop * 30; T.armLF.t = -60 + hop * 30;
-    T.armR.t = 120 - hop * 30; T.armRF.t = 60 - hop * 30;
-    T.bobY.t = -hop * 22; T.rootRot.t = Math.sin(b * .25) * 3;
-    T.sy.t = 1 + hop * .08; T.sx.t = 1 - hop * .05;
-  } else if (danceId === 2) { // dalga
-    T.s1.t = Math.sin(b) * 12; T.s2.t = Math.sin(b - 1.1) * 14; T.s3.t = Math.sin(b - 2.2) * 16;
-    T.head.t = Math.sin(b - 3.2) * 14;
+  } else if (danceId === 1) {
+    const h = Math.abs(Math.sin(b));
+    T.s1.t = Math.sin(b * .5) * 4; T.s2.t = -h * 6; T.s3.t = -h * 9; T.head.t = h * 8;
+    T.armL.t = -120 + h * 30; T.armLF.t = -60 + h * 30; T.armR.t = 120 - h * 30; T.armRF.t = 60 - h * 30;
+    T.bobY.t = -h * 22; T.rootRot.t = Math.sin(b * .25) * 3; T.sy.t = 1 + h * .08; T.sx.t = 1 - h * .05;
+  } else if (danceId === 2) {
+    T.s1.t = Math.sin(b) * 12; T.s2.t = Math.sin(b - 1.1) * 14; T.s3.t = Math.sin(b - 2.2) * 16; T.head.t = Math.sin(b - 3.2) * 14;
     T.armL.t = -90 + Math.sin(b - .5) * 55; T.armLF.t = -30 + Math.sin(b - 1.2) * 45;
     T.armR.t = 90 + Math.sin(b - .5) * 55; T.armRF.t = 30 + Math.sin(b - 1.2) * 45;
     T.bobY.t = Math.sin(b) * 6; T.rootRot.t = Math.sin(b) * 7;
-  } else if (danceId === 3) { // kafa sallama
-    T.s1.t = Math.sin(b * .5) * 3; T.s2.t = Math.sin(b) * 6; T.s3.t = Math.sin(b) * 10;
-    T.head.t = Math.sin(b * 2) * 18;
-    T.armL.t = -140 + Math.sin(b * 2) * 12; T.armLF.t = -70;
-    T.armR.t = 140 - Math.sin(b * 2) * 12; T.armRF.t = 70;
+  } else if (danceId === 3) {
+    T.s1.t = Math.sin(b * .5) * 3; T.s2.t = Math.sin(b) * 6; T.s3.t = Math.sin(b) * 10; T.head.t = Math.sin(b * 2) * 18;
+    T.armL.t = -140 + Math.sin(b * 2) * 12; T.armLF.t = -70; T.armR.t = 140 - Math.sin(b * 2) * 12; T.armRF.t = 70;
     T.bobY.t = -Math.abs(Math.sin(b * 2)) * 8; T.rootRot.t = 0;
-  } else { // robot adım
+  } else {
     const st = Math.sign(Math.sin(b)) || 1;
-    T.s1.t = st * 6; T.s2.t = -st * 5; T.s3.t = st * 8;
-    T.head.t = -st * 9;
+    T.s1.t = st * 6; T.s2.t = -st * 5; T.s3.t = st * 8; T.head.t = -st * 9;
     T.armL.t = -70 - (st > 0 ? 55 : 0); T.armLF.t = st > 0 ? -80 : -10;
     T.armR.t = 70 + (st < 0 ? 55 : 0); T.armRF.t = st < 0 ? 80 : 10;
     T.bobY.t = -Math.abs(Math.sin(b * 2)) * 6; T.rootRot.t = st * 3;
   }
-  T.potSy.t = 1 - Math.max(0, Math.sin(b + p)) * .06;
+  T.potSy.t = 1 - Math.max(0, Math.sin(b + danceSeed)) * .06;
   T.mouth.t = .45 + Math.abs(Math.sin(b)) * .45; T.eye.t = 1.1; T.pupX.t = Math.sin(b * .5) * 6;
 }
-
+let poke = null;
+function pokeTargets(T) {
+  if (!poke) return;
+  const f = poke.t / poke.d, e = Math.exp(-f * 3.4) * Math.sin(f * 26), m = Math.exp(-f * 3.4);
+  if (poke.part === 'head') {
+    T.head.t += 18 * e; T.s3.t += 11 * e; T.s2.t += 6 * e;
+    T.eye.t = Math.max(T.eye.t, 1 + .45 * m); T.mouth.t = Math.max(T.mouth.t, .85 * m); T.pupY.t -= 5 * m;
+  } else if (poke.part === 'arm') {
+    T.armL.t -= (poke.side < 0 ? 55 : 12) * e; T.armLF.t -= (poke.side < 0 ? 45 : 8) * e;
+    T.armR.t += (poke.side > 0 ? 55 : 12) * e; T.armRF.t += (poke.side > 0 ? 45 : 8) * e;
+    T.s3.t -= 8 * e * poke.side; T.mouth.t = Math.max(T.mouth.t, .6 * m);
+  } else {
+    T.potSy.t -= .08 * m * Math.abs(Math.sin(f * 26));
+    T.bobY.t -= 13 * m * Math.abs(Math.sin(f * 20));
+    T.s1.t += 7 * e; T.s2.t += 5 * e; T.mouth.t = Math.max(T.mouth.t, .5 * m);
+    T.sy.t = 1 - .05 * m * Math.abs(Math.sin(f * 26));
+  }
+  T.rootRot.t += 5 * e * (poke.side || 1);
+}
 function targets(t) {
   const T = C, a = level;
   if (state === 'idle') {
     const s = Math.sin(t * 1.1);
-    T.s1.t = s * 2.2; T.s2.t = Math.sin(t * 1.1 - .5) * 3; T.s3.t = Math.sin(t * 1.1 - 1) * 3.5;
-    T.head.t = -s * 3;
+    T.s1.t = s * 2.2; T.s2.t = Math.sin(t * 1.1 - .5) * 3; T.s3.t = Math.sin(t * 1.1 - 1) * 3.5; T.head.t = -s * 3;
     T.armL.t = -76 + Math.sin(t * .9) * 4; T.armLF.t = -20 + Math.sin(t * 1.3) * 5;
     T.armR.t = 76 - Math.sin(t * .9 + .5) * 4; T.armRF.t = 20 - Math.sin(t * 1.3 + .5) * 5;
     T.bobY.t = s * 2; T.rootRot.t = s * .8;
@@ -344,14 +390,12 @@ function targets(t) {
   } else if (state === 'listening') {
     const w = Math.sin(t * 9) * a;
     T.s1.t = w * 2; T.s2.t = w * 3; T.s3.t = w * 4 + 2; T.head.t = -w * 4;
-    T.armL.t = -104 - a * 24; T.armLF.t = -46 - a * 20;
-    T.armR.t = 104 + a * 24; T.armRF.t = 46 + a * 20;
+    T.armL.t = -104 - a * 24; T.armLF.t = -46 - a * 20; T.armR.t = 104 + a * 24; T.armRF.t = 46 + a * 20;
     T.bobY.t = -a * 5; T.rootRot.t = w * 1.4;
     T.sx.t = 1 - a * .03; T.sy.t = 1 + a * .07; T.potSy.t = 1;
     T.mouth.t = .08 + a * .2; T.eye.t = 1.12 + a * .16; T.pupY.t = -3;
   } else if (state === 'thinking') {
-    T.s1.t = -2; T.s2.t = -4; T.s3.t = -7 + Math.sin(t * 1.6) * 2;
-    T.head.t = 13 + Math.sin(t * 1.6) * 2;
+    T.s1.t = -2; T.s2.t = -4; T.s3.t = -7 + Math.sin(t * 1.6) * 2; T.head.t = 13 + Math.sin(t * 1.6) * 2;
     T.armL.t = -68; T.armLF.t = -14; T.armR.t = 44 + Math.sin(t * 3.4) * 5; T.armRF.t = 94;
     T.bobY.t = 0; T.rootRot.t = -2; T.sx.t = 1; T.sy.t = 1; T.potSy.t = 1;
     T.mouth.t = .05; T.eye.t = .85; T.pupX.t = -5; T.pupY.t = -6;
@@ -365,33 +409,11 @@ function targets(t) {
     T.sx.t = 1 - a * .04; T.sy.t = 1 + a * .06; T.potSy.t = 1 - Math.max(0, Math.sin(t * 4)) * .03;
     T.mouth.t = .1 + a * .95; T.eye.t = 1 + a * .1; T.pupX.t = Math.sin(t * 1.7) * 4; T.pupY.t = 0;
   } else if (state === 'song') {
-    danceTargets(T, beat, a);
-    T.mouth.t = .3 + a * .7;
+    danceTargets(T, beat); T.mouth.t = .3 + a * .7;
   } else {
-    danceTargets(T, t * danceSpd, a);
+    danceTargets(T, t * danceSpd);
   }
   pokeTargets(T);
-  T.tip.t = -C.head.x * 1.4 - C.s3.x * .8;
-}
-let poke = null;
-function pokeTargets(T) {
-  if (!poke) return;
-  const f = poke.t / poke.d, e = Math.exp(-f * 3.4) * Math.sin(f * 26), m = Math.exp(-f * 3.4);
-  if (poke.part === 'head') {
-    T.head.t += 18 * e; T.s3.t += 11 * e; T.s2.t += 6 * e;
-    T.eye.t = Math.max(T.eye.t, 1 + .45 * m); T.mouth.t = Math.max(T.mouth.t, .85 * m);
-    T.pupY.t -= 5 * m;
-  } else if (poke.part === 'arm') {
-    T.armL.t -= (poke.side < 0 ? 55 : 12) * e; T.armLF.t -= (poke.side < 0 ? 45 : 8) * e;
-    T.armR.t += (poke.side > 0 ? 55 : 12) * e; T.armRF.t += (poke.side > 0 ? 45 : 8) * e;
-    T.s3.t -= 8 * e * poke.side; T.mouth.t = Math.max(T.mouth.t, .6 * m);
-  } else {
-    T.potSy.t -= .08 * m * Math.abs(Math.sin(f * 26));
-    T.bobY.t -= 13 * m * Math.abs(Math.sin(f * 20));
-    T.s1.t += 7 * e; T.s2.t += 5 * e; T.mouth.t = Math.max(T.mouth.t, .5 * m);
-    T.sy.t = 1 - .05 * m * Math.abs(Math.sin(f * 26));
-  }
-  T.rootRot.t += 5 * e * (poke.side || 1);
 }
 function integrate(dt) { for (const k in C) { const c = C[k]; c.v += ((c.t - c.x) * c.k - c.v * c.d) * dt; c.x += c.v * dt; } }
 function apply() {
@@ -405,40 +427,82 @@ function apply() {
   N.mouth.setAttribute('ry', (3 + C.mouth.x * 14).toFixed(2));
   N.eye.setAttribute('transform', 'scale(1,' + Math.max(.06, C.eye.x * (1 - eyeClose)).toFixed(3) + ')');
   N.pupils.setAttribute('transform', 'translate(' + C.pupX.x.toFixed(2) + ',' + C.pupY.x.toFixed(2) + ')');
-  N.tip.setAttribute('transform', 'rotate(' + (C.tip.x * .6).toFixed(2) + ')');
 }
 
-/* ================= GÖRÜNÜMLER ================= */
-const SKINS = [
-  { body: ['#2f9d5c', '#59dc87', '#238a4c'], hood: ['#2ba3bd', '#5fdcee', '#1d8ba6'], pot: ['#2ea6c2', '#6fe0f0', '#1c88a4'], rim: '#7fe6f4', pat: 'patQuilt', tip: 'tipLeaf', line: '#15532f', hline: '#0e5f72' },
-  { body: ['#7d3fb8', '#b57af0', '#5f2a91'], hood: ['#ff7aa8', '#ffb3cd', '#e04d80'], pot: ['#ffb03a', '#ffd98a', '#d4801a'], rim: '#ffe0a6', pat: 'patDots', tip: 'tipStar', line: '#3a1858', hline: '#7d2648' },
-  { body: ['#e05a2b', '#ff9a5c', '#b8401a'], hood: ['#3ac0a0', '#7fe8d0', '#218f74'], pot: ['#5566d8', '#8f9bf0', '#3543a8'], rim: '#a8b2ff', pat: 'patStripe', tip: 'tipAnt', line: '#6b2410', hline: '#155e4c' },
-  { body: ['#2b7fd4', '#77c4ff', '#1b5da0'], hood: ['#f0f4ff', '#ffffff', '#c8d4ee'], pot: ['#8a6fd8', '#c0aef0', '#5f47a8'], rim: '#ddd2ff', pat: 'patQuilt', tip: 'tipStar', line: '#12406e', hline: '#6b7590' }
+/* ================= KARAKTERLER ================= */
+const CHARS = [
+  {
+    name: 'Kaktüs', body: ['#2f9d5c', '#59dc87', '#238a4c'], acc: ['#2ba3bd', '#5fdcee', '#1d8ba6'],
+    pot: ['#2ea6c2', '#6fe0f0', '#1c88a4'], rim: '#7fe6f4', line: '#15532f', accLine: '#0e5f72',
+    head: 'hHood', face: 'round', eyes: 'eLens', mouth: null, pat: 'patQuilt', ex: 'ex-spike',
+    segRx: 24, armRx: 20, twist: true, sfx: ['squeak', 'giggle'], sing: 'a', pitch: 1.3
+  },
+  {
+    name: 'Ayıcık', body: ['#a9713f', '#e0a86b', '#8a5a2e'], acc: ['#ff9fc0', '#ffc9dc', '#e07098'],
+    pot: ['#ff8f5e', '#ffc19b', '#d4642f'], rim: '#ffd8bd', line: '#4a2a12', accLine: '#a04068',
+    head: 'hEars', face: 'round', eyes: 'eGoogly', mouth: 'mMuzzle', pat: null, ex: 'ex-belly',
+    segRx: 26, armRx: 20, twist: false, sfx: ['growl', 'giggle'], sing: 'o', pitch: 1.1
+  },
+  {
+    name: 'Robot', body: ['#8f9bb8', '#d5def0', '#6b7796'], acc: ['#ff5c8a', '#ffa3c0', '#c93b68'],
+    pot: ['#3a4463', '#6a769a', '#252c45'], rim: '#9aa6c8', line: '#3a4463', accLine: '#3a4463',
+    head: 'hAnt', face: 'square', eyes: 'eSquare', mouth: 'mGrill', pat: null, ex: 'ex-bolt',
+    segRx: 7, armRx: 7, twist: false, sfx: ['beep', 'zap'], sing: 'i', pitch: 1.5
+  },
+  {
+    name: 'Ejder', body: ['#7d3fb8', '#b57af0', '#5f2a91'], acc: ['#ffd66b', '#ffe9a8', '#d9a323'],
+    pot: ['#3ac0a0', '#7fe8d0', '#218f74'], rim: '#a8f0dc', line: '#3a1858', accLine: '#8a6410',
+    head: 'hHorns', face: 'round', eyes: 'eGoogly', mouth: null, pat: 'patDots', ex: 'ex-back',
+    segRx: 20, armRx: 18, twist: false, sfx: ['roar', 'boing'], sing: 'e', pitch: .95
+  }
 ];
-let skinIx = 0;
-try { skinIx = parseInt(localStorage.getItem('kaktus-skin') || '0', 10) || 0; } catch (e) { }
-function applySkin(i) {
-  const s = SKINS[i % SKINS.length];
+let charIx = 0;
+try { charIx = parseInt(localStorage.getItem('kaktus-char') || '0', 10) || 0; } catch (e) { }
+function show(sel, on) { document.querySelectorAll(sel).forEach(n => n.style.display = on ? '' : 'none'); }
+function applyChar(i) {
+  const c = CHARS[i % CHARS.length];
   ['A', 'B', 'C'].forEach((k, n) => {
-    el('body' + k).setAttribute('stop-color', s.body[n]);
-    el('hood' + k).setAttribute('stop-color', s.hood[n]);
-    el('pot' + k).setAttribute('stop-color', s.pot[n]);
+    el('body' + k).setAttribute('stop-color', c.body[n]);
+    el('hood' + k).setAttribute('stop-color', c.acc[n]);
+    el('pot' + k).setAttribute('stop-color', c.pot[n]);
   });
-  el('potRim').setAttribute('fill', s.rim);
-  ['patQuilt', 'patDots', 'patStripe'].forEach(p => el(p).style.display = p === s.pat ? '' : 'none');
-  ['tipLeaf', 'tipStar', 'tipAnt'].forEach(p => el(p).style.display = p === s.tip ? '' : 'none');
-  document.querySelectorAll('.limb').forEach(n => n.setAttribute('stroke', s.line));
-  document.querySelectorAll('.twist,.side').forEach(n => n.setAttribute('stroke', s.hood[1]));
-  el('hoodShape').setAttribute('stroke', s.hline);
-  try { localStorage.setItem('kaktus-skin', String(i % SKINS.length)); } catch (e) { }
+  el('potRim').setAttribute('fill', c.rim);
+  ['hHood', 'hEars', 'hAnt', 'hHorns'].forEach(h => show('#' + h, h === c.head));
+  show('#faceRound', c.face === 'round'); show('#faceSquare', c.face === 'square');
+  ['eLens', 'eGoogly', 'eSquare'].forEach(e2 => show('#' + e2, e2 === c.eyes));
+  ['mMuzzle', 'mGrill'].forEach(m => show('#' + m, m === c.mouth));
+  show('#mouth', c.mouth !== 'mGrill');
+  ['patQuilt', 'patDots'].forEach(p => show('#' + p, p === c.pat));
+  ['ex-spike', 'ex-bolt', 'ex-back', 'ex-belly'].forEach(x => show('.' + x, x === c.ex));
+  show('.twist', c.twist); show('.side', c.twist); show('.stitch', c.face === 'round');
+  document.querySelectorAll('.seg').forEach(n => n.setAttribute('rx', c.segRx));
+  document.querySelectorAll('.arm').forEach(n => n.setAttribute('rx', c.armRx));
+  document.querySelectorAll('.limb').forEach(n => n.setAttribute('stroke', c.line));
+  document.querySelectorAll('.ex-belly').forEach(n => n.setAttribute('stroke', c.line));
+  const hs = el('hoodShape'); if (hs) hs.setAttribute('stroke', c.accLine);
+  el('who').textContent = c.name;
+  el('title').innerHTML = 'Dans Eden <span>' + c.name + '</span>';
+  el('tone').value = String(c.pitch);
+  try { localStorage.setItem('kaktus-char', String(i % CHARS.length)); } catch (e) { }
 }
-el('skinBtn').onclick = () => { skinIx = (skinIx + 1) % SKINS.length; applySkin(skinIx); };
-applySkin(skinIx);
+const curChar = () => CHARS[charIx % CHARS.length];
 
-/* ================= SES YAKALAMA ================= */
-let ac = null, micStream = null, proc = null, playAnalyser = null, pbuf = null, lastRec = null;
+/* ================= SES ================= */
+let ac = null, master = null, micStream = null, proc = null, playAnalyser = null, pbuf = null, lastRec = null;
 let micLevel = 0, fakeTalk = false, fakeSeed = 0, heardPulse = 0;
 const CAP = { chunks: [], pre: [], preLen: 0, recording: false, preMax: 0 };
+function audio() {
+  if (!ac) {
+    ac = new (window.AudioContext || window.webkitAudioContext)();
+    master = ac.createDynamicsCompressor();
+    master.threshold.value = -8; master.knee.value = 6; master.ratio.value = 8;
+    master.attack.value = .004; master.release.value = .18;
+    const g = ac.createGain(); g.gain.value = .95;
+    master.connect(g); g.connect(ac.destination);
+  }
+  if (ac.state === 'suspended') ac.resume();
+  return ac;
+}
 function readLevel() {
   if (fakeTalk) return Math.min(1, .35 + Math.abs(Math.sin(_t * 11 + fakeSeed)) * .4 + Math.abs(Math.sin(_t * 27)) * .2);
   if (playAnalyser) {
@@ -458,13 +522,13 @@ function checkEnv() {
   return '';
 }
 async function ensureMic() {
-  if (micStream) { if (ac.state === 'suspended') await ac.resume(); return true; }
+  if (micStream) { audio(); return true; }
   const e0 = checkEnv(); if (e0) { diag(e0); return false; }
   try {
     micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
-    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
-    if (ac.state === 'suspended') await ac.resume();
+    audio();
     CAP.preMax = Math.round(ac.sampleRate * .4);
+    CAP.maxChunks = Math.ceil(ac.sampleRate * 12 / 2048);
     const src = ac.createMediaStreamSource(micStream);
     proc = ac.createScriptProcessor(2048, 1, 1);
     const mute = ac.createGain(); mute.gain.value = 0;
@@ -473,9 +537,15 @@ async function ensureMic() {
       const inp = ev.inputBuffer.getChannelData(0);
       let s = 0; for (let i = 0; i < inp.length; i++) s += inp[i] * inp[i];
       micLevel = Math.sqrt(s / inp.length);
-      const copy = new Float32Array(inp);
-      if (CAP.recording) CAP.chunks.push(copy);
-      else { CAP.pre.push(copy); CAP.preLen += copy.length; while (CAP.preLen > CAP.preMax) CAP.preLen -= CAP.pre.shift().length; }
+      // Oyuncak konuşurken hiçbir şey biriktirme: kendi sesini kaydetmesin
+      if (busy) { CAP.pre.length = 0; CAP.preLen = 0; CAP.chunks.length = 0; return; }
+      if (CAP.recording) {
+        CAP.chunks.push(new Float32Array(inp));
+        if (CAP.chunks.length > CAP.maxChunks) CAP.chunks.shift();
+      } else {
+        CAP.pre.push(new Float32Array(inp)); CAP.preLen += inp.length;
+        while (CAP.preLen > CAP.preMax) CAP.preLen -= CAP.pre.shift().length;
+      }
     };
     diag(''); return true;
   } catch (err) {
@@ -489,44 +559,37 @@ function releaseMic() {
   CAP.chunks = []; CAP.pre = []; CAP.preLen = 0; CAP.recording = false; micLevel = 0;
 }
 function buildBuffer(chunks) {
-  const len = chunks.reduce((a, c) => a + c.length, 0);
-  const b = ac.createBuffer(1, Math.max(len, 128), ac.sampleRate);
+  let len = chunks.reduce((a, c) => a + c.length, 0);
+  const maxLen = Math.round(ac.sampleRate * 12);
+  const b = ac.createBuffer(1, Math.max(Math.min(len, maxLen), 256), ac.sampleRate);
   const d = b.getChannelData(0); let o = 0;
-  for (const c of chunks) { d.set(c, o); o += c.length; }
+  for (const c of chunks) { if (o + c.length > d.length) break; d.set(c, o); o += c.length; }
+  const fade = Math.min(600, Math.floor(d.length / 8));
+  for (let i = 0; i < fade; i++) { d[i] *= i / fade; d[d.length - 1 - i] *= i / fade; }
   let peak = 0; for (let i = 0; i < d.length; i++) peak = Math.max(peak, Math.abs(d[i]));
-  if (peak > .001) { const g = Math.min(6, .7 / peak); for (let i = 0; i < d.length; i++) d[i] *= g; }
+  if (peak > .001) { const g = Math.min(5, .65 / peak); for (let i = 0; i < d.length; i++) d[i] *= g; }
   return b;
 }
-
-/* ================= DSP ================= */
-// Grain tabanlı perde kaydırma: süreyi bozmadan sesi incelt/kalınlaştır
 function pitchShift(buf, ratio) {
+  if (Math.abs(ratio - 1) < .01) return buf;
   const sr = buf.sampleRate, inD = buf.getChannelData(0), n = inD.length;
-  const grain = Math.max(256, Math.round(sr * .045)), hop = Math.round(grain / 2);
+  const grain = Math.max(256, Math.round(sr * .045)), hop = Math.round(grain * .55);
   const out = ac.createBuffer(1, n, sr), o = out.getChannelData(0);
-  for (let pos = 0, inPos = 0; pos + grain < n; pos += hop, inPos += hop) {
+  for (let pos = 0, ip = 0; pos + grain < n; pos += hop, ip += hop) {
     for (let i = 0; i < grain; i++) {
-      const src = inPos + i * ratio, i0 = Math.floor(src);
+      const s = ip + i * ratio, i0 = Math.floor(s);
       if (i0 + 1 >= n) break;
-      const f = src - i0, s = inD[i0] * (1 - f) + inD[i0 + 1] * f;
-      o[pos + i] += s * (.5 - .5 * Math.cos(6.283185 * i / grain));
+      const f = s - i0;
+      o[pos + i] += (inD[i0] * (1 - f) + inD[i0 + 1] * f) * (.5 - .5 * Math.cos(6.283185 * i / grain));
     }
   }
   let peak = 0; for (let i = 0; i < n; i++) peak = Math.max(peak, Math.abs(o[i]));
-  if (peak > .001) { const g = .8 / peak; for (let i = 0; i < n; i++) o[i] *= g; }
+  if (peak > .001) { const g = .7 / peak; for (let i = 0; i < n; i++) o[i] *= g; }
   return out;
 }
-function reversedBuf(b) {
-  const n = ac.createBuffer(1, b.length, b.sampleRate), s = b.getChannelData(0), d = n.getChannelData(0);
-  for (let i = 0; i < s.length; i++) d[i] = s[s.length - 1 - i];
-  return n;
-}
-function impulse(dur, decay, bright) {
+function impulse(dur, decay) {
   const sr = ac.sampleRate, len = Math.round(sr * dur), b = ac.createBuffer(2, len, sr);
-  for (let c = 0; c < 2; c++) {
-    const d = b.getChannelData(c);
-    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay) * (bright ? 1 : (1 - i / len));
-  }
+  for (let c = 0; c < 2; c++) { const d = b.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay); }
   return b;
 }
 function shaper(amount) {
@@ -534,47 +597,63 @@ function shaper(amount) {
   for (let i = 0; i < n; i++) { const x = i * 2 / n - 1; c[i] = (1 + amount) * x / (1 + amount * Math.abs(x)); }
   ws.curve = c; return ws;
 }
-const semi = s => Math.pow(2, s / 12);
 
 /* ================= EFEKTLER ================= */
 const FX = ['sincap', 'dev', 'robot', 'yanki', 'uzayli', 'telefon', 'koro', 'suyalti', 'rastgele'];
 const FXUI = { sincap: ['🐿️', 'Sincap'], dev: ['👹', 'Dev'], robot: ['🤖', 'Robot'], yanki: ['🕳️', 'Mağara'], uzayli: ['👽', 'Uzaylı'], telefon: ['📞', 'Telsiz'], koro: ['👥', 'Koro'], suyalti: ['🐠', 'Su altı'], rastgele: ['🎲', 'Karışık'] };
-let fx = 'sincap';
-
+let fx = 'sincap', live = null;
+function trim(buf, sec) {
+  const max = Math.round(ac.sampleRate * sec);
+  if (buf.length <= max) return buf;
+  const n = ac.createBuffer(1, max, ac.sampleRate), d = n.getChannelData(0);
+  d.set(buf.getChannelData(0).subarray(0, max));
+  const f = 900; for (let i = 0; i < f; i++) d[max - 1 - i] *= i / f;
+  return n;
+}
+function stopPlayback() {
+  if (!live) return;
+  clearTimeout(live.timer);
+  live.srcs.forEach(s => { try { s.onended = null; s.stop(); } catch (e) { } });
+  live.extras.forEach(o => { try { o.stop(); } catch (e) { } });
+  try { live.out.disconnect(); } catch (e) { }
+  live = null; playAnalyser = null;
+}
 function playFx(buffer, kind) {
+  audio();
+  stopPlayback();
+  buffer = trim(buffer, 6);
   const k = kind === 'rastgele' ? FX[Math.floor(Math.random() * (FX.length - 1))] : kind;
-  const out = ac.createGain(); out.gain.value = 1;
+  const out = ac.createGain(); out.gain.value = .8;
   const an = ac.createAnalyser(); an.fftSize = 1024;
-  out.connect(an); an.connect(ac.destination); playAnalyser = an;
+  out.connect(an); an.connect(master); playAnalyser = an;
   const srcs = [], extras = [];
   const mk = (buf, rate) => { const s = ac.createBufferSource(); s.buffer = buf; s.playbackRate.value = rate || 1; srcs.push(s); return s; };
-  const rev = (wet, dur, dec) => { const cv = ac.createConvolver(); cv.buffer = impulse(dur, dec, true); const g = ac.createGain(); g.gain.value = wet; cv.connect(g); g.connect(out); return cv; };
+  const rev = (wet, dur, dec) => { const cv = ac.createConvolver(); cv.buffer = impulse(dur, dec); const g = ac.createGain(); g.gain.value = wet; cv.connect(g); g.connect(out); return cv; };
+  const via = (node, amt) => { const ws = shaper(amt); node.connect(ws); ws.connect(out); };
 
   if (k === 'sincap') {
-    const s = mk(pitchShift(buffer, semi(7)), 1.06);
-    const hs = ac.createBiquadFilter(); hs.type = 'highshelf'; hs.frequency.value = 2600; hs.gain.value = 5;
+    const s = mk(pitchShift(buffer, semi(7)), 1.05);
+    const hs = ac.createBiquadFilter(); hs.type = 'highshelf'; hs.frequency.value = 2600; hs.gain.value = 4;
     s.connect(hs); hs.connect(out);
   } else if (k === 'dev') {
-    const s = mk(pitchShift(buffer, semi(-7)), .94);
-    const ls = ac.createBiquadFilter(); ls.type = 'lowshelf'; ls.frequency.value = 300; ls.gain.value = 8;
-    const ws = shaper(.6);
-    s.connect(ls); ls.connect(ws); ws.connect(out); ws.connect(rev(.25, 1.4, 2.5));
+    const s = mk(pitchShift(buffer, semi(-7)), .95);
+    const ls = ac.createBiquadFilter(); ls.type = 'lowshelf'; ls.frequency.value = 300; ls.gain.value = 7;
+    s.connect(ls); via(ls, .5); ls.connect(rev(.22, 1.4, 2.5));
   } else if (k === 'robot') {
     const s = mk(pitchShift(buffer, semi(-2)), 1);
     const ring = ac.createGain(); ring.gain.value = 0;
-    const osc = ac.createOscillator(); osc.type = 'sine'; osc.frequency.value = 78; osc.connect(ring.gain); osc.start(); extras.push(osc);
+    const osc = ac.createOscillator(); osc.type = 'sine'; osc.frequency.value = 76; osc.connect(ring.gain); osc.start(); extras.push(osc);
     const comb = ac.createDelay(.05); comb.delayTime.value = .0042;
-    const fb = ac.createGain(); fb.gain.value = .55;
+    const fb = ac.createGain(); fb.gain.value = .5;
     const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1200; bp.Q.value = .7;
     s.connect(ring); ring.connect(comb); comb.connect(fb); fb.connect(comb);
-    ring.connect(bp); comb.connect(bp); bp.connect(shaperTo(out, 3));
+    ring.connect(bp); comb.connect(bp); via(bp, 2.5);
   } else if (k === 'yanki') {
     const s = mk(buffer, 1);
     const dly = ac.createDelay(1); dly.delayTime.value = .27;
-    const fb = ac.createGain(); fb.gain.value = .45;
+    const fb = ac.createGain(); fb.gain.value = .4;
     const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2200;
-    s.connect(out); s.connect(dly); dly.connect(lp); lp.connect(fb); fb.connect(dly); dly.connect(out);
-    s.connect(rev(.55, 2.6, 2.2));
+    s.connect(out); s.connect(dly); dly.connect(lp); lp.connect(fb); fb.connect(dly); dly.connect(out); s.connect(rev(.45, 2.4, 2.2));
   } else if (k === 'uzayli') {
     const s = mk(pitchShift(buffer, semi(4)), 1);
     const dly = ac.createDelay(.05); dly.delayTime.value = .008;
@@ -582,139 +661,242 @@ function playFx(buffer, kind) {
     const dep = ac.createGain(); dep.gain.value = .0045;
     lfo.connect(dep); dep.connect(dly.delayTime); lfo.start(); extras.push(lfo);
     const trem = ac.createGain(); trem.gain.value = .75;
-    const tl = ac.createOscillator(); tl.frequency.value = 7.5;
-    const td = ac.createGain(); td.gain.value = .25;
+    const tl = ac.createOscillator(); tl.frequency.value = 7;
+    const td = ac.createGain(); td.gain.value = .22;
     tl.connect(td); td.connect(trem.gain); tl.start(); extras.push(tl);
-    s.connect(trem); s.connect(dly); dly.connect(trem); trem.connect(out); trem.connect(rev(.3, 1.8, 2));
+    s.connect(trem); s.connect(dly); dly.connect(trem); trem.connect(out); trem.connect(rev(.28, 1.8, 2));
   } else if (k === 'telefon') {
     const s = mk(buffer, 1);
-    const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1700; bp.Q.value = 1.4;
     const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 600;
-    s.connect(hp); hp.connect(bp); bp.connect(shaperTo(out, 9));
-    const nb = ac.createBufferSource(); const nz = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
-    const nd = nz.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = (Math.random() * 2 - 1) * .012;
-    nb.buffer = nz; nb.loop = true; const ng = ac.createGain(); ng.gain.value = .5;
-    nb.connect(ng); ng.connect(out); nb.start(); extras.push(nb);
+    const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1700; bp.Q.value = 1.4;
+    s.connect(hp); hp.connect(bp); via(bp, 7);
   } else if (k === 'koro') {
-    [[0, .55, .002], [7, .4, .014], [12, .32, .026], [-12, .35, .038]].forEach(([sm, vol, dt]) => {
+    [[0, .5, .002], [7, .34, .014], [12, .26, .026], [-12, .3, .038]].forEach(([sm, vol, dt]) => {
       const s = mk(sm === 0 ? buffer : pitchShift(buffer, semi(sm)), 1);
       const g = ac.createGain(); g.gain.value = vol;
       const d = ac.createDelay(.1); d.delayTime.value = dt;
       s.connect(d); d.connect(g); g.connect(out);
     });
-    srcs[0].connect(rev(.25, 1.6, 2.4));
+    srcs[0].connect(rev(.2, 1.6, 2.4));
   } else if (k === 'suyalti') {
-    const s = mk(pitchShift(buffer, semi(-3)), .96);
-    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 700; lp.Q.value = 6;
+    const s = mk(pitchShift(buffer, semi(-3)), .97);
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 700; lp.Q.value = 5;
     const lfo = ac.createOscillator(); lfo.frequency.value = 1.6;
-    const dep = ac.createGain(); dep.gain.value = 320;
+    const dep = ac.createGain(); dep.gain.value = 300;
     lfo.connect(dep); dep.connect(lp.frequency); lfo.start(); extras.push(lfo);
-    s.connect(lp); lp.connect(out); lp.connect(rev(.4, 2, 2));
+    s.connect(lp); lp.connect(out); lp.connect(rev(.35, 2, 2));
   }
-  function shaperTo(dest, amt) { const ws = shaper(amt); ws.connect(dest); return ws; }
-
   fakeTalk = false; setState('talking', FXUI[k][1]);
+  let ended = false;
+  const finish = () => {
+    if (ended) return; ended = true;
+    extras.forEach(o => { try { o.stop(); } catch (e) { } });
+    if (live) { clearTimeout(live.timer); live = null; }
+    playAnalyser = null; level = 0; setState('dance');
+    setTimeout(() => {
+      busy = false; VAD.cool = .45; floorLvl = Math.max(floorLvl, .012);
+      if (state === 'dance') setState(running ? 'listening' : 'idle');
+    }, 700);
+  };
   let done = 0;
-  srcs.forEach(s => {
-    s.onended = () => {
-      if (++done < srcs.length) return;
-      extras.forEach(o => { try { o.stop(); } catch (e) { } });
-      playAnalyser = null; level = 0; setState('dance');
-      setTimeout(() => { busy = false; if (state === 'dance') setState(running ? 'listening' : 'idle'); }, 1000);
-    };
-    s.start();
-  });
-  if (!srcs.length) { playAnalyser = null; busy = false; setState('idle'); }
+  srcs.forEach(s => { s.onended = () => { if (++done >= srcs.length) finish(); }; s.start(); });
+  if (!srcs.length) { finish(); return; }
+  // güvenlik ağı: bir kaynak hiç bitmezse kilit açık kalmasın
+  const guard = (buffer.duration + 2.5) * 1000;
+  live = { srcs, extras, out, timer: setTimeout(finish, guard) };
 }
 
-/* ================= ŞARKI ================= */
-// Melodiler özgün, telifsiz. Sayılar yarım ses cinsinden, süre vuruş cinsinden.
+/* ================= ŞARKI: formant tabanlı vokal ================= */
+const VOWELS = { a: [730, 1090, 2440], e: [530, 1840, 2480], i: [270, 2290, 3010], o: [570, 840, 2410], u: [300, 870, 2240] };
 const SONGS = [
-  { bpm: 116, notes: [[0, 1], [4, 1], [7, 1], [4, 1], [5, 1], [4, 1], [2, 2], [0, 1], [2, 1], [4, 1], [7, 1], [5, 2], [4, 2]] },
-  { bpm: 128, notes: [[7, .5], [7, .5], [9, 1], [7, 1], [12, 1], [11, 2], [7, .5], [7, .5], [9, 1], [7, 1], [14, 1], [12, 2]] },
-  { bpm: 100, notes: [[0, 1.5], [3, .5], [5, 1], [7, 1], [10, 1.5], [7, .5], [5, 1], [3, 1], [0, 2]] }
+  { bpm: 112, notes: [[0, 1], [4, 1], [7, 1], [4, 1], [5, 1], [4, 1], [2, 2], [0, 1], [2, 1], [4, 1], [7, 1], [5, 2], [4, 2]] },
+  { bpm: 126, notes: [[7, .5], [7, .5], [9, 1], [7, 1], [12, 1], [11, 2], [7, .5], [7, .5], [9, 1], [7, 1], [14, 1], [12, 2]] },
+  { bpm: 98, notes: [[0, 1.5], [3, .5], [5, 1], [7, 1], [10, 1.5], [7, .5], [5, 1], [3, 1], [0, 2]] }
 ];
 let songTimer = null;
-function stopSong() {
-  if (songTimer) { clearTimeout(songTimer); songTimer = null; }
-  if (ac) { try { ac.suspend(); ac.resume(); } catch (e) { } }
+function voiceNote(at, dur, freq, vow, dest, cv) {
+  const osc = ac.createOscillator(); osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(freq * .997, at);
+  osc.frequency.linearRampToValueAtTime(freq, at + .06);
+  const vib = ac.createOscillator(); vib.frequency.value = 5.2;
+  const vg = ac.createGain(); vg.gain.setValueAtTime(0, at);
+  vg.gain.linearRampToValueAtTime(freq * .014, at + Math.min(.25, dur * .5));
+  vib.connect(vg); vg.connect(osc.frequency); vib.start(at); vib.stop(at + dur + .1);
+  const env = ac.createGain();
+  env.gain.setValueAtTime(.0001, at);
+  env.gain.exponentialRampToValueAtTime(.5, at + .045);
+  env.gain.setValueAtTime(.5, at + dur * .72);
+  env.gain.exponentialRampToValueAtTime(.0001, at + dur);
+  osc.connect(env);
+  const f = VOWELS[vow] || VOWELS.a, gains = [1, .5, .22];
+  f.forEach((hz, i) => {
+    const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = hz; bp.Q.value = 7 + i * 3;
+    const g = ac.createGain(); g.gain.value = gains[i];
+    env.connect(bp); bp.connect(g); g.connect(dest); if (i === 0 && cv) g.connect(cv);
+  });
+  const br = ac.createBufferSource(), nb = ac.createBuffer(1, Math.round(ac.sampleRate * .05), ac.sampleRate);
+  const nd = nb.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / nd.length, 2);
+  br.buffer = nb;
+  const bg = ac.createGain(); bg.gain.value = .1;
+  const bhp = ac.createBiquadFilter(); bhp.type = 'highpass'; bhp.frequency.value = 1800;
+  br.connect(bhp); bhp.connect(bg); bg.connect(dest); br.start(at);
+  osc.start(at); osc.stop(at + dur + .06);
 }
 function sing() {
-  unlockAudio();
-  if (!ac) { diag('Önce BAŞLA ile mikrofonu aç, sonra bir şey söyle; şarkıyı senin sesinle söyleyeceğim.'); return; }
-  const song = SONGS[Math.floor(Math.random() * SONGS.length)];
-  const spb = 60 / song.bpm;
-  const t0 = ac.currentTime + .15;
-  const master = ac.createGain(); master.gain.value = .9;
+  audio();
+  const song = one(SONGS), spb = 60 / song.bpm, t0 = ac.currentTime + .18;
+  const outG = ac.createGain(); outG.gain.value = .85;
   const an = ac.createAnalyser(); an.fftSize = 1024;
-  master.connect(an); an.connect(ac.destination); playAnalyser = an;
-  const cv = ac.createConvolver(); cv.buffer = impulse(1.6, 2.4, true);
-  const wet = ac.createGain(); wet.gain.value = .22; cv.connect(wet); wet.connect(master);
+  outG.connect(an); an.connect(master); playAnalyser = an;
+  const cv = ac.createConvolver(); cv.buffer = impulse(1.5, 2.4);
+  const wet = ac.createGain(); wet.gain.value = .2; cv.connect(wet); wet.connect(outG);
 
-  // ses malzemesi: çocuğun son kaydından kısa bir hece
-  let voice = null;
-  if (lastRec && lastRec.length > ac.sampleRate * .25) {
-    const d = lastRec.getChannelData(0);
+  let voiceGrain = null;
+  if (lastRec && lastRec.length > ac.sampleRate * .3) {
+    const d = lastRec.getChannelData(0), win = Math.round(ac.sampleRate * .2);
     let best = 0, bestE = 0;
-    const win = Math.round(ac.sampleRate * .22);
     for (let p = 0; p + win < d.length; p += Math.round(win / 2)) {
       let e = 0; for (let i = 0; i < win; i += 8) e += d[p + i] * d[p + i];
       if (e > bestE) { bestE = e; best = p; }
     }
-    voice = ac.createBuffer(1, win, ac.sampleRate);
-    const o = voice.getChannelData(0);
+    voiceGrain = ac.createBuffer(1, win, ac.sampleRate);
+    const o = voiceGrain.getChannelData(0);
     for (let i = 0; i < win; i++) o[i] = d[best + i] * (.5 - .5 * Math.cos(6.283185 * i / win));
   }
-
-  let tt = 0, total = 0;
-  song.notes.forEach(([sm, len]) => {
-    const at = t0 + tt * spb, dur = len * spb * .92;
-    if (voice) {
-      const s = ac.createBufferSource(); s.buffer = voice; s.playbackRate.value = semi(sm + 5);
+  const vows = ['a', 'e', 'i', 'o', 'u'], base = 196 * semi(curChar().sing === 'i' ? 5 : 0);
+  let tt = 0;
+  song.notes.forEach(([sm, len], ix) => {
+    const at = t0 + tt * spb, dur = len * spb * .9;
+    voiceNote(at, dur, base * semi(sm), ix % 3 === 0 ? curChar().sing : vows[ix % vows.length], outG, cv);
+    if (voiceGrain) {
+      const s = ac.createBufferSource(); s.buffer = voiceGrain; s.loop = true;
+      s.playbackRate.value = semi(sm + 3);
       const g = ac.createGain();
-      g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(.9, at + .04);
-      g.gain.setValueAtTime(.9, at + dur * .7); g.gain.linearRampToValueAtTime(0, at + dur);
-      s.connect(g); g.connect(master); g.connect(cv);
-      s.loop = true; s.start(at); s.stop(at + dur);
+      g.gain.setValueAtTime(.0001, at); g.gain.exponentialRampToValueAtTime(.32, at + .05);
+      g.gain.setValueAtTime(.32, at + dur * .7); g.gain.exponentialRampToValueAtTime(.0001, at + dur);
+      s.connect(g); g.connect(outG); s.start(at); s.stop(at + dur);
     }
-    const o = ac.createOscillator(); o.type = 'triangle';
-    o.frequency.value = 220 * semi(sm);
-    const og = ac.createGain(); og.gain.setValueAtTime(0, at);
-    og.gain.linearRampToValueAtTime(voice ? .1 : .28, at + .03);
-    og.gain.exponentialRampToValueAtTime(.001, at + dur);
-    o.connect(og); og.connect(master); o.start(at); o.stop(at + dur + .05);
-    tt += len; total = tt;
+    tt += len;
   });
-  // bas + ritim
-  for (let b = 0; b < Math.ceil(total); b++) {
+  for (let b = 0; b < Math.ceil(tt); b++) {
     const at = t0 + b * spb;
-    const o = ac.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(110, at);
-    o.frequency.exponentialRampToValueAtTime(55, at + .18);
-    const g = ac.createGain(); g.gain.setValueAtTime(.5, at); g.gain.exponentialRampToValueAtTime(.001, at + .22);
-    o.connect(g); g.connect(master); o.start(at); o.stop(at + .25);
+    const o = ac.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(110, at); o.frequency.exponentialRampToValueAtTime(55, at + .16);
+    const g = ac.createGain(); g.gain.setValueAtTime(.35, at); g.gain.exponentialRampToValueAtTime(.001, at + .2);
+    o.connect(g); g.connect(outG); o.start(at); o.stop(at + .22);
     if (b % 2 === 1) {
-      const n = ac.createBufferSource(); const nb = ac.createBuffer(1, ac.sampleRate * .12, ac.sampleRate);
+      const n = ac.createBufferSource(), nb = ac.createBuffer(1, Math.round(ac.sampleRate * .1), ac.sampleRate);
       const nd = nb.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / nd.length, 3);
-      n.buffer = nb; const ng = ac.createGain(); ng.gain.value = .25;
-      const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 4000;
-      n.connect(hp); hp.connect(ng); ng.connect(master); n.start(at);
+      n.buffer = nb;
+      const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 4200;
+      const ng = ac.createGain(); ng.gain.value = .18;
+      n.connect(hp); hp.connect(ng); ng.connect(outG); n.start(at);
     }
   }
   busy = true; beat = 0; songBpm = song.bpm; setState('song');
+  clearTimeout(songTimer);
   songTimer = setTimeout(() => {
-    playAnalyser = null; level = 0; busy = false; songTimer = null;
+    playAnalyser = null; level = 0; busy = false;
     setState(running ? 'listening' : 'idle');
-  }, (total * spb + .6) * 1000);
+  }, (tt * spb + .7) * 1000);
 }
-let songBpm = 120;
+
+/* ================= DÜRTME SESLERİ ================= */
+function sfx(name) {
+  audio();
+  const t = ac.currentTime, out = ac.createGain(); out.gain.value = .5; out.connect(master);
+  const noiseSrc = dur => {
+    const b = ac.createBuffer(1, Math.round(ac.sampleRate * dur), ac.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const s = ac.createBufferSource(); s.buffer = b; return s;
+  };
+  const tone = (type, f0, f1, dur, vol) => {
+    const o = ac.createOscillator(); o.type = type;
+    o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    const g = ac.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+    o.connect(g); g.connect(out); o.start(t); o.stop(t + dur + .02); return o;
+  };
+  if (name === 'boing') {
+    const o = tone('triangle', 680, 130, .34, .7);
+    const lfo = ac.createOscillator(); lfo.frequency.value = 17;
+    const ld = ac.createGain(); ld.gain.value = 70; lfo.connect(ld); ld.connect(o.frequency); lfo.start(t); lfo.stop(t + .36);
+  } else if (name === 'squeak') {
+    const o = ac.createOscillator(); o.type = 'sawtooth';
+    o.frequency.setValueAtTime(760, t); o.frequency.exponentialRampToValueAtTime(1900, t + .09); o.frequency.exponentialRampToValueAtTime(900, t + .17);
+    const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1500; bp.Q.value = 4;
+    const g = ac.createGain(); g.gain.setValueAtTime(.45, t); g.gain.exponentialRampToValueAtTime(.001, t + .18);
+    o.connect(bp); bp.connect(g); g.connect(out); o.start(t); o.stop(t + .2);
+  } else if (name === 'pop') {
+    tone('sine', 880, 180, .09, .55);
+    const n = noiseSrc(.05), hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2500;
+    const ng = ac.createGain(); ng.gain.setValueAtTime(.2, t); ng.gain.exponentialRampToValueAtTime(.001, t + .05);
+    n.connect(hp); hp.connect(ng); ng.connect(out); n.start(t);
+  } else if (name === 'giggle') {
+    [0, .085, .17, .255].forEach((off, i) => {
+      const o = ac.createOscillator(); o.type = 'triangle';
+      const f = 620 + i * 90 + rnd(-40, 40);
+      o.frequency.setValueAtTime(f, t + off); o.frequency.exponentialRampToValueAtTime(f * 1.35, t + off + .05);
+      const g = ac.createGain(); g.gain.setValueAtTime(.001, t + off);
+      g.gain.linearRampToValueAtTime(.35, t + off + .015); g.gain.exponentialRampToValueAtTime(.001, t + off + .07);
+      o.connect(g); g.connect(out); o.start(t + off); o.stop(t + off + .09);
+    });
+  } else if (name === 'growl') {
+    const o = ac.createOscillator(); o.type = 'sawtooth';
+    o.frequency.setValueAtTime(90, t); o.frequency.linearRampToValueAtTime(70, t + .45);
+    const lfo = ac.createOscillator(); lfo.frequency.value = 26;
+    const ld = ac.createGain(); ld.gain.value = 22; lfo.connect(ld); ld.connect(o.frequency); lfo.start(t); lfo.stop(t + .5);
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900;
+    const g = ac.createGain(); g.gain.setValueAtTime(.5, t); g.gain.exponentialRampToValueAtTime(.001, t + .5);
+    o.connect(lp); lp.connect(g); g.connect(out); o.start(t); o.stop(t + .52);
+  } else if (name === 'roar') {
+    const n = noiseSrc(.6), lp = ac.createBiquadFilter(); lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(300, t); lp.frequency.exponentialRampToValueAtTime(1400, t + .2); lp.frequency.exponentialRampToValueAtTime(250, t + .6);
+    lp.Q.value = 4;
+    const g = ac.createGain(); g.gain.setValueAtTime(.001, t); g.gain.linearRampToValueAtTime(.55, t + .08); g.gain.exponentialRampToValueAtTime(.001, t + .6);
+    n.connect(lp); lp.connect(g); g.connect(out); n.start(t);
+    tone('sawtooth', 120, 60, .5, .25);
+  } else if (name === 'beep') {
+    [[0, 880], [.09, 1320], [.18, 1760]].forEach(([off, f]) => {
+      const o = ac.createOscillator(); o.type = 'square'; o.frequency.value = f;
+      const g = ac.createGain(); g.gain.setValueAtTime(.001, t + off);
+      g.gain.linearRampToValueAtTime(.28, t + off + .01); g.gain.exponentialRampToValueAtTime(.001, t + off + .07);
+      o.connect(g); g.connect(out); o.start(t + off); o.stop(t + off + .08);
+    });
+  } else if (name === 'zap') {
+    const o = ac.createOscillator(); o.type = 'square';
+    o.frequency.setValueAtTime(1600, t); o.frequency.exponentialRampToValueAtTime(140, t + .22);
+    const g = ac.createGain(); g.gain.setValueAtTime(.3, t); g.gain.exponentialRampToValueAtTime(.001, t + .24);
+    const ws = shaper(8); o.connect(ws); ws.connect(g); g.connect(out); o.start(t); o.stop(t + .26);
+  } else if (name === 'drum') {
+    tone('sine', 190, 48, .2, .7);
+    const n = noiseSrc(.08), hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1800;
+    const ng = ac.createGain(); ng.gain.setValueAtTime(.12, t); ng.gain.exponentialRampToValueAtTime(.001, t + .08);
+    n.connect(hp); hp.connect(ng); ng.connect(out); n.start(t);
+  } else if (name === 'whoosh') {
+    const n = noiseSrc(.4), bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.2;
+    bp.frequency.setValueAtTime(400, t); bp.frequency.exponentialRampToValueAtTime(3600, t + .3);
+    const g = ac.createGain(); g.gain.setValueAtTime(.001, t); g.gain.linearRampToValueAtTime(.35, t + .08); g.gain.exponentialRampToValueAtTime(.001, t + .38);
+    n.connect(bp); bp.connect(g); g.connect(out); n.start(t);
+  }
+}
+function doPoke(vx, vy) {
+  let part = 'pot';
+  if (vy < 280) part = 'head';
+  else if (vy < 440) part = Math.abs(vx - 200) > 55 ? 'arm' : 'head';
+  poke = { t: 0, d: .9, part, side: vx < 200 ? -1 : 1 };
+  const set = curChar().sfx;
+  sfx(part === 'pot' ? one(['pop', 'drum']) : one(set));
+  if (navigator.vibrate) { try { navigator.vibrate(18); } catch (e) { } }
+}
 
 /* ================= VAD ================= */
-let running = false, busy = false, floorLvl = .01;
-const VAD = { on: false, sil: 0, dur: 0 };
+let running = false, busy = false, floorLvl = .01, mode = 'parrot';
+const VAD = { on: false, sil: 0, dur: 0, cool: 0 };
 function vadTick(dt) {
   if (!running || mode !== 'parrot' || !micStream) return;
   const L = micLevel;
   if (busy) { VAD.on = false; VAD.sil = 0; return; }
+  if (VAD.cool > 0) { VAD.cool -= dt; return; }
   if (!VAD.on && L < floorLvl * 3) floorLvl += (L - floorLvl) * .03;
   const th = Math.max(.026, floorLvl * 3.2 + .01);
   if (!VAD.on) {
@@ -722,10 +904,10 @@ function vadTick(dt) {
   } else {
     VAD.dur += dt;
     if (L < th * .65) VAD.sil += dt; else VAD.sil = 0;
-    if (VAD.sil > 1.15 || VAD.dur > 20) {
+    if (VAD.sil > .7 || VAD.dur > 12) {
       VAD.on = false; CAP.recording = false;
       const c = CAP.chunks; CAP.chunks = [];
-      if (VAD.dur > .35) { busy = true; lastRec = buildBuffer(c); playFx(lastRec, fx); }
+      if (VAD.dur > .3) { busy = true; lastRec = buildBuffer(c); playFx(lastRec, fx); }
     }
   }
 }
@@ -745,13 +927,49 @@ function frame(now) {
     fidgetAt -= dt;
     if (fidget) { fidget.t += dt; if (fidget.t > fidget.d) fidget = null; }
     else if (fidgetAt < 0) { newFidget(); fidgetAt = rnd(5, 11); }
-  } else { fidget = null; }
+  } else fidget = null;
   vadTick(dt);
   targets(_t); integrate(reduce ? dt * .5 : dt); apply();
   if (running) el('meterFill').style.width = Math.min(100, Math.max(level, micLevel * 6) * 100) + '%';
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
+
+/* ================= DOKUNMA KATMANI ================= */
+(function touch() {
+  const pad = el('pad'), svg = el('stage');
+  let sx = 0, sy = 0, st = 0, moved = false, active = false;
+  const view = (cx, cy) => {
+    const r = svg.getBoundingClientRect();
+    return [(cx - r.left) / r.width * 400, (cy - r.top) / r.height * 640];
+  };
+  const down = (x, y) => { sx = x; sy = y; st = performance.now(); moved = false; active = true; };
+  const move = (x, y) => { if (active && Math.abs(x - sx) > 14) moved = true; };
+  const up = (x, y) => {
+    if (!active) return; active = false;
+    const dx = x - sx, dy = y - sy;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+      charIx = (charIx + (dx < 0 ? 1 : CHARS.length - 1)) % CHARS.length;
+      applyChar(charIx); sfx('whoosh');
+      poke = { t: 0, d: .8, part: 'arm', side: dx < 0 ? 1 : -1 };
+      el('hint').style.display = 'none';
+      return;
+    }
+    if (!moved && performance.now() - st < 800) { const v = view(x, y); doPoke(v[0], v[1]); el('hint').style.display = 'none'; }
+  };
+  if (window.PointerEvent) {
+    pad.addEventListener('pointerdown', e => down(e.clientX, e.clientY));
+    pad.addEventListener('pointermove', e => move(e.clientX, e.clientY));
+    pad.addEventListener('pointerup', e => up(e.clientX, e.clientY));
+    pad.addEventListener('pointercancel', () => active = false);
+  } else {
+    pad.addEventListener('touchstart', e => { const t = e.changedTouches[0]; down(t.clientX, t.clientY); }, { passive: true });
+    pad.addEventListener('touchmove', e => { const t = e.changedTouches[0]; move(t.clientX, t.clientY); }, { passive: true });
+    pad.addEventListener('touchend', e => { const t = e.changedTouches[0]; up(t.clientX, t.clientY); });
+    pad.addEventListener('mousedown', e => down(e.clientX, e.clientY));
+    pad.addEventListener('mouseup', e => up(e.clientX, e.clientY));
+  }
+})();
 
 /* ================= TANIMA ================= */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -778,7 +996,7 @@ function startRec() { if (!rec || recOn || speaking || !wantRec) return; try { r
 function stopRec() { wantRec = false; if (rec && recOn) { try { rec.stop(); } catch (e) { } } }
 
 /* ================= BEYİN + KONUŞMA ================= */
-const SYSTEM = `Sen "Kaktüs", saksıda yaşayan dans eden bir peluş kaktüssün. Küçük çocuklarla konuşuyorsun.
+const SYSTEM = `Sen saksıda yaşayan dans eden bir peluş oyuncaksın. Küçük çocuklarla konuşuyorsun.
 Kurallar: Türkçe konuş. En fazla 2 kısa ve basit cümle. Neşeli, tatlı, nazik ol. Emoji ve madde işareti kullanma.`;
 let history = [];
 let cfgValue = ''; try { cfgValue = localStorage.getItem('kaktus-cfg') || ''; } catch (e) { }
@@ -800,21 +1018,20 @@ async function askOllama(msgs) {
 }
 const OFF = {
   selam: ['Selam! Saksıdan bakıyordum, geldin demek.', 'Merhaba! Bugün çok neşeliyim.'],
-  nasil: ['Dikenlerim yerinde, keyfim yerinde.', 'Çok iyiyim, biraz susadım ama olsun.'],
+  nasil: ['Keyfim yerinde, hoplayasım var.', 'Çok iyiyim, biraz susadım ama olsun.'],
   soru: ['Bilmiyorum ama çok güzel bir soru.', 'Hmm, düşünmem lazım. Sen ne dersin?', 'Belki evet, belki dans etmeliyiz.'],
   emir: ['Tamam, hemen yapıyorum!', 'Bunu yapabilirim, izle beni.'],
-  isim: ['Benim adım Kaktüs. Seninki ne?'],
-  sarki: ['Şarkı düğmesine bas, hemen söylerim.'],
+  isim: ['Benim adım {n}. Seninki ne?'],
+  sarki: ['Hemen söylüyorum, dinle!'],
   genel: ['{w} dedin, çok hoşuma gitti.', 'Vay, {w}. Bir daha söyle!', '{w} mi? Ben de onu düşünüyordum.']
 };
-const one = a => a[Math.floor(Math.random() * a.length)];
 function offlineBrain(x) {
   const t = x.toLowerCase();
   if (!t) return 'Seni dinliyorum.';
   if (/(selam|merhaba|günaydın|naber|hey)/.test(t)) return one(OFF.selam);
   if (/nasılsın|napıyorsun|iyi misin/.test(t)) return one(OFF.nasil);
-  if (/(adın ne|ismin ne|kimsin)/.test(t)) return one(OFF.isim);
-  if (/şarkı|türkü|söyle bana/.test(t)) { setTimeout(sing, 900); return one(OFF.sarki); }
+  if (/(adın ne|ismin ne|kimsin)/.test(t)) return one(OFF.isim).replace('{n}', curChar().name);
+  if (/şarkı|türkü|söyle bana/.test(t)) { setTimeout(sing, 1200); return one(OFF.sarki); }
   if (/[?]|neden|niye|nasıl|kim|ne zaman/.test(t)) return one(OFF.soru);
   if (/(dans et|zıpla|yap)/.test(t)) { setTimeout(() => setState('dance'), 900); return one(OFF.emir); }
   const w = x.split(/\s+/).filter(s => s.length > 3).pop() || x;
@@ -870,7 +1087,6 @@ async function respond(text) {
 }
 
 /* ================= ARAYÜZ ================= */
-let mode = 'parrot';
 function bubble(t, who) {
   const d = document.createElement('div');
   d.className = 'bubble ' + (who === 'me' ? 'me' : 'cactus'); d.textContent = t;
@@ -901,7 +1117,7 @@ el('voice').onchange = () => {
   savedVoice = el('voice').value;
   try { localStorage.setItem('kaktus-voice', savedVoice); } catch (e) { }
 };
-el('testVoice').onclick = () => { unlockAudio(); speak('Merhaba, ben Kaktüs. Beni böyle duyuyorsun.'); };
+el('testVoice').onclick = () => { audio(); speak('Merhaba, ben ' + curChar().name + '. Beni böyle duyuyorsun.'); };
 el('brainCfg').value = cfgValue;
 el('brainCfg').onchange = () => { cfgValue = el('brainCfg').value.trim(); try { localStorage.setItem('kaktus-cfg', cfgValue); } catch (e) { } };
 el('brain').onchange = () => {
@@ -910,7 +1126,7 @@ el('brain').onchange = () => {
   el('brainCfg').placeholder = m === 'ollama' ? 'http://192.168.x.x:11434' : 'sk-ant-…';
 };
 async function startAll() {
-  unlockAudio();
+  audio();
   if (mode === 'parrot') { if (!(await ensureMic())) return; }
   else {
     releaseMic();
@@ -923,8 +1139,10 @@ async function startAll() {
   setState('listening');
 }
 function stopAll() {
-  running = false; busy = false; VAD.on = false; CAP.recording = false;
-  stopRec(); stopSong(); try { speechSynthesis.cancel(); } catch (e) { }
+  running = false; busy = false; VAD.on = false; VAD.cool = 0; CAP.recording = false;
+  CAP.chunks.length = 0; CAP.pre.length = 0; CAP.preLen = 0;
+  stopPlayback();
+  stopRec(); clearTimeout(songTimer); try { speechSynthesis.cancel(); } catch (e) { }
   fakeTalk = false; speaking = false;
   el('go').classList.remove('on'); el('go').textContent = '▶ BAŞLA';
   el('meter').classList.remove('on');
@@ -932,103 +1150,13 @@ function stopAll() {
 }
 el('go').onclick = () => running ? stopAll() : startAll();
 el('danceBtn').onclick = () => {
-  unlockAudio(); newDance(); setState('dance');
+  audio(); newDance(); setState('dance');
   clearTimeout(window.__d);
   window.__d = setTimeout(() => { if (state === 'dance') setState(running ? 'listening' : 'idle'); }, 7000);
 };
 el('songBtn').onclick = () => sing();
-let unlocked = false;
-function unlockAudio() {
-  if (unlocked) return; unlocked = true;
-  try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') ac.resume(); } catch (e) { }
-  try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch (e) { }
-}
-/* ================= DOKUNMA: dürtme sesleri + kaydırarak görünüm ================= */
-function sfx(name) {
-  unlockAudio(); if (!ac) return;
-  const t = ac.currentTime, out = ac.createGain();
-  out.gain.value = .55; out.connect(ac.destination);
-  const noiseSrc = dur => {
-    const b = ac.createBuffer(1, Math.round(ac.sampleRate * dur), ac.sampleRate), d = b.getChannelData(0);
-    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-    const s = ac.createBufferSource(); s.buffer = b; return s;
-  };
-  if (name === 'boing') {
-    const o = ac.createOscillator(); o.type = 'triangle';
-    o.frequency.setValueAtTime(680, t); o.frequency.exponentialRampToValueAtTime(130, t + .34);
-    const lfo = ac.createOscillator(); lfo.frequency.value = 17;
-    const ld = ac.createGain(); ld.gain.value = 70;
-    lfo.connect(ld); ld.connect(o.frequency); lfo.start(t); lfo.stop(t + .38);
-    const g = ac.createGain(); g.gain.setValueAtTime(.7, t); g.gain.exponentialRampToValueAtTime(.001, t + .38);
-    o.connect(g); g.connect(out); o.start(t); o.stop(t + .4);
-  } else if (name === 'squeak') {
-    const o = ac.createOscillator(); o.type = 'sawtooth';
-    o.frequency.setValueAtTime(760, t); o.frequency.exponentialRampToValueAtTime(1900, t + .09);
-    o.frequency.exponentialRampToValueAtTime(900, t + .17);
-    const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1500; bp.Q.value = 4;
-    const g = ac.createGain(); g.gain.setValueAtTime(.5, t); g.gain.exponentialRampToValueAtTime(.001, t + .18);
-    o.connect(bp); bp.connect(g); g.connect(out); o.start(t); o.stop(t + .2);
-  } else if (name === 'pop') {
-    const o = ac.createOscillator(); o.type = 'sine';
-    o.frequency.setValueAtTime(880, t); o.frequency.exponentialRampToValueAtTime(180, t + .09);
-    const g = ac.createGain(); g.gain.setValueAtTime(.6, t); g.gain.exponentialRampToValueAtTime(.001, t + .1);
-    o.connect(g); g.connect(out); o.start(t); o.stop(t + .12);
-    const n = noiseSrc(.05), hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2500;
-    const ng = ac.createGain(); ng.gain.setValueAtTime(.25, t); ng.gain.exponentialRampToValueAtTime(.001, t + .05);
-    n.connect(hp); hp.connect(ng); ng.connect(out); n.start(t);
-  } else if (name === 'giggle') {
-    [0, .085, .17, .255].forEach((off, i) => {
-      const o = ac.createOscillator(); o.type = 'triangle';
-      const f = 620 + i * 90 + rnd(-40, 40);
-      o.frequency.setValueAtTime(f, t + off); o.frequency.exponentialRampToValueAtTime(f * 1.35, t + off + .05);
-      const g = ac.createGain(); g.gain.setValueAtTime(.001, t + off);
-      g.gain.linearRampToValueAtTime(.4, t + off + .015); g.gain.exponentialRampToValueAtTime(.001, t + off + .07);
-      o.connect(g); g.connect(out); o.start(t + off); o.stop(t + off + .09);
-    });
-  } else if (name === 'drum') {
-    const o = ac.createOscillator(); o.type = 'sine';
-    o.frequency.setValueAtTime(180, t); o.frequency.exponentialRampToValueAtTime(48, t + .18);
-    const g = ac.createGain(); g.gain.setValueAtTime(.8, t); g.gain.exponentialRampToValueAtTime(.001, t + .22);
-    o.connect(g); g.connect(out); o.start(t); o.stop(t + .24);
-  } else if (name === 'whoosh') {
-    const n = noiseSrc(.4), bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.2;
-    bp.frequency.setValueAtTime(400, t); bp.frequency.exponentialRampToValueAtTime(3600, t + .3);
-    const g = ac.createGain(); g.gain.setValueAtTime(.001, t);
-    g.gain.linearRampToValueAtTime(.4, t + .08); g.gain.exponentialRampToValueAtTime(.001, t + .38);
-    n.connect(bp); bp.connect(g); g.connect(out); n.start(t);
-  }
-}
-const HEAD_SFX = ['squeak', 'giggle'], ARM_SFX = ['boing', 'squeak'], POT_SFX = ['drum', 'pop'];
-function doPoke(vx, vy) {
-  let part = 'pot';
-  if (vy < 275) part = 'head';
-  else if (vy < 430) part = Math.abs(vx - 200) > 55 ? 'arm' : 'head';
-  poke = { t: 0, d: .9, part, side: vx < 200 ? -1 : 1 };
-  sfx(one(part === 'head' ? HEAD_SFX : part === 'arm' ? ARM_SFX : POT_SFX));
-  if (navigator.vibrate) { try { navigator.vibrate(18); } catch (e) { } }
-}
-(function touch() {
-  const svg = el('stage');
-  let sx = 0, sy = 0, st = 0, moved = false;
-  const toView = e => {
-    const r = svg.getBoundingClientRect();
-    return [(e.clientX - r.left) / r.width * 400, (e.clientY - r.top) / r.height * 640];
-  };
-  svg.style.touchAction = 'pan-y';
-  svg.addEventListener('pointerdown', e => { sx = e.clientX; sy = e.clientY; st = performance.now(); moved = false; });
-  svg.addEventListener('pointermove', e => { if (Math.abs(e.clientX - sx) > 12) moved = true; });
-  svg.addEventListener('pointerup', e => {
-    const dx = e.clientX - sx, dy = e.clientY - sy;
-    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-      skinIx = (skinIx + (dx < 0 ? 1 : SKINS.length - 1)) % SKINS.length;
-      applySkin(skinIx); sfx('whoosh');
-      poke = { t: 0, d: .8, part: 'arm', side: dx < 0 ? 1 : -1 };
-      return;
-    }
-    if (!moved && performance.now() - st < 700) { const v = toView(e); doPoke(v[0], v[1]); }
-  });
-})();
 
+applyChar(charIx);
 setMode('parrot');
 (function boot() { const e0 = checkEnv(); if (e0) diag(e0); })();
 </script>
