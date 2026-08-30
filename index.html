@@ -122,21 +122,21 @@
           <g class="ex-spike"><path d="M-25,-40 l-11,-4 l11,-4z"/><path d="M25,-20 l11,-4 l-11,-4z"/></g>
           <g class="ex-bolt"><circle cx="-16" cy="-42" r="4"/><circle cx="16" cy="-42" r="4"/><circle cx="-16" cy="-14" r="4"/><circle cx="16" cy="-14" r="4"/></g>
           <g class="ex-back"><path d="M25,-46 l16,-8 l-4,16z"/><path d="M25,-18 l16,-8 l-4,16z"/></g>
-          <g transform="translate(0,-52)"><g id="s2">
+          <g id="j2" transform="translate(0,-52)"><g id="s2">
             <rect class="limb seg" x="-25" y="-56" width="50" height="62" rx="24"/>
             <path class="twist" d="M18,-48 C-4,-40 4,-22 -18,-14"/>
             <g class="ex-spike"><path d="M-25,-24 l-11,-4 l11,-4z"/><path d="M25,-44 l11,-4 l-11,-4z"/></g>
             <g class="ex-bolt"><circle cx="-16" cy="-44" r="4"/><circle cx="16" cy="-44" r="4"/><circle cx="-16" cy="-16" r="4"/><circle cx="16" cy="-16" r="4"/></g>
             <g class="ex-back"><path d="M25,-48 l16,-8 l-4,16z"/><path d="M25,-20 l16,-8 l-4,16z"/></g>
-            <g transform="translate(0,-52)"><g id="s3">
-              <rect class="limb seg" x="-31" y="-62" width="62" height="70" rx="29"/>
+            <g id="j3" transform="translate(0,-52)"><g id="s3">
+              <rect id="seg3" class="limb seg" x="-31" y="-62" width="62" height="70" rx="29"/>
               <path class="twist" d="M-22,-52 C6,-42 -6,-24 22,-14"/>
               <ellipse class="ex-belly" cx="0" cy="-24" rx="22" ry="26"/>
               <g class="ex-spike"><path d="M-31,-48 l-11,-4 l11,-4z"/><path d="M31,-30 l11,-4 l-11,-4z"/></g>
               <g class="ex-bolt"><circle cx="-20" cy="-48" r="4"/><circle cx="20" cy="-48" r="4"/><circle cx="0" cy="-12" r="5"/></g>
               <g class="ex-back"><path d="M31,-52 l17,-9 l-4,17z"/><path d="M31,-24 l17,-9 l-4,17z"/></g>
 
-              <g transform="translate(-27,-30)"><g id="armL">
+              <g id="jaL" transform="translate(-27,-30)"><g id="armL">
                 <rect class="limb arm" x="-20" y="-58" width="40" height="66" rx="20"/>
                 <path class="side" d="M-14,-48 C-19,-30 -19,-12 -14,2"/>
                 <g transform="translate(0,-54)"><g id="armLF">
@@ -146,7 +146,7 @@
                 </g></g>
               </g></g>
 
-              <g transform="translate(27,-30)"><g id="armR">
+              <g id="jaR" transform="translate(27,-30)"><g id="armR">
                 <rect class="limb arm" x="-20" y="-58" width="40" height="66" rx="20"/>
                 <path class="side" d="M14,-48 C19,-30 19,-12 14,2"/>
                 <g transform="translate(0,-54)"><g id="armRF">
@@ -156,7 +156,7 @@
                 </g></g>
               </g></g>
 
-              <g transform="translate(0,-50)"><g id="head">
+              <g id="jh" transform="translate(0,-50)"><g id="head"><g id="headK">
                 <g id="hEars">
                   <circle cx="-62" cy="-176" r="30" fill="url(#gBody)" stroke="#15532f" stroke-width="5"/>
                   <circle cx="62" cy="-176" r="30" fill="url(#gBody)" stroke="#15532f" stroke-width="5"/>
@@ -217,7 +217,7 @@
                   <g id="pupils" opacity=".9"><circle cx="-32" cy="1" r="8" fill="#14322a"/><circle cx="32" cy="1" r="8" fill="#14322a"/></g>
                 </g></g>
                 <ellipse id="mouth" cx="0" cy="-50" rx="15" ry="4" fill="#2c0f22" stroke="#15532f" stroke-width="3"/>
-              </g></g>
+              </g></g></g>
             </g></g>
           </g></g>
         </g>
@@ -232,6 +232,16 @@
       </g>
       <path id="potRim" d="M-100,-186 C-58,-206 58,-206 100,-186 C104,-168 96,-154 90,-150 C56,-166 -56,-166 -90,-150 C-96,-156 -104,-170 -100,-186 Z"
             fill="#7fe6f4" stroke="#0e5f72" stroke-width="5" stroke-linejoin="round"/>
+    </g>
+
+    <g id="baseBlower" transform="translate(200,600)" style="display:none">
+      <rect x="-44" y="-132" width="88" height="66" rx="12" fill="#2a3050" stroke="#151a2e" stroke-width="5"/>
+      <path d="M-44,-104 L44,-104 M-44,-86 L44,-86" stroke="#151a2e" stroke-width="4"/>
+      <rect x="-72" y="-70" width="144" height="52" rx="12" fill="#3a4463" stroke="#151a2e" stroke-width="5"/>
+      <circle cx="0" cy="-44" r="19" fill="#151a2e"/>
+      <path d="M0,-44 L0,-59 M0,-44 L13,-36 M0,-44 L-13,-36" stroke="#8ef0ff" stroke-width="5" stroke-linecap="round"/>
+      <rect x="-98" y="-22" width="196" height="20" rx="9" fill="#232a44" stroke="#151a2e" stroke-width="5"/>
+      <rect x="46" y="-52" width="16" height="30" rx="4" fill="#ffd66b" stroke="#151a2e" stroke-width="4"/>
     </g>
 
     <style>
@@ -298,7 +308,7 @@ const semi = s => Math.pow(2, s / 12);
 const N = {
   root: el('rootBob'), s1: el('s1'), s2: el('s2'), s3: el('s3'), head: el('head'),
   armL: el('armL'), armLF: el('armLF'), armR: el('armR'), armRF: el('armRF'),
-  pot: el('pot'), mouth: el('mouth'), eye: el('eyeScale'), pupils: el('pupils'), tip: el('hHood')
+  pot: el('pot'), base2: el('baseBlower'), mouth: el('mouth'), eye: el('eyeScale'), pupils: el('pupils'), tip: el('hHood')
 };
 function ch(v, k = 120, d = 14) { return { x: v, v: 0, t: v, k, d }; }
 const C = {
@@ -356,23 +366,42 @@ let poke = null;
 function pokeTargets(T) {
   if (!poke) return;
   const f = poke.t / poke.d, e = Math.exp(-f * 3.4) * Math.sin(f * 26), m = Math.exp(-f * 3.4);
-  if (poke.part === 'head') {
-    T.head.t += 18 * e; T.s3.t += 11 * e; T.s2.t += 6 * e;
-    T.eye.t = Math.max(T.eye.t, 1 + .45 * m); T.mouth.t = Math.max(T.mouth.t, .85 * m); T.pupY.t -= 5 * m;
-  } else if (poke.part === 'arm') {
+  const st = poke.style;
+  if (poke.part === 'head') { T.head.t += 18 * e; T.s3.t += 11 * e; T.s2.t += 6 * e; T.pupY.t -= 5 * m; }
+  else if (poke.part === 'arm') {
     T.armL.t -= (poke.side < 0 ? 55 : 12) * e; T.armLF.t -= (poke.side < 0 ? 45 : 8) * e;
     T.armR.t += (poke.side > 0 ? 55 : 12) * e; T.armRF.t += (poke.side > 0 ? 45 : 8) * e;
-    T.s3.t -= 8 * e * poke.side; T.mouth.t = Math.max(T.mouth.t, .6 * m);
-  } else {
-    T.potSy.t -= .08 * m * Math.abs(Math.sin(f * 26));
-    T.bobY.t -= 13 * m * Math.abs(Math.sin(f * 20));
-    T.s1.t += 7 * e; T.s2.t += 5 * e; T.mouth.t = Math.max(T.mouth.t, .5 * m);
-    T.sy.t = 1 - .05 * m * Math.abs(Math.sin(f * 26));
+    T.s3.t -= 8 * e * poke.side;
+  } else { T.s1.t += 7 * e; T.s2.t += 5 * e; T.potSy.t -= .08 * m * Math.abs(Math.sin(f * 26)); }
+
+  if (st === 'bounce') {                       // sevimli: sevinçle zıplar
+    T.bobY.t -= 26 * m * Math.abs(Math.sin(f * 13));
+    T.armL.t -= 45 * m; T.armR.t += 45 * m;
+    T.mouth.t = Math.max(T.mouth.t, .9 * m); T.eye.t = 1 + .4 * m; T.sy.t = 1 + .07 * m;
+  } else if (st === 'shrink') {                // uykucu: irkilip büzülür
+    T.sy.t = 1 - .12 * m; T.sx.t = 1 + .08 * m; T.bobY.t += 8 * m;
+    T.armL.t += 40 * m; T.armR.t -= 40 * m; T.eye.t = 1 - .35 * m; T.mouth.t = Math.max(T.mouth.t, .35 * m);
+  } else if (st === 'shake') {                 // komik robot: kısa devre yapar
+    T.rootRot.t += 9 * Math.sin(f * 60) * m; T.head.t += 14 * Math.sin(f * 52) * m;
+    T.armL.t -= 30 * Math.sin(f * 44) * m; T.armR.t += 30 * Math.sin(f * 44) * m;
+    T.eye.t = 1 + .5 * Math.abs(Math.sin(f * 30)) * m;
+  } else if (st === 'spin') {                  // huysuz: sinirlenip savurur
+    T.rootRot.t += 16 * m * Math.sin(f * 9); T.s2.t += 14 * e; T.head.t -= 16 * m;
+    T.armL.t -= 70 * m; T.armR.t += 70 * m; T.mouth.t = Math.max(T.mouth.t, .8 * m); T.eye.t = 1 - .2 * m;
+  } else if (st === 'flail') {                 // çılgın: kolları savrulur
+    T.armL.t -= 90 * Math.sin(f * 22) * m; T.armR.t += 90 * Math.sin(f * 19 + 1) * m;
+    T.armLF.t -= 70 * Math.sin(f * 26) * m; T.armRF.t += 70 * Math.sin(f * 24) * m;
+    T.s3.t += 20 * e; T.bobY.t -= 14 * m; T.mouth.t = Math.max(T.mouth.t, m);
+  } else {                                     // utangaç: küçülüp gözlerini kapatır
+    T.sy.t = 1 - .08 * m; T.head.t += 12 * m * poke.side;
+    T.armL.t += 55 * m; T.armR.t -= 55 * m;
+    T.eye.t = 1 - .55 * m; T.mouth.t = Math.max(T.mouth.t, .25 * m); T.pupY.t += 4 * m;
   }
   T.rootRot.t += 5 * e * (poke.side || 1);
 }
 function targets(t) {
   const T = C, a = level;
+  T.pupX.t = 0; T.pupY.t = 0; T.eye.t = 1;
   if (state === 'idle') {
     const s = Math.sin(t * 1.1);
     T.s1.t = s * 2.2; T.s2.t = Math.sin(t * 1.1 - .5) * 3; T.s3.t = Math.sin(t * 1.1 - 1) * 3.5; T.head.t = -s * 3;
@@ -423,7 +452,8 @@ function apply() {
   N.head.setAttribute('transform', R(C.head.x));
   N.armL.setAttribute('transform', R(C.armL.x)); N.armLF.setAttribute('transform', R(C.armLF.x));
   N.armR.setAttribute('transform', R(C.armR.x)); N.armRF.setAttribute('transform', R(C.armRF.x));
-  N.pot.setAttribute('transform', 'translate(200,600) scale(1,' + C.potSy.x.toFixed(3) + ')');
+  const bt = 'translate(200,600) scale(1,' + C.potSy.x.toFixed(3) + ')';
+  N.pot.setAttribute('transform', bt); if (N.base2) N.base2.setAttribute('transform', bt);
   N.mouth.setAttribute('ry', (3 + C.mouth.x * 14).toFixed(2));
   N.eye.setAttribute('transform', 'scale(1,' + Math.max(.06, C.eye.x * (1 - eyeClose)).toFixed(3) + ')');
   N.pupils.setAttribute('transform', 'translate(' + C.pupX.x.toFixed(2) + ',' + C.pupY.x.toFixed(2) + ')');
@@ -432,28 +462,46 @@ function apply() {
 /* ================= KARAKTERLER ================= */
 const CHARS = [
   {
-    name: 'Kaktüs', body: ['#2f9d5c', '#59dc87', '#238a4c'], acc: ['#2ba3bd', '#5fdcee', '#1d8ba6'],
+    name: 'Kaktüs', mood: 'sevimli', body: ['#2f9d5c', '#59dc87', '#238a4c'], acc: ['#2ba3bd', '#5fdcee', '#1d8ba6'],
     pot: ['#2ea6c2', '#6fe0f0', '#1c88a4'], rim: '#7fe6f4', line: '#15532f', accLine: '#0e5f72',
-    head: 'hHood', face: 'round', eyes: 'eLens', mouth: null, pat: 'patQuilt', ex: 'ex-spike',
-    segRx: 24, armRx: 20, twist: true, sfx: ['squeak', 'giggle'], sing: 'a', pitch: 1.3
+    head: 'hHood', face: 'round', eyes: 'eLens', mouth: null, pat: 'patQuilt', ex: 'ex-spike', base: 'pot',
+    segW: 50, segH: 52, armW: 40, armH: 66, headK: 1, segRx: 24, armRx: 20, twist: true,
+    sfx: ['giggle', 'squeak', 'laugh'], poke: 'bounce', tone: 1.3, rate: 1, sing: 'a'
   },
   {
-    name: 'Ayıcık', body: ['#a9713f', '#e0a86b', '#8a5a2e'], acc: ['#ff9fc0', '#ffc9dc', '#e07098'],
+    name: 'Ayıcık', mood: 'uykucu', body: ['#a9713f', '#e0a86b', '#8a5a2e'], acc: ['#ff9fc0', '#ffc9dc', '#e07098'],
     pot: ['#ff8f5e', '#ffc19b', '#d4642f'], rim: '#ffd8bd', line: '#4a2a12', accLine: '#a04068',
-    head: 'hEars', face: 'round', eyes: 'eGoogly', mouth: 'mMuzzle', pat: null, ex: 'ex-belly',
-    segRx: 26, armRx: 20, twist: false, sfx: ['growl', 'giggle'], sing: 'o', pitch: 1.1
+    head: 'hEars', face: 'round', eyes: 'eGoogly', mouth: 'mMuzzle', pat: null, ex: 'ex-belly', base: 'pot',
+    segW: 80, segH: 44, armW: 46, armH: 52, headK: 1.06, segRx: 30, armRx: 23, twist: false,
+    sfx: ['growl', 'laugh', 'huff'], poke: 'shrink', tone: 1.05, rate: .9, sing: 'o'
   },
   {
-    name: 'Robot', body: ['#8f9bb8', '#d5def0', '#6b7796'], acc: ['#ff5c8a', '#ffa3c0', '#c93b68'],
+    name: 'Robot', mood: 'komik', body: ['#8f9bb8', '#d5def0', '#6b7796'], acc: ['#ff5c8a', '#ffa3c0', '#c93b68'],
     pot: ['#3a4463', '#6a769a', '#252c45'], rim: '#9aa6c8', line: '#3a4463', accLine: '#3a4463',
-    head: 'hAnt', face: 'square', eyes: 'eSquare', mouth: 'mGrill', pat: null, ex: 'ex-bolt',
-    segRx: 7, armRx: 7, twist: false, sfx: ['beep', 'zap'], sing: 'i', pitch: 1.5
+    head: 'hAnt', face: 'square', eyes: 'eSquare', mouth: 'mGrill', pat: null, ex: 'ex-bolt', base: 'blower',
+    segW: 44, segH: 56, armW: 30, armH: 62, headK: .95, segRx: 7, armRx: 7, twist: false,
+    sfx: ['beep', 'zap', 'titter'], poke: 'shake', tone: 1.55, rate: 1.1, sing: 'i'
   },
   {
-    name: 'Ejder', body: ['#7d3fb8', '#b57af0', '#5f2a91'], acc: ['#ffd66b', '#ffe9a8', '#d9a323'],
+    name: 'Ejder', mood: 'huysuz', body: ['#7d3fb8', '#b57af0', '#5f2a91'], acc: ['#ffd66b', '#ffe9a8', '#d9a323'],
     pot: ['#3ac0a0', '#7fe8d0', '#218f74'], rim: '#a8f0dc', line: '#3a1858', accLine: '#8a6410',
-    head: 'hHorns', face: 'round', eyes: 'eGoogly', mouth: null, pat: 'patDots', ex: 'ex-back',
-    segRx: 20, armRx: 18, twist: false, sfx: ['roar', 'boing'], sing: 'e', pitch: .95
+    head: 'hHorns', face: 'round', eyes: 'eGoogly', mouth: null, pat: 'patDots', ex: 'ex-back', base: 'pot',
+    segW: 64, segH: 50, armW: 46, armH: 58, headK: 1.04, segRx: 20, armRx: 18, twist: false,
+    sfx: ['roar', 'huff', 'growl'], poke: 'spin', tone: .95, rate: .95, sing: 'e'
+  },
+  {
+    name: 'Uzun', mood: 'çılgın', body: ['#f27022', '#ffa25c', '#c8500f'], acc: ['#2a2f45', '#4d5573', '#1a1e30'],
+    pot: ['#3a4463', '#6a769a', '#252c45'], rim: '#9aa6c8', line: '#7a3208', accLine: '#1a1e30',
+    head: null, face: 'round', eyes: 'eGoogly', mouth: null, pat: null, ex: null, base: 'blower',
+    segW: 30, segH: 72, armW: 22, armH: 76, headK: .74, segRx: 15, armRx: 11, twist: false,
+    sfx: ['raspberry', 'boing', 'squeal'], poke: 'flail', tone: 1.25, rate: 1.15, sing: 'a'
+  },
+  {
+    name: 'Minik', mood: 'utangaç', body: ['#e34d8c', '#ff9ac2', '#b02f68'], acc: ['#ffd66b', '#fff0b8', '#d9a323'],
+    pot: ['#5566d8', '#8f9bf0', '#3543a8'], rim: '#c0c9ff', line: '#7a1f47', accLine: '#8a6410',
+    head: null, face: 'round', eyes: 'eGoogly', mouth: null, pat: 'patDots', ex: 'ex-belly', base: 'pot',
+    segW: 88, segH: 34, armW: 40, armH: 42, headK: 1.14, segRx: 17, armRx: 20, twist: false,
+    sfx: ['titter', 'giggle', 'pop'], poke: 'shy', tone: 1.65, rate: 1.05, sing: 'u'
   }
 ];
 let charIx = 0;
@@ -475,14 +523,34 @@ function applyChar(i) {
   ['patQuilt', 'patDots'].forEach(p => show('#' + p, p === c.pat));
   ['ex-spike', 'ex-bolt', 'ex-back', 'ex-belly'].forEach(x => show('.' + x, x === c.ex));
   show('.twist', c.twist); show('.side', c.twist); show('.stitch', c.face === 'round');
-  document.querySelectorAll('.seg').forEach(n => n.setAttribute('rx', c.segRx));
-  document.querySelectorAll('.arm').forEach(n => n.setAttribute('rx', c.armRx));
+  show('#pot', c.base === 'pot'); show('#baseBlower', c.base === 'blower');
+
+  // gövde oranları: şişman / ince / uzun siluetler
+  const w = c.segW, hh = c.segH;
+  document.querySelectorAll('.seg').forEach(n => {
+    n.setAttribute('x', -w / 2); n.setAttribute('width', w);
+    n.setAttribute('y', -hh - 4); n.setAttribute('height', hh + 10); n.setAttribute('rx', c.segRx);
+  });
+  const s3 = el('seg3');
+  s3.setAttribute('x', -(w + 12) / 2); s3.setAttribute('width', w + 12);
+  s3.setAttribute('y', -hh - 12); s3.setAttribute('height', hh + 20);
+  s3.setAttribute('rx', Math.min(c.segRx + 5, (w + 12) / 2));
+  el('j2').setAttribute('transform', 'translate(0,' + (-hh) + ')');
+  el('j3').setAttribute('transform', 'translate(0,' + (-hh) + ')');
+  el('jaL').setAttribute('transform', 'translate(' + (-(w / 2) - 2) + ',' + (-hh * .55) + ')');
+  el('jaR').setAttribute('transform', 'translate(' + ((w / 2) + 2) + ',' + (-hh * .55) + ')');
+  el('jh').setAttribute('transform', 'translate(0,' + (-hh - 2) + ')');
+  el('headK').setAttribute('transform', 'scale(' + c.headK + ')');
+  document.querySelectorAll('.arm').forEach(n => {
+    n.setAttribute('x', -c.armW / 2); n.setAttribute('width', c.armW);
+    n.setAttribute('y', -c.armH); n.setAttribute('height', c.armH + 8); n.setAttribute('rx', c.armRx);
+  });
   document.querySelectorAll('.limb').forEach(n => n.setAttribute('stroke', c.line));
   document.querySelectorAll('.ex-belly').forEach(n => n.setAttribute('stroke', c.line));
   const hs = el('hoodShape'); if (hs) hs.setAttribute('stroke', c.accLine);
   el('who').textContent = c.name;
   el('title').innerHTML = 'Dans Eden <span>' + c.name + '</span>';
-  el('tone').value = String(c.pitch);
+  el('tone').value = String(c.tone); el('speed').value = String(c.rate);
   try { localStorage.setItem('kaktus-char', String(i % CHARS.length)); } catch (e) { }
 }
 const curChar = () => CHARS[charIx % CHARS.length];
@@ -867,6 +935,32 @@ function sfx(name) {
     o.frequency.setValueAtTime(1600, t); o.frequency.exponentialRampToValueAtTime(140, t + .22);
     const g = ac.createGain(); g.gain.setValueAtTime(.3, t); g.gain.exponentialRampToValueAtTime(.001, t + .24);
     const ws = shaper(8); o.connect(ws); ws.connect(g); g.connect(out); o.start(t); o.stop(t + .26);
+  } else if (name === 'laugh') {
+    const outG = ac.createGain(); outG.gain.value = .45; outG.connect(master);
+    const base = 240 * (curChar().tone || 1.2), n = 3 + Math.floor(Math.random() * 2);
+    for (let i = 0; i < n; i++) voiceNote(t + .02 + i * .155, .11, base * Math.pow(.93, i), i % 2 ? 'a' : 'e', outG, null);
+  } else if (name === 'titter') {
+    const outG = ac.createGain(); outG.gain.value = .4; outG.connect(master);
+    const base = 420 * (curChar().tone || 1.4);
+    for (let i = 0; i < 5; i++) voiceNote(t + .02 + i * .095, .07, base * (i % 2 ? 1.08 : 1), 'i', outG, null);
+  } else if (name === 'raspberry') {
+    const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = 78;
+    const am = ac.createGain(); am.gain.value = .5;
+    const lfo = ac.createOscillator(); lfo.type = 'square'; lfo.frequency.value = 33;
+    const ld = ac.createGain(); ld.gain.value = .45; lfo.connect(ld); ld.connect(am.gain); lfo.start(t); lfo.stop(t + .45);
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1100;
+    const g = ac.createGain(); g.gain.setValueAtTime(.5, t); g.gain.setValueAtTime(.5, t + .3); g.gain.exponentialRampToValueAtTime(.001, t + .45);
+    o.connect(am); am.connect(lp); lp.connect(g); g.connect(out); o.start(t); o.stop(t + .46);
+  } else if (name === 'huff') {
+    const n = noiseSrc(.3), lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900;
+    const g = ac.createGain(); g.gain.setValueAtTime(.001, t); g.gain.linearRampToValueAtTime(.4, t + .05); g.gain.exponentialRampToValueAtTime(.001, t + .3);
+    n.connect(lp); lp.connect(g); g.connect(out); n.start(t);
+    tone('sine', 150, 95, .28, .3);
+  } else if (name === 'squeal') {
+    const o = ac.createOscillator(); o.type = 'triangle';
+    o.frequency.setValueAtTime(500, t); o.frequency.exponentialRampToValueAtTime(2200, t + .16); o.frequency.exponentialRampToValueAtTime(1400, t + .3);
+    const g = ac.createGain(); g.gain.setValueAtTime(.35, t); g.gain.exponentialRampToValueAtTime(.001, t + .32);
+    o.connect(g); g.connect(out); o.start(t); o.stop(t + .34);
   } else if (name === 'drum') {
     tone('sine', 190, 48, .2, .7);
     const n = noiseSrc(.08), hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1800;
@@ -879,14 +973,17 @@ function sfx(name) {
     n.connect(bp); bp.connect(g); g.connect(out); n.start(t);
   }
 }
+let lastSfx = '';
 function doPoke(vx, vy) {
+  const c = curChar();
   let part = 'pot';
   if (vy < 280) part = 'head';
   else if (vy < 440) part = Math.abs(vx - 200) > 55 ? 'arm' : 'head';
-  poke = { t: 0, d: .9, part, side: vx < 200 ? -1 : 1 };
-  const set = curChar().sfx;
-  sfx(part === 'pot' ? one(['pop', 'drum']) : one(set));
-  if (navigator.vibrate) { try { navigator.vibrate(18); } catch (e) { } }
+  poke = { t: 0, d: 1, part, side: vx < 200 ? -1 : 1, style: c.poke };
+  let pool = part === 'pot' ? ['pop', 'drum'] : c.sfx.slice();
+  if (pool.length > 1) pool = pool.filter(s => s !== lastSfx);
+  const pick = one(pool); lastSfx = pick; sfx(pick);
+  if (navigator.vibrate) { try { navigator.vibrate(part === 'head' ? 22 : 14); } catch (e) { } }
 }
 
 /* ================= VAD ================= */
