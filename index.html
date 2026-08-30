@@ -381,10 +381,15 @@ function pokeTargets(T) {
   } else if (st === 'shrink') {                // uykucu: irkilip büzülür
     T.sy.t = 1 - .12 * m; T.sx.t = 1 + .08 * m; T.bobY.t += 8 * m;
     T.armL.t += 40 * m; T.armR.t -= 40 * m; T.eye.t = 1 - .35 * m; T.mouth.t = Math.max(T.mouth.t, .35 * m);
-  } else if (st === 'shake') {                 // komik robot: kısa devre yapar
-    T.rootRot.t += 9 * Math.sin(f * 60) * m; T.head.t += 14 * Math.sin(f * 52) * m;
-    T.armL.t -= 30 * Math.sin(f * 44) * m; T.armR.t += 30 * Math.sin(f * 44) * m;
-    T.eye.t = 1 + .5 * Math.abs(Math.sin(f * 30)) * m;
+  } else if (st === 'shake') {                 // komik robot: kademeli, mekanik sarsıntı
+    const q = v => Math.round(v * 3) / 3;       // hareketi basamaklara böl: robotik görünsün
+    T.rootRot.t += 10 * q(Math.sin(f * 34)) * m;
+    T.head.t += 16 * q(Math.sin(f * 26)) * m;
+    T.s2.t += 9 * q(Math.sin(f * 20 + 1)) * m;
+    T.armL.t -= 45 * q(Math.sin(f * 17)) * m; T.armR.t += 45 * q(Math.sin(f * 17 + 1.6)) * m;
+    T.armLF.t -= 30 * q(Math.sin(f * 23)) * m; T.armRF.t += 30 * q(Math.sin(f * 23)) * m;
+    T.eye.t = 1 + .55 * Math.round(Math.abs(Math.sin(f * 15))) * m;
+    T.bobY.t -= 8 * Math.round(Math.abs(Math.sin(f * 11))) * m;
   } else if (st === 'spin') {                  // huysuz: sinirlenip savurur
     T.rootRot.t += 16 * m * Math.sin(f * 9); T.s2.t += 14 * e; T.head.t -= 16 * m;
     T.armL.t -= 70 * m; T.armR.t += 70 * m; T.mouth.t = Math.max(T.mouth.t, .8 * m); T.eye.t = 1 - .2 * m;
@@ -466,42 +471,42 @@ const CHARS = [
     pot: ['#2ea6c2', '#6fe0f0', '#1c88a4'], rim: '#7fe6f4', line: '#15532f', accLine: '#0e5f72',
     head: 'hHood', face: 'round', eyes: 'eLens', mouth: null, pat: 'patQuilt', ex: 'ex-spike', base: 'pot',
     segW: 50, segH: 52, armW: 40, armH: 66, headK: 1, segRx: 24, armRx: 20, twist: true,
-    sfx: ['giggle', 'squeak', 'laugh'], poke: 'bounce', tone: 1.3, rate: 1, sing: 'a'
+    sHead: ['giggle', 'laugh'], sArm: ['boing', 'squeak'], sBase: ['pop', 'drum'], poke: 'bounce', tone: 1.3, rate: 1, sing: 'a'
   },
   {
     name: 'Ayıcık', mood: 'uykucu', body: ['#a9713f', '#e0a86b', '#8a5a2e'], acc: ['#ff9fc0', '#ffc9dc', '#e07098'],
     pot: ['#ff8f5e', '#ffc19b', '#d4642f'], rim: '#ffd8bd', line: '#4a2a12', accLine: '#a04068',
     head: 'hEars', face: 'round', eyes: 'eGoogly', mouth: 'mMuzzle', pat: null, ex: 'ex-belly', base: 'pot',
     segW: 80, segH: 44, armW: 46, armH: 52, headK: 1.06, segRx: 30, armRx: 23, twist: false,
-    sfx: ['growl', 'laugh', 'huff'], poke: 'shrink', tone: 1.05, rate: .9, sing: 'o'
+    sHead: ['growl', 'laugh'], sArm: ['huff', 'boing'], sBase: ['thud', 'drum'], poke: 'shrink', tone: 1.05, rate: .9, sing: 'o'
   },
   {
     name: 'Robot', mood: 'komik', body: ['#8f9bb8', '#d5def0', '#6b7796'], acc: ['#ff5c8a', '#ffa3c0', '#c93b68'],
     pot: ['#3a4463', '#6a769a', '#252c45'], rim: '#9aa6c8', line: '#3a4463', accLine: '#3a4463',
     head: 'hAnt', face: 'square', eyes: 'eSquare', mouth: 'mGrill', pat: null, ex: 'ex-bolt', base: 'blower',
     segW: 44, segH: 56, armW: 30, armH: 62, headK: .95, segRx: 7, armRx: 7, twist: false,
-    sfx: ['beep', 'zap', 'titter'], poke: 'shake', tone: 1.55, rate: 1.1, sing: 'i'
+    sHead: ['beep', 'glitch'], sArm: ['servo', 'zap'], sBase: ['clank', 'servo'], poke: 'shake', tone: 1.55, rate: 1.1, sing: 'i'
   },
   {
     name: 'Ejder', mood: 'huysuz', body: ['#7d3fb8', '#b57af0', '#5f2a91'], acc: ['#ffd66b', '#ffe9a8', '#d9a323'],
     pot: ['#3ac0a0', '#7fe8d0', '#218f74'], rim: '#a8f0dc', line: '#3a1858', accLine: '#8a6410',
     head: 'hHorns', face: 'round', eyes: 'eGoogly', mouth: null, pat: 'patDots', ex: 'ex-back', base: 'pot',
     segW: 64, segH: 50, armW: 46, armH: 58, headK: 1.04, segRx: 20, armRx: 18, twist: false,
-    sfx: ['roar', 'huff', 'growl'], poke: 'spin', tone: .95, rate: .95, sing: 'e'
+    sHead: ['roar', 'grumble'], sArm: ['huff', 'growl'], sBase: ['thud', 'grumble'], poke: 'spin', tone: .95, rate: .95, sing: 'e'
   },
   {
     name: 'Uzun', mood: 'çılgın', body: ['#f27022', '#ffa25c', '#c8500f'], acc: ['#2a2f45', '#4d5573', '#1a1e30'],
     pot: ['#3a4463', '#6a769a', '#252c45'], rim: '#9aa6c8', line: '#7a3208', accLine: '#1a1e30',
     head: null, face: 'round', eyes: 'eGoogly', mouth: null, pat: null, ex: null, base: 'blower',
     segW: 30, segH: 72, armW: 22, armH: 76, headK: .74, segRx: 15, armRx: 11, twist: false,
-    sfx: ['raspberry', 'boing', 'squeal'], poke: 'flail', tone: 1.25, rate: 1.15, sing: 'a'
+    sHead: ['squeal', 'raspberry'], sArm: ['flap', 'boing'], sBase: ['fanwhir', 'flap'], poke: 'flail', tone: 1.25, rate: 1.15, sing: 'a'
   },
   {
     name: 'Minik', mood: 'utangaç', body: ['#e34d8c', '#ff9ac2', '#b02f68'], acc: ['#ffd66b', '#fff0b8', '#d9a323'],
     pot: ['#5566d8', '#8f9bf0', '#3543a8'], rim: '#c0c9ff', line: '#7a1f47', accLine: '#8a6410',
     head: null, face: 'round', eyes: 'eGoogly', mouth: null, pat: 'patDots', ex: 'ex-belly', base: 'pot',
     segW: 88, segH: 34, armW: 40, armH: 42, headK: 1.14, segRx: 17, armRx: 20, twist: false,
-    sfx: ['titter', 'giggle', 'pop'], poke: 'shy', tone: 1.65, rate: 1.05, sing: 'u'
+    sHead: ['titter', 'giggle'], sArm: ['squeak', 'pop'], sBase: ['pop', 'titter'], poke: 'shy', tone: 1.65, rate: 1.05, sing: 'u'
   }
 ];
 let charIx = 0;
@@ -966,6 +971,57 @@ function sfx(name) {
     const n = noiseSrc(.08), hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1800;
     const ng = ac.createGain(); ng.gain.setValueAtTime(.12, t); ng.gain.exponentialRampToValueAtTime(.001, t + .08);
     n.connect(hp); hp.connect(ng); ng.connect(out); n.start(t);
+  } else if (name === 'servo') {
+    const o = ac.createOscillator(); o.type = 'sawtooth';
+    o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(520, t + .13); o.frequency.exponentialRampToValueAtTime(190, t + .26);
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2200; lp.Q.value = 3;
+    const g = ac.createGain(); g.gain.setValueAtTime(.001, t); g.gain.linearRampToValueAtTime(.3, t + .02); g.gain.exponentialRampToValueAtTime(.001, t + .27);
+    o.connect(lp); lp.connect(g); g.connect(out); o.start(t); o.stop(t + .28);
+    const n = noiseSrc(.26), nh = ac.createBiquadFilter(); nh.type = 'bandpass'; nh.frequency.value = 3200; nh.Q.value = 2;
+    const ng = ac.createGain(); ng.gain.setValueAtTime(.07, t); ng.gain.exponentialRampToValueAtTime(.001, t + .26);
+    n.connect(nh); nh.connect(ng); ng.connect(out); n.start(t);
+  } else if (name === 'clank') {
+    [1140, 1730, 2410, 3120].forEach((f, i) => {
+      const o = ac.createOscillator(); o.type = 'sine'; o.frequency.value = f;
+      const g = ac.createGain(); g.gain.setValueAtTime(.22 / (i + 1), t); g.gain.exponentialRampToValueAtTime(.001, t + .22 - i * .03);
+      o.connect(g); g.connect(out); o.start(t); o.stop(t + .24);
+    });
+    const n = noiseSrc(.06), bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2600; bp.Q.value = 1.2;
+    const ng = ac.createGain(); ng.gain.setValueAtTime(.25, t); ng.gain.exponentialRampToValueAtTime(.001, t + .06);
+    n.connect(bp); bp.connect(ng); ng.connect(out); n.start(t);
+  } else if (name === 'glitch') {
+    for (let i = 0; i < 6; i++) {
+      const at = t + i * .042, o = ac.createOscillator(); o.type = 'square';
+      o.frequency.value = [320, 660, 990, 1480, 2200][Math.floor(Math.random() * 5)];
+      const g = ac.createGain(); g.gain.setValueAtTime(.22, at); g.gain.setValueAtTime(.0001, at + .028);
+      o.connect(g); g.connect(out); o.start(at); o.stop(at + .03);
+    }
+  } else if (name === 'thud') {
+    tone('sine', 105, 42, .26, .75);
+    const n = noiseSrc(.12), lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 500;
+    const ng = ac.createGain(); ng.gain.setValueAtTime(.22, t); ng.gain.exponentialRampToValueAtTime(.001, t + .12);
+    n.connect(lp); lp.connect(ng); ng.connect(out); n.start(t);
+  } else if (name === 'flap') {
+    [0, .085, .175].forEach((off, i) => {
+      const n = noiseSrc(.09), bp = ac.createBiquadFilter(); bp.type = 'bandpass';
+      bp.frequency.value = 900 + i * 350; bp.Q.value = 1.6;
+      const g = ac.createGain(); g.gain.setValueAtTime(.001, t + off);
+      g.gain.linearRampToValueAtTime(.32, t + off + .012); g.gain.exponentialRampToValueAtTime(.001, t + off + .08);
+      n.connect(bp); bp.connect(g); g.connect(out); n.start(t + off);
+    });
+  } else if (name === 'grumble') {
+    const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = 72;
+    const am = ac.createGain(); am.gain.value = .55;
+    const lfo = ac.createOscillator(); lfo.frequency.value = 11;
+    const ld = ac.createGain(); ld.gain.value = .4; lfo.connect(ld); ld.connect(am.gain); lfo.start(t); lfo.stop(t + .55);
+    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 520;
+    const g = ac.createGain(); g.gain.setValueAtTime(.5, t); g.gain.setValueAtTime(.45, t + .35); g.gain.exponentialRampToValueAtTime(.001, t + .55);
+    o.connect(am); am.connect(lp); lp.connect(g); g.connect(out); o.start(t); o.stop(t + .56);
+  } else if (name === 'fanwhir') {
+    const n = noiseSrc(.55), bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 4;
+    bp.frequency.setValueAtTime(300, t); bp.frequency.exponentialRampToValueAtTime(1300, t + .25); bp.frequency.exponentialRampToValueAtTime(420, t + .55);
+    const g = ac.createGain(); g.gain.setValueAtTime(.001, t); g.gain.linearRampToValueAtTime(.4, t + .1); g.gain.exponentialRampToValueAtTime(.001, t + .55);
+    n.connect(bp); bp.connect(g); g.connect(out); n.start(t);
   } else if (name === 'whoosh') {
     const n = noiseSrc(.4), bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.2;
     bp.frequency.setValueAtTime(400, t); bp.frequency.exponentialRampToValueAtTime(3600, t + .3);
@@ -980,7 +1036,7 @@ function doPoke(vx, vy) {
   if (vy < 280) part = 'head';
   else if (vy < 440) part = Math.abs(vx - 200) > 55 ? 'arm' : 'head';
   poke = { t: 0, d: 1, part, side: vx < 200 ? -1 : 1, style: c.poke };
-  let pool = part === 'pot' ? ['pop', 'drum'] : c.sfx.slice();
+  let pool = (part === 'head' ? c.sHead : part === 'arm' ? c.sArm : c.sBase).slice();
   if (pool.length > 1) pool = pool.filter(s => s !== lastSfx);
   const pick = one(pool); lastSfx = pick; sfx(pick);
   if (navigator.vibrate) { try { navigator.vibrate(part === 'head' ? 22 : 14); } catch (e) { } }
