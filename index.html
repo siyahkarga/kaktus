@@ -38,6 +38,12 @@
   .dot.busy{background:var(--sun)}
   @keyframes pulse{50%{opacity:.25}}
   .hint{position:absolute;left:0;right:0;bottom:26px;text-align:center;font-size:12px;color:rgba(255,255,255,.35);pointer-events:none}
+  .notes{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .nf{position:absolute;bottom:24%;font-size:23px;opacity:0;animation:fly 1.7s ease-out forwards;text-shadow:0 2px 7px rgba(0,0,0,.45)}
+  @keyframes fly{0%{opacity:0;transform:translateY(0) scale(.5)}18%{opacity:1}100%{opacity:0;transform:translateY(-150px) scale(1.2) rotate(var(--r))}}
+  .song{position:absolute;top:46px;left:0;right:0;text-align:center;font-size:13px;font-weight:700;color:var(--sun);
+    pointer-events:none;opacity:0;transition:opacity .3s}
+  .song.on{opacity:1}
   .meter{position:absolute;left:12px;right:12px;bottom:10px;height:8px;border-radius:99px;background:rgba(0,0,0,.4);overflow:hidden;display:none;pointer-events:none}
   .meter.on{display:block}
   .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--aqua),var(--hot))}
@@ -63,7 +69,12 @@
 
   .pair{display:flex;gap:9px;margin-top:10px}
   .pair button{flex:1;border:2px solid var(--line);background:var(--panel);color:var(--cream);font:inherit;font-weight:800;
-    font-size:18px;padding:15px 6px;border-radius:20px;cursor:pointer}
+    font-size:18px;padding:15px 6px;border-radius:20px;cursor:pointer;transition:transform .08s,background .15s,border-color .15s}
+  .pair button:active{transform:scale(.95)}
+  .pair button.on{background:var(--sun);border-color:var(--sun);color:#3a2a05}
+  .modes button:active,.go:active{filter:brightness(1.08)}
+  .tap{animation:tapPulse .32s ease-out}
+  @keyframes tapPulse{0%{transform:scale(1)}35%{transform:scale(.93)}100%{transform:scale(1)}}
 
   .talk{display:flex;flex-direction:column;gap:8px;margin-top:12px}
   .bubble{padding:12px 15px;border-radius:16px;font-size:16px;line-height:1.4;max-width:90%;-webkit-user-select:text;user-select:text}
@@ -256,13 +267,15 @@
     </style>
   </svg>
 
+  <div class="notes" id="noteLayer"></div>
+  <div class="song" id="songName"></div>
   <div class="hint" id="hint">dürt · sağa sola kaydır</div>
   <div class="meter" id="meter"><i id="meterFill"></i></div>
 </div>
 
 <div class="modes" role="group" aria-label="Oyun modu">
   <button id="mParrot" aria-pressed="true"><b>🦜</b>Taklit</button>
-  <button id="mSmart" aria-pressed="false"><b>🧠</b>Sohbet</button>
+  <button id="mSmart" aria-pressed="false"><b>💬</b>Sohbet</button>
 </div>
 
 <button class="go" id="go">▶ BAŞLA</button>
@@ -277,8 +290,13 @@
 <div class="talk" id="talk"></div>
 
 <div class="settings" id="settings">
-  <p>Kaktüsün sesini buradan ayarla. Cevaplar telefonun içinden geliyor, internet gerekmez.</p>
+  <p id="setInfo"></p>
   <select id="voice" aria-label="Konuşma sesi"></select>
+  <select id="lang" aria-label="Dil"></select>
+  <select id="voiceMode" aria-label="Konuşma sesi kaynağı">
+    <option id="vCharOpt" value="karakter" selected></option>
+    <option id="vPhoneOpt" value="telefon"></option>
+  </select>
   <select id="tone" aria-label="Ses tonu">
     <option value="1">Ton: doğal</option><option value="1.3" selected>Ton: tatlı</option><option value="0.85">Ton: kalın</option>
   </select>
@@ -287,7 +305,7 @@
   </select>
   <button id="testVoice">🔊 Sesi dene</button>
   <select id="brain">
-    <option value="offline" selected>Beyin: kaktüsün kendi cevapları</option>
+    <option id="brainOffOpt" value="offline" selected></option>
     <option value="auto">Beyin: otomatik</option>
     <option value="claude">Claude (API anahtarı)</option>
     <option value="ollama">Ollama (yerel ağ)</option>
@@ -325,7 +343,8 @@ function setState(s, label) {
   if (s === 'talking' && state !== 'talking') talkSeed = rnd(0, 9);
   state = s;
   el('dot').className = 'dot' + (s === 'listening' ? ' live' : (s === 'thinking' ? ' busy' : ''));
-  el('status').textContent = label || ({ idle: 'Uyukluyor', listening: 'Seni dinliyorum', thinking: 'Düşünüyor', talking: 'Konuşuyor', dance: 'Dans ediyor', song: 'Şarkı söylüyor' })[s] || '';
+  const ix = { idle: 0, listening: 1, thinking: 2, talking: 3, dance: 4, song: 5 }[s];
+  el('status').textContent = label || (L && L.st[ix]) || '';
 }
 let danceId = 0, danceSpd = 5.2, danceSeed = 0, talkSeed = 0, beat = 0, songBpm = 120;
 function newDance() { danceId = Math.floor(Math.random() * 5); danceSpd = rnd(4.2, 6.4); danceSeed = rnd(0, 9); }
@@ -464,45 +483,214 @@ function apply() {
   N.pupils.setAttribute('transform', 'translate(' + C.pupX.x.toFixed(2) + ',' + C.pupY.x.toFixed(2) + ')');
 }
 
+
+/* ================= DİL ================= */
+const I18N = {
+  en: { locale: 'en-US', dancing: 'Dancing', mimic: 'Mimic', chat: 'Chat', start: '▶ START', stop: '⏸ STOP',
+    dance: '💃 Dance', song: '🎵 Song', hint: 'poke · swipe to change', songWord: 'Song',
+    st: ['Sleeping', 'Listening', 'Thinking', 'Talking', 'Dancing', 'Singing'],
+    fx: ['Chipmunk', 'Giant', 'Robot', 'Cave', 'Alien', 'Radio', 'Choir', 'Underwater', 'Random'],
+    names: ['Cactus', 'Bear', 'Robot', 'Dragon', 'Lanky', 'Tiny'],
+    setInfo: 'Set the toy voice here. Answers come from the phone, no internet needed.',
+    toneChar: 'Tone: character', speedChar: 'Speed: character', vChar: 'Voice: character', vPhone: 'Voice: phone reader',
+    test: '🔊 Test voice', brainOff: 'Brain: built-in answers', langAuto: 'Language: automatic',
+    off: { hi: ['Hi there! I was waiting for you.', 'Hello! I feel great today.'], how: ['I feel wonderful!', 'Pretty good, a little thirsty.'],
+      q: ['I do not know, but nice question.', 'Hmm, what do you think?', 'Maybe yes, maybe we should dance.'],
+      cmd: ['Okay, doing it now!', 'Watch me!'], name: ['My name is {n}. What is yours?'], sing: ['Listen, here it comes!'],
+      gen: ['You said {w}. I like that.', 'Wow, {w}! Say it again.', '{w}? I was thinking the same.'] } },
+  tr: { locale: 'tr-TR', dancing: 'Dans Eden', mimic: 'Taklit', chat: 'Sohbet', start: '▶ BAŞLA', stop: '⏸ DUR',
+    dance: '💃 Dans', song: '🎵 Şarkı', hint: 'dürt · sağa sola kaydır', songWord: 'Şarkı',
+    st: ['Uyukluyor', 'Seni dinliyorum', 'Düşünüyor', 'Konuşuyor', 'Dans ediyor', 'Şarkı söylüyor'],
+    fx: ['Sincap', 'Dev', 'Robot', 'Mağara', 'Uzaylı', 'Telsiz', 'Koro', 'Su altı', 'Karışık'],
+    names: ['Kaktüs', 'Ayıcık', 'Robot', 'Ejder', 'Uzun', 'Minik'],
+    setInfo: 'Oyuncağın sesini buradan ayarla. Cevaplar telefonun içinden geliyor, internet gerekmez.',
+    toneChar: 'Ton: karakterin kendi tonu', speedChar: 'Hız: karakterin hızı', vChar: 'Ses: karakterin kendi sesi', vPhone: 'Ses: telefonun okuyucusu',
+    test: '🔊 Sesi dene', brainOff: 'Beyin: kendi cevapları', langAuto: 'Dil: otomatik',
+    off: { hi: ['Selam! Seni bekliyordum.', 'Merhaba! Bugün çok neşeliyim.'], how: ['Keyfim yerinde, hoplayasım var.', 'Çok iyiyim, biraz susadım ama olsun.'],
+      q: ['Bilmiyorum ama çok güzel bir soru.', 'Hmm, sen ne dersin?', 'Belki evet, belki dans etmeliyiz.'],
+      cmd: ['Tamam, hemen yapıyorum!', 'İzle beni!'], name: ['Benim adım {n}. Seninki ne?'], sing: ['Hemen söylüyorum, dinle!'],
+      gen: ['{w} dedin, çok hoşuma gitti.', 'Vay, {w}! Bir daha söyle.', '{w} mi? Ben de onu düşünüyordum.'] } },
+  de: { locale: 'de-DE', dancing: 'Tanzender', mimic: 'Nachplappern', chat: 'Plaudern', start: '▶ START', stop: '⏸ STOPP',
+    dance: '💃 Tanzen', song: '🎵 Lied', hint: 'antippen · wischen zum Wechseln', songWord: 'Lied',
+    st: ['Schläft', 'Hört zu', 'Denkt nach', 'Spricht', 'Tanzt', 'Singt'],
+    fx: ['Eichhörnchen', 'Riese', 'Roboter', 'Höhle', 'Alien', 'Funk', 'Chor', 'Unter Wasser', 'Zufall'],
+    names: ['Kaktus', 'Bärchen', 'Roboter', 'Drache', 'Langer', 'Kleiner'],
+    setInfo: 'Stimme hier einstellen. Antworten kommen vom Handy, kein Internet nötig.',
+    toneChar: 'Ton: Figur', speedChar: 'Tempo: Figur', vChar: 'Stimme: eigene Stimme', vPhone: 'Stimme: Handy-Vorleser',
+    test: '🔊 Stimme testen', brainOff: 'Gehirn: eigene Antworten', langAuto: 'Sprache: automatisch',
+    off: { hi: ['Hallo! Ich habe auf dich gewartet.', 'Hi! Mir geht es heute super.'], how: ['Mir geht es prima!', 'Ganz gut, nur etwas durstig.'],
+      q: ['Ich weiß es nicht, aber gute Frage.', 'Hmm, was meinst du?', 'Vielleicht ja, vielleicht tanzen wir.'],
+      cmd: ['Okay, mache ich sofort!', 'Schau mir zu!'], name: ['Ich heiße {n}. Und du?'], sing: ['Hör zu, es geht los!'],
+      gen: ['Du hast {w} gesagt. Das mag ich.', 'Wow, {w}! Sag es nochmal.', '{w}? Daran dachte ich auch.'] } },
+  fr: { locale: 'fr-FR', dancing: 'Le danseur', mimic: 'Imiter', chat: 'Discuter', start: '▶ DÉMARRER', stop: '⏸ STOP',
+    dance: '💃 Danser', song: '🎵 Chanson', hint: 'touche · glisse pour changer', songWord: 'Chanson',
+    st: ['Il dort', 'Il écoute', 'Il réfléchit', 'Il parle', 'Il danse', 'Il chante'],
+    fx: ['Écureuil', 'Géant', 'Robot', 'Grotte', 'Alien', 'Radio', 'Chorale', 'Sous l\'eau', 'Au hasard'],
+    names: ['Cactus', 'Nounours', 'Robot', 'Dragon', 'Grand', 'Petit'],
+    setInfo: 'Règle la voix ici. Les réponses viennent du téléphone, sans internet.',
+    toneChar: 'Ton : personnage', speedChar: 'Vitesse : personnage', vChar: 'Voix : sa propre voix', vPhone: 'Voix : lecteur du téléphone',
+    test: '🔊 Tester la voix', brainOff: 'Cerveau : réponses intégrées', langAuto: 'Langue : automatique',
+    off: { hi: ['Salut ! Je t\'attendais.', 'Bonjour ! Je vais très bien aujourd\'hui.'], how: ['Je vais très bien !', 'Ça va, j\'ai un peu soif.'],
+      q: ['Je ne sais pas, mais bonne question.', 'Hmm, et toi ?', 'Peut-être, ou alors dansons.'],
+      cmd: ['D\'accord, tout de suite !', 'Regarde-moi !'], name: ['Je m\'appelle {n}. Et toi ?'], sing: ['Écoute, ça commence !'],
+      gen: ['Tu as dit {w}. J\'aime ça.', 'Waouh, {w} ! Répète.', '{w} ? J\'y pensais aussi.'] } },
+  es: { locale: 'es-ES', dancing: 'El bailarín', mimic: 'Imitar', chat: 'Charlar', start: '▶ EMPEZAR', stop: '⏸ PARAR',
+    dance: '💃 Bailar', song: '🎵 Canción', hint: 'toca · desliza para cambiar', songWord: 'Canción',
+    st: ['Durmiendo', 'Escuchando', 'Pensando', 'Hablando', 'Bailando', 'Cantando'],
+    fx: ['Ardilla', 'Gigante', 'Robot', 'Cueva', 'Alien', 'Radio', 'Coro', 'Bajo el agua', 'Al azar'],
+    names: ['Cactus', 'Osito', 'Robot', 'Dragón', 'Largo', 'Chiqui'],
+    setInfo: 'Ajusta la voz aquí. Las respuestas salen del teléfono, sin internet.',
+    toneChar: 'Tono: personaje', speedChar: 'Velocidad: personaje', vChar: 'Voz: su propia voz', vPhone: 'Voz: lector del teléfono',
+    test: '🔊 Probar voz', brainOff: 'Cerebro: respuestas propias', langAuto: 'Idioma: automático',
+    off: { hi: ['¡Hola! Te estaba esperando.', '¡Buenas! Hoy estoy muy alegre.'], how: ['¡Estoy genial!', 'Bien, con un poco de sed.'],
+      q: ['No lo sé, pero buena pregunta.', 'Mmm, ¿tú qué dices?', 'Quizá sí, o mejor bailamos.'],
+      cmd: ['¡Vale, ahora mismo!', '¡Mírame!'], name: ['Me llamo {n}. ¿Y tú?'], sing: ['¡Escucha, ahí va!'],
+      gen: ['Dijiste {w}. Me gusta.', '¡Vaya, {w}! Repítelo.', '¿{w}? Pensaba lo mismo.'] } },
+  it: { locale: 'it-IT', dancing: 'Il ballerino', mimic: 'Imita', chat: 'Chiacchiera', start: '▶ AVVIA', stop: '⏸ STOP',
+    dance: '💃 Balla', song: '🎵 Canzone', hint: 'tocca · scorri per cambiare', songWord: 'Canzone',
+    st: ['Dorme', 'Ascolta', 'Pensa', 'Parla', 'Balla', 'Canta'],
+    fx: ['Scoiattolo', 'Gigante', 'Robot', 'Grotta', 'Alieno', 'Radio', 'Coro', 'Sott\'acqua', 'A caso'],
+    names: ['Cactus', 'Orsetto', 'Robot', 'Drago', 'Lungo', 'Piccolo'],
+    setInfo: 'Regola la voce qui. Le risposte arrivano dal telefono, senza internet.',
+    toneChar: 'Tono: personaggio', speedChar: 'Velocità: personaggio', vChar: 'Voce: la sua voce', vPhone: 'Voce: lettore del telefono',
+    test: '🔊 Prova la voce', brainOff: 'Cervello: risposte interne', langAuto: 'Lingua: automatica',
+    off: { hi: ['Ciao! Ti stavo aspettando.', 'Ehi! Oggi sono allegrissimo.'], how: ['Sto benissimo!', 'Bene, ho solo un po\' di sete.'],
+      q: ['Non lo so, ma bella domanda.', 'Mmm, tu che dici?', 'Forse sì, o balliamo.'],
+      cmd: ['Va bene, subito!', 'Guardami!'], name: ['Mi chiamo {n}. E tu?'], sing: ['Ascolta, si parte!'],
+      gen: ['Hai detto {w}. Mi piace.', 'Wow, {w}! Ripetilo.', '{w}? Ci stavo pensando anch\'io.'] } },
+  pt: { locale: 'pt-BR', dancing: 'O dançarino', mimic: 'Imitar', chat: 'Conversar', start: '▶ COMEÇAR', stop: '⏸ PARAR',
+    dance: '💃 Dançar', song: '🎵 Música', hint: 'cutuque · deslize para trocar', songWord: 'Música',
+    st: ['Dormindo', 'Ouvindo', 'Pensando', 'Falando', 'Dançando', 'Cantando'],
+    fx: ['Esquilo', 'Gigante', 'Robô', 'Caverna', 'Alien', 'Rádio', 'Coral', 'Debaixo d\'água', 'Aleatório'],
+    names: ['Cacto', 'Ursinho', 'Robô', 'Dragão', 'Comprido', 'Pequeno'],
+    setInfo: 'Ajuste a voz aqui. As respostas vêm do telefone, sem internet.',
+    toneChar: 'Tom: personagem', speedChar: 'Velocidade: personagem', vChar: 'Voz: a própria voz', vPhone: 'Voz: leitor do telefone',
+    test: '🔊 Testar voz', brainOff: 'Cérebro: respostas próprias', langAuto: 'Idioma: automático',
+    off: { hi: ['Oi! Estava esperando você.', 'Olá! Hoje estou muito alegre.'], how: ['Estou ótimo!', 'Bem, só com um pouco de sede.'],
+      q: ['Não sei, mas boa pergunta.', 'Hmm, o que você acha?', 'Talvez sim, ou vamos dançar.'],
+      cmd: ['Certo, já vou!', 'Olha só!'], name: ['Meu nome é {n}. E o seu?'], sing: ['Escuta, lá vai!'],
+      gen: ['Você disse {w}. Gostei.', 'Uau, {w}! Fala de novo.', '{w}? Eu pensava o mesmo.'] } },
+  ru: { locale: 'ru-RU', dancing: 'Танцующий', mimic: 'Повторюшка', chat: 'Болтать', start: '▶ СТАРТ', stop: '⏸ СТОП',
+    dance: '💃 Танец', song: '🎵 Песня', hint: 'ткни · проведи для смены', songWord: 'Песня',
+    st: ['Спит', 'Слушает', 'Думает', 'Говорит', 'Танцует', 'Поёт'],
+    fx: ['Бурундук', 'Великан', 'Робот', 'Пещера', 'Пришелец', 'Рация', 'Хор', 'Под водой', 'Случайно'],
+    names: ['Кактус', 'Мишка', 'Робот', 'Дракон', 'Длинный', 'Малыш'],
+    setInfo: 'Настрой голос здесь. Ответы берутся из телефона, интернет не нужен.',
+    toneChar: 'Тон: персонаж', speedChar: 'Скорость: персонаж', vChar: 'Голос: собственный', vPhone: 'Голос: чтец телефона',
+    test: '🔊 Проверить голос', brainOff: 'Мозг: свои ответы', langAuto: 'Язык: автоматически',
+    off: { hi: ['Привет! Я тебя ждал.', 'Здравствуй! Сегодня мне весело.'], how: ['У меня всё отлично!', 'Хорошо, только пить хочется.'],
+      q: ['Не знаю, но вопрос хороший.', 'Хмм, а ты как думаешь?', 'Может быть. А может, потанцуем.'],
+      cmd: ['Хорошо, сейчас сделаю!', 'Смотри на меня!'], name: ['Меня зовут {n}. А тебя?'], sing: ['Слушай, начинаю!'],
+      gen: ['Ты сказал {w}. Мне нравится.', 'Ух ты, {w}! Повтори.', '{w}? Я тоже об этом думал.'] } },
+  ar: { locale: 'ar-SA', rtl: 1, dancing: 'الراقص', mimic: 'تقليد', chat: 'دردشة', start: '▶ ابدأ', stop: '⏸ توقف',
+    dance: '💃 ارقص', song: '🎵 أغنية', hint: 'اضغط · اسحب للتبديل', songWord: 'أغنية',
+    st: ['نائم', 'يستمع', 'يفكر', 'يتكلم', 'يرقص', 'يغني'],
+    fx: ['سنجاب', 'عملاق', 'روبوت', 'كهف', 'فضائي', 'لاسلكي', 'جوقة', 'تحت الماء', 'عشوائي'],
+    names: ['صبار', 'دبدوب', 'روبوت', 'تنين', 'طويل', 'صغير'],
+    setInfo: 'اضبط الصوت هنا. الإجابات من الهاتف نفسه، بدون إنترنت.',
+    toneChar: 'النغمة: الشخصية', speedChar: 'السرعة: الشخصية', vChar: 'الصوت: صوته الخاص', vPhone: 'الصوت: قارئ الهاتف',
+    test: '🔊 جرب الصوت', brainOff: 'العقل: إجابات داخلية', langAuto: 'اللغة: تلقائي',
+    off: { hi: ['مرحبا! كنت أنتظرك.', 'أهلا! أنا سعيد اليوم.'], how: ['أنا بخير تماما!', 'بخير، لكني عطشان قليلا.'],
+      q: ['لا أعرف، لكنه سؤال جميل.', 'همم، ما رأيك أنت؟', 'ربما نعم، أو لنرقص.'],
+      cmd: ['حسنا، سأفعل حالا!', 'انظر إلي!'], name: ['اسمي {n}. وأنت؟'], sing: ['استمع، ها هي!'],
+      gen: ['قلت {w}. أعجبني ذلك.', 'واو، {w}! قلها مرة أخرى.', '{w}؟ كنت أفكر بذلك.'] } },
+  hi: { locale: 'hi-IN', dancing: 'नाचने वाला', mimic: 'नकल', chat: 'बातचीत', start: '▶ शुरू', stop: '⏸ रुको',
+    dance: '💃 नाचो', song: '🎵 गाना', hint: 'छुओ · बदलने के लिए स्वाइप करो', songWord: 'गाना',
+    st: ['सो रहा है', 'सुन रहा है', 'सोच रहा है', 'बोल रहा है', 'नाच रहा है', 'गा रहा है'],
+    fx: ['गिलहरी', 'दानव', 'रोबोट', 'गुफा', 'एलियन', 'रेडियो', 'कोरस', 'पानी के नीचे', 'कोई भी'],
+    names: ['कैक्टस', 'भालू', 'रोबोट', 'ड्रैगन', 'लंबू', 'नन्हा'],
+    setInfo: 'आवाज़ यहाँ चुनो। जवाब फ़ोन से आते हैं, इंटरनेट नहीं चाहिए।',
+    toneChar: 'सुर: किरदार', speedChar: 'गति: किरदार', vChar: 'आवाज़: अपनी आवाज़', vPhone: 'आवाज़: फ़ोन का वाचक',
+    test: '🔊 आवाज़ सुनो', brainOff: 'दिमाग़: अपने जवाब', langAuto: 'भाषा: स्वतः',
+    off: { hi: ['नमस्ते! मैं तुम्हारा इंतज़ार कर रहा था।', 'हैलो! आज मैं बहुत खुश हूँ।'], how: ['मैं बहुत बढ़िया हूँ!', 'ठीक हूँ, थोड़ी प्यास लगी है।'],
+      q: ['पता नहीं, पर सवाल अच्छा है।', 'हम्म, तुम क्या कहते हो?', 'शायद हाँ, या चलो नाचें।'],
+      cmd: ['ठीक है, अभी करता हूँ!', 'मुझे देखो!'], name: ['मेरा नाम {n} है। तुम्हारा?'], sing: ['सुनो, शुरू करता हूँ!'],
+      gen: ['तुमने {w} कहा। मुझे अच्छा लगा।', 'वाह, {w}! फिर से कहो।', '{w}? मैं भी यही सोच रहा था।'] } }
+};
+const LANGS = ['en', 'tr', 'de', 'fr', 'es', 'it', 'pt', 'ru', 'ar', 'hi'];
+const LANGNAME = { en: 'English', tr: 'Türkçe', de: 'Deutsch', fr: 'Français', es: 'Español', it: 'Italiano', pt: 'Português', ru: 'Русский', ar: 'العربية', hi: 'हिन्दी' };
+let langCode = 'en', L = I18N.en, langAuto = true;
+function detectLang() {
+  const c = (navigator.language || 'en').slice(0, 2).toLowerCase();
+  return LANGS.indexOf(c) >= 0 ? c : 'en';
+}
+function setDynOption(id, val, label) {
+  const s = el(id); let o = s.querySelector('option[data-dyn]');
+  if (!o) { o = document.createElement('option'); o.setAttribute('data-dyn', '1'); s.insertBefore(o, s.firstChild); }
+  o.value = String(val); o.textContent = label; s.value = String(val);
+}
+function applyLang(code, auto) {
+  langCode = LANGS.indexOf(code) >= 0 ? code : 'en';
+  L = I18N[langCode]; langAuto = !!auto;
+  document.documentElement.lang = langCode;
+  document.documentElement.dir = L.rtl ? 'rtl' : 'ltr';
+  el('mParrot').innerHTML = '<b>🦜</b>' + L.mimic;
+  el('mSmart').innerHTML = '<b>💬</b>' + L.chat;
+  el('go').textContent = running ? L.stop : L.start;
+  el('danceBtn').textContent = L.dance;
+  el('songBtn').textContent = L.song;
+  el('hint').textContent = L.hint;
+  el('setInfo').textContent = L.setInfo;
+  el('testVoice').textContent = L.test;
+  el('brainOffOpt').textContent = L.brainOff;
+  el('vCharOpt').textContent = L.vChar; el('vPhoneOpt').textContent = L.vPhone;
+  [...el('fxGrid').children].forEach((b, i) => { b.innerHTML = '<b>' + FXUI[FX[i]][0] + '</b>' + L.fx[i]; });
+  if (rec) rec.lang = L.locale;
+  applyChar(charIx);
+  setState(state);
+  try { localStorage.setItem('kaktus-lang', auto ? 'auto' : langCode); } catch (e) { }
+}
+function buildLangSelect() {
+  const s = el('lang'); s.innerHTML = '';
+  const a = document.createElement('option'); a.value = 'auto'; a.textContent = L.langAuto; s.appendChild(a);
+  LANGS.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = LANGNAME[c]; s.appendChild(o); });
+  s.value = langAuto ? 'auto' : langCode;
+  s.onchange = () => {
+    const v = s.value;
+    applyLang(v === 'auto' ? detectLang() : v, v === 'auto');
+    buildLangSelect();
+  };
+}
+
 /* ================= KARAKTERLER ================= */
 const CHARS = [
   {
-    name: 'Kaktüs', mood: 'sevimli', body: ['#2f9d5c', '#59dc87', '#238a4c'], acc: ['#2ba3bd', '#5fdcee', '#1d8ba6'],
+    name: 'Kaktüs', voiceFx: 'dry', mood: 'sevimli', body: ['#2f9d5c', '#59dc87', '#238a4c'], acc: ['#2ba3bd', '#5fdcee', '#1d8ba6'],
     pot: ['#2ea6c2', '#6fe0f0', '#1c88a4'], rim: '#7fe6f4', line: '#15532f', accLine: '#0e5f72',
     head: 'hHood', face: 'round', eyes: 'eLens', mouth: null, pat: 'patQuilt', ex: 'ex-spike', base: 'pot',
     segW: 50, segH: 52, armW: 40, armH: 66, headK: 1, segRx: 24, armRx: 20, twist: true,
     sHead: ['giggle', 'laugh'], sArm: ['boing', 'squeak'], sBase: ['pop', 'drum'], poke: 'bounce', tone: 1.3, rate: 1, sing: 'a'
   },
   {
-    name: 'Ayıcık', mood: 'uykucu', body: ['#a9713f', '#e0a86b', '#8a5a2e'], acc: ['#ff9fc0', '#ffc9dc', '#e07098'],
+    name: 'Ayıcık', voiceFx: 'dev', mood: 'uykucu', body: ['#a9713f', '#e0a86b', '#8a5a2e'], acc: ['#ff9fc0', '#ffc9dc', '#e07098'],
     pot: ['#ff8f5e', '#ffc19b', '#d4642f'], rim: '#ffd8bd', line: '#4a2a12', accLine: '#a04068',
     head: 'hEars', face: 'round', eyes: 'eGoogly', mouth: 'mMuzzle', pat: null, ex: 'ex-belly', base: 'pot',
     segW: 80, segH: 44, armW: 46, armH: 52, headK: 1.06, segRx: 30, armRx: 23, twist: false,
     sHead: ['growl', 'laugh'], sArm: ['huff', 'boing'], sBase: ['thud', 'drum'], poke: 'shrink', tone: 1.05, rate: .9, sing: 'o'
   },
   {
-    name: 'Robot', mood: 'komik', body: ['#8f9bb8', '#d5def0', '#6b7796'], acc: ['#ff5c8a', '#ffa3c0', '#c93b68'],
+    name: 'Robot', voiceFx: 'robot', mood: 'komik', body: ['#8f9bb8', '#d5def0', '#6b7796'], acc: ['#ff5c8a', '#ffa3c0', '#c93b68'],
     pot: ['#3a4463', '#6a769a', '#252c45'], rim: '#9aa6c8', line: '#3a4463', accLine: '#3a4463',
     head: 'hAnt', face: 'square', eyes: 'eSquare', mouth: 'mGrill', pat: null, ex: 'ex-bolt', base: 'blower',
     segW: 44, segH: 56, armW: 30, armH: 62, headK: .95, segRx: 7, armRx: 7, twist: false,
     sHead: ['beep', 'glitch'], sArm: ['servo', 'zap'], sBase: ['clank', 'servo'], poke: 'shake', tone: 1.55, rate: 1.1, sing: 'i'
   },
   {
-    name: 'Ejder', mood: 'huysuz', body: ['#7d3fb8', '#b57af0', '#5f2a91'], acc: ['#ffd66b', '#ffe9a8', '#d9a323'],
+    name: 'Ejder', voiceFx: 'dev', mood: 'huysuz', body: ['#7d3fb8', '#b57af0', '#5f2a91'], acc: ['#ffd66b', '#ffe9a8', '#d9a323'],
     pot: ['#3ac0a0', '#7fe8d0', '#218f74'], rim: '#a8f0dc', line: '#3a1858', accLine: '#8a6410',
     head: 'hHorns', face: 'round', eyes: 'eGoogly', mouth: null, pat: 'patDots', ex: 'ex-back', base: 'pot',
     segW: 64, segH: 50, armW: 46, armH: 58, headK: 1.04, segRx: 20, armRx: 18, twist: false,
     sHead: ['roar', 'grumble'], sArm: ['huff', 'growl'], sBase: ['thud', 'grumble'], poke: 'spin', tone: .95, rate: .95, sing: 'e'
   },
   {
-    name: 'Uzun', mood: 'çılgın', body: ['#f27022', '#ffa25c', '#c8500f'], acc: ['#2a2f45', '#4d5573', '#1a1e30'],
+    name: 'Uzun', voiceFx: 'uzayli', mood: 'çılgın', body: ['#f27022', '#ffa25c', '#c8500f'], acc: ['#2a2f45', '#4d5573', '#1a1e30'],
     pot: ['#3a4463', '#6a769a', '#252c45'], rim: '#9aa6c8', line: '#7a3208', accLine: '#1a1e30',
     head: null, face: 'round', eyes: 'eGoogly', mouth: null, pat: null, ex: null, base: 'blower',
     segW: 30, segH: 72, armW: 22, armH: 76, headK: .74, segRx: 15, armRx: 11, twist: false,
     sHead: ['squeal', 'raspberry'], sArm: ['flap', 'boing'], sBase: ['fanwhir', 'flap'], poke: 'flail', tone: 1.25, rate: 1.15, sing: 'a'
   },
   {
-    name: 'Minik', mood: 'utangaç', body: ['#e34d8c', '#ff9ac2', '#b02f68'], acc: ['#ffd66b', '#fff0b8', '#d9a323'],
+    name: 'Minik', voiceFx: 'sincap', mood: 'utangaç', body: ['#e34d8c', '#ff9ac2', '#b02f68'], acc: ['#ffd66b', '#fff0b8', '#d9a323'],
     pot: ['#5566d8', '#8f9bf0', '#3543a8'], rim: '#c0c9ff', line: '#7a1f47', accLine: '#8a6410',
     head: null, face: 'round', eyes: 'eGoogly', mouth: null, pat: 'patDots', ex: 'ex-belly', base: 'pot',
     segW: 88, segH: 34, armW: 40, armH: 42, headK: 1.14, segRx: 17, armRx: 20, twist: false,
@@ -553,9 +741,11 @@ function applyChar(i) {
   document.querySelectorAll('.limb').forEach(n => n.setAttribute('stroke', c.line));
   document.querySelectorAll('.ex-belly').forEach(n => n.setAttribute('stroke', c.line));
   const hs = el('hoodShape'); if (hs) hs.setAttribute('stroke', c.accLine);
-  el('who').textContent = c.name;
-  el('title').innerHTML = 'Dans Eden <span>' + c.name + '</span>';
-  el('tone').value = String(c.tone); el('speed').value = String(c.rate);
+  const nm = (L && L.names[i % CHARS.length]) || c.name;
+  el('who').textContent = nm;
+  el('title').innerHTML = L.dancing + ' <span>' + nm + '</span>';
+  setDynOption('tone', c.tone, L.toneChar);
+  setDynOption('speed', c.rate, L.speedChar);
   try { localStorage.setItem('kaktus-char', String(i % CHARS.length)); } catch (e) { }
 }
 const curChar = () => CHARS[charIx % CHARS.length];
@@ -691,7 +881,7 @@ function stopPlayback() {
   try { live.out.disconnect(); } catch (e) { }
   live = null; playAnalyser = null;
 }
-function playFx(buffer, kind) {
+function playFx(buffer, kind, after) {
   audio();
   stopPlayback();
   buffer = trim(buffer, 6);
@@ -751,6 +941,8 @@ function playFx(buffer, kind) {
       s.connect(d); d.connect(g); g.connect(out);
     });
     srcs[0].connect(rev(.2, 1.6, 2.4));
+  } else if (k === 'dry') {
+    mk(buffer, 1).connect(out);
   } else if (k === 'suyalti') {
     const s = mk(pitchShift(buffer, semi(-3)), .97);
     const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 700; lp.Q.value = 5;
@@ -759,7 +951,7 @@ function playFx(buffer, kind) {
     lfo.connect(dep); dep.connect(lp.frequency); lfo.start(); extras.push(lfo);
     s.connect(lp); lp.connect(out); lp.connect(rev(.35, 2, 2));
   }
-  fakeTalk = false; setState('talking', FXUI[k][1]);
+  fakeTalk = false; setState('talking', (FXUI[k] || ['', 'Konuşuyor'])[1]);
   let ended = false;
   const finish = () => {
     if (ended) return; ended = true;
@@ -769,6 +961,7 @@ function playFx(buffer, kind) {
     setTimeout(() => {
       busy = false; VAD.cool = .45; floorLvl = Math.max(floorLvl, .012);
       if (state === 'dance') setState(running ? 'listening' : 'idle');
+      if (after) after();
     }, 700);
   };
   let done = 0;
@@ -782,47 +975,75 @@ function playFx(buffer, kind) {
 /* ================= ŞARKI: formant tabanlı vokal ================= */
 const VOWELS = { a: [730, 1090, 2440], e: [530, 1840, 2480], i: [270, 2290, 3010], o: [570, 840, 2410], u: [300, 870, 2240] };
 const SONGS = [
-  { bpm: 112, notes: [[0, 1], [4, 1], [7, 1], [4, 1], [5, 1], [4, 1], [2, 2], [0, 1], [2, 1], [4, 1], [7, 1], [5, 2], [4, 2]] },
-  { bpm: 126, notes: [[7, .5], [7, .5], [9, 1], [7, 1], [12, 1], [11, 2], [7, .5], [7, .5], [9, 1], [7, 1], [14, 1], [12, 2]] },
-  { bpm: 98, notes: [[0, 1.5], [3, .5], [5, 1], [7, 1], [10, 1.5], [7, .5], [5, 1], [3, 1], [0, 2]] }
+  { name: 'Zıpzıp Marşı', bpm: 112, key: 0, lead: 'triangle', bass: 'sine', perc: 'hat', arp: true,
+    notes: [[0, 1], [4, 1], [7, 1], [4, 1], [5, 1], [4, 1], [2, 2], [0, 1], [2, 1], [4, 1], [7, 1], [5, 2], [4, 2]] },
+  { name: 'Gece Yolu', bpm: 126, key: 3, lead: 'square', bass: 'triangle', perc: 'clap', arp: false,
+    notes: [[7, .5], [7, .5], [9, 1], [7, 1], [12, 1], [11, 2], [7, .5], [7, .5], [9, 1], [7, 1], [14, 1], [12, 2]] },
+  { name: 'Küçük Vals', bpm: 98, key: -2, lead: 'sine', bass: 'sawtooth', perc: 'shaker', arp: true,
+    notes: [[0, 1.5], [3, .5], [5, 1], [7, 1], [10, 1.5], [7, .5], [5, 1], [3, 1], [0, 2]] },
+  { name: 'Saklambaç', bpm: 138, key: 5, lead: 'sawtooth', bass: 'square', perc: 'hat', arp: false,
+    notes: [[12, .5], [10, .5], [7, 1], [5, .5], [7, .5], [9, 1], [5, .5], [4, .5], [0, 1], [4, 1], [7, 2]] },
+  { name: 'Uyku Vakti', bpm: 84, key: -5, lead: 'sine', bass: 'sine', perc: 'shaker', arp: true,
+    notes: [[7, 1], [5, 1], [4, 2], [2, 1], [4, 1], [5, 2], [0, 1], [4, 1], [2, 3]] }
 ];
+let songIx = -1, songNoteTimers = [];
+function spawnNote() {
+  const layer = el('noteLayer'); if (!layer) return;
+  const d = document.createElement('div'); d.className = 'nf';
+  d.textContent = one(['♪', '♫', '♬', '🎵', '🎶']);
+  d.style.left = (16 + Math.random() * 68) + '%';
+  d.style.setProperty('--r', (Math.random() * 60 - 30) + 'deg');
+  d.style.color = one(['#ffc14d', '#40c4dd', '#ff5c8a', '#4fd07f', '#b57af0']);
+  layer.appendChild(d);
+  setTimeout(() => d.remove(), 1750);
+}
+function clearNotes() {
+  songNoteTimers.forEach(clearTimeout); songNoteTimers = [];
+  const l = el('noteLayer'); if (l) l.innerHTML = '';
+  el('songName').classList.remove('on');
+}
 let songTimer = null;
-function voiceNote(at, dur, freq, vow, dest, cv) {
-  const osc = ac.createOscillator(); osc.type = 'sawtooth';
+function voiceNote(at, dur, freq, vow, dest, cv, ctx) {
+  ctx = ctx || ac;
+  const osc = ctx.createOscillator(); osc.type = 'sawtooth';
   osc.frequency.setValueAtTime(freq * .997, at);
   osc.frequency.linearRampToValueAtTime(freq, at + .06);
-  const vib = ac.createOscillator(); vib.frequency.value = 5.2;
-  const vg = ac.createGain(); vg.gain.setValueAtTime(0, at);
+  const vib = ctx.createOscillator(); vib.frequency.value = 5.2;
+  const vg = ctx.createGain(); vg.gain.setValueAtTime(0, at);
   vg.gain.linearRampToValueAtTime(freq * .014, at + Math.min(.25, dur * .5));
   vib.connect(vg); vg.connect(osc.frequency); vib.start(at); vib.stop(at + dur + .1);
-  const env = ac.createGain();
+  const env = ctx.createGain();
   env.gain.setValueAtTime(.0001, at);
-  env.gain.exponentialRampToValueAtTime(.5, at + .045);
+  env.gain.exponentialRampToValueAtTime(.5, at + Math.min(.045, dur * .3));
   env.gain.setValueAtTime(.5, at + dur * .72);
   env.gain.exponentialRampToValueAtTime(.0001, at + dur);
   osc.connect(env);
   const f = VOWELS[vow] || VOWELS.a, gains = [1, .5, .22];
   f.forEach((hz, i) => {
-    const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = hz; bp.Q.value = 7 + i * 3;
-    const g = ac.createGain(); g.gain.value = gains[i];
+    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = hz; bp.Q.value = 7 + i * 3;
+    const g = ctx.createGain(); g.gain.value = gains[i];
     env.connect(bp); bp.connect(g); g.connect(dest); if (i === 0 && cv) g.connect(cv);
   });
-  const br = ac.createBufferSource(), nb = ac.createBuffer(1, Math.round(ac.sampleRate * .05), ac.sampleRate);
+  const br = ctx.createBufferSource(), nb = ctx.createBuffer(1, Math.round(ctx.sampleRate * .05), ctx.sampleRate);
   const nd = nb.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / nd.length, 2);
   br.buffer = nb;
-  const bg = ac.createGain(); bg.gain.value = .1;
-  const bhp = ac.createBiquadFilter(); bhp.type = 'highpass'; bhp.frequency.value = 1800;
+  const bg = ctx.createGain(); bg.gain.value = .1;
+  const bhp = ctx.createBiquadFilter(); bhp.type = 'highpass'; bhp.frequency.value = 1800;
   br.connect(bhp); bhp.connect(bg); bg.connect(dest); br.start(at);
   osc.start(at); osc.stop(at + dur + .06);
 }
 function sing() {
   audio();
-  const song = one(SONGS), spb = 60 / song.bpm, t0 = ac.currentTime + .18;
+  stopPlayback(); clearTimeout(songTimer); clearNotes();      // üst üste binmesin
+  try { speechSynthesis.cancel(); } catch (e) { }
+  songIx = (songIx + 1) % SONGS.length;                        // her basışta sıradaki şarkı
+  const song = SONGS[songIx], spb = 60 / song.bpm, t0 = ac.currentTime + .2;
   const outG = ac.createGain(); outG.gain.value = .85;
   const an = ac.createAnalyser(); an.fftSize = 1024;
   outG.connect(an); an.connect(master); playAnalyser = an;
   const cv = ac.createConvolver(); cv.buffer = impulse(1.5, 2.4);
-  const wet = ac.createGain(); wet.gain.value = .2; cv.connect(wet); wet.connect(outG);
+  const wet = ac.createGain(); wet.gain.value = .18; cv.connect(wet); wet.connect(outG);
+  const nodes = [];
 
   let voiceGrain = null;
   if (lastRec && lastRec.length > ac.sampleRate * .3) {
@@ -836,42 +1057,101 @@ function sing() {
     const o = voiceGrain.getChannelData(0);
     for (let i = 0; i < win; i++) o[i] = d[best + i] * (.5 - .5 * Math.cos(6.283185 * i / win));
   }
-  const vows = ['a', 'e', 'i', 'o', 'u'], base = 196 * semi(curChar().sing === 'i' ? 5 : 0);
+  const vows = ['a', 'e', 'i', 'o', 'u'];
+  const base = 196 * semi(song.key + (curChar().sing === 'i' ? 5 : curChar().sing === 'o' ? -3 : 0));
   let tt = 0;
   song.notes.forEach(([sm, len], ix) => {
     const at = t0 + tt * spb, dur = len * spb * .9;
+    // vokal: melodiyi ünlülerle söylüyor
     voiceNote(at, dur, base * semi(sm), ix % 3 === 0 ? curChar().sing : vows[ix % vows.length], outG, cv);
+    // enstrüman: şarkıya göre farklı ton
+    const o = ac.createOscillator(); o.type = song.lead;
+    o.frequency.setValueAtTime(base * 2 * semi(sm), at);
+    const og = ac.createGain(); og.gain.setValueAtTime(.0001, at);
+    og.gain.exponentialRampToValueAtTime(.13, at + .03);
+    og.gain.exponentialRampToValueAtTime(.001, at + dur);
+    o.connect(og); og.connect(outG); o.start(at); o.stop(at + dur + .05); nodes.push(o);
     if (voiceGrain) {
       const s = ac.createBufferSource(); s.buffer = voiceGrain; s.loop = true;
       s.playbackRate.value = semi(sm + 3);
       const g = ac.createGain();
-      g.gain.setValueAtTime(.0001, at); g.gain.exponentialRampToValueAtTime(.32, at + .05);
-      g.gain.setValueAtTime(.32, at + dur * .7); g.gain.exponentialRampToValueAtTime(.0001, at + dur);
-      s.connect(g); g.connect(outG); s.start(at); s.stop(at + dur);
+      g.gain.setValueAtTime(.0001, at); g.gain.exponentialRampToValueAtTime(.3, at + .05);
+      g.gain.setValueAtTime(.3, at + dur * .7); g.gain.exponentialRampToValueAtTime(.0001, at + dur);
+      s.connect(g); g.connect(outG); s.start(at); s.stop(at + dur); nodes.push(s);
     }
+    songNoteTimers.push(setTimeout(spawnNote, (at - ac.currentTime) * 1000));
     tt += len;
   });
   for (let b = 0; b < Math.ceil(tt); b++) {
     const at = t0 + b * spb;
-    const o = ac.createOscillator(); o.type = 'sine';
-    o.frequency.setValueAtTime(110, at); o.frequency.exponentialRampToValueAtTime(55, at + .16);
-    const g = ac.createGain(); g.gain.setValueAtTime(.35, at); g.gain.exponentialRampToValueAtTime(.001, at + .2);
-    o.connect(g); g.connect(outG); o.start(at); o.stop(at + .22);
-    if (b % 2 === 1) {
+    const o = ac.createOscillator(); o.type = song.bass;
+    o.frequency.setValueAtTime(base / 2, at); o.frequency.exponentialRampToValueAtTime(base / 4, at + .16);
+    const g = ac.createGain(); g.gain.setValueAtTime(.3, at); g.gain.exponentialRampToValueAtTime(.001, at + .2);
+    o.connect(g); g.connect(outG); o.start(at); o.stop(at + .22); nodes.push(o);
+    if (song.arp) {
+      const a2 = ac.createOscillator(); a2.type = song.lead;
+      a2.frequency.value = base * 4 * semi([0, 4, 7, 12][b % 4]);
+      const ag = ac.createGain(); ag.gain.setValueAtTime(.0001, at + spb * .5);
+      ag.gain.exponentialRampToValueAtTime(.05, at + spb * .55);
+      ag.gain.exponentialRampToValueAtTime(.001, at + spb * .95);
+      a2.connect(ag); ag.connect(outG); a2.start(at + spb * .5); a2.stop(at + spb); nodes.push(a2);
+    }
+    if (b % 2 === 1 || song.perc === 'shaker') {
       const n = ac.createBufferSource(), nb = ac.createBuffer(1, Math.round(ac.sampleRate * .1), ac.sampleRate);
-      const nd = nb.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / nd.length, 3);
+      const nd = nb.getChannelData(0);
+      for (let i = 0; i < nd.length; i++) nd[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / nd.length, song.perc === 'clap' ? 2 : 5);
       n.buffer = nb;
-      const hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 4200;
-      const ng = ac.createGain(); ng.gain.value = .18;
-      n.connect(hp); hp.connect(ng); ng.connect(outG); n.start(at);
+      const hp = ac.createBiquadFilter();
+      hp.type = song.perc === 'clap' ? 'bandpass' : 'highpass';
+      hp.frequency.value = song.perc === 'clap' ? 1400 : song.perc === 'shaker' ? 7000 : 4200;
+      const ng = ac.createGain(); ng.gain.value = song.perc === 'shaker' ? .1 : .18;
+      n.connect(hp); hp.connect(ng); ng.connect(outG); n.start(at); nodes.push(n);
     }
   }
-  busy = true; beat = 0; songBpm = song.bpm; setState('song');
-  clearTimeout(songTimer);
+  busy = true; beat = 0; songBpm = song.bpm;
+  const sname = L.songWord + ' ' + (songIx + 1);
+  setState('song', sname);
+  el('songName').textContent = '🎵 ' + sname;
+  el('songName').classList.add('on');
+  live = { srcs: [], extras: nodes, out: outG, timer: null };
   songTimer = setTimeout(() => {
-    playAnalyser = null; level = 0; busy = false;
+    playAnalyser = null; level = 0; busy = false; live = null; clearNotes();
+    VAD.cool = .4; el('songBtn').classList.remove('on');
     setState(running ? 'listening' : 'idle');
-  }, (tt * spb + .7) * 1000);
+  }, (tt * spb + .8) * 1000);
+}
+
+/* ============ KARAKTERİN KENDİ SESİ ============ */
+// Tarayıcı, telefonun okuyucusunun sesini yakalamamıza izin vermiyor.
+// O yüzden konuşmayı biz üretip taklit modundaki efekt zincirinden geçiriyoruz.
+const TRVOW = { 'a': 'a', 'e': 'e', 'ı': 'u', 'i': 'i', 'o': 'o', 'ö': 'o', 'u': 'u', 'ü': 'i' };
+async function speakSynth(text) {
+  audio();
+  const sr = ac.sampleRate, c = curChar();
+  const syll = [];
+  text.toLowerCase().split(/\s+/).slice(0, 14).forEach((w, wi) => {
+    let n = 0;
+    for (const ch2 of w) if (TRVOW[ch2]) { syll.push({ v: TRVOW[ch2], w: wi, i: n++ }); }
+    if (n) syll.push(null);                       // kelime arası kısa duraklama
+  });
+  if (!syll.length) return false;
+  const step = .135, dur = syll.length * step + .5;
+  const off = new OfflineAudioContext(1, Math.ceil(sr * dur), sr);
+  const dest = off.createGain(); dest.gain.value = .9; dest.connect(off.destination);
+  const base = 165 * (c.tone || 1.2);
+  const up = /[?]\s*$/.test(text);
+  let t = .05;
+  syll.forEach((s, i) => {
+    if (!s) { t += step * .6; return; }
+    const prog = i / syll.length;
+    const wob = Math.sin(i * 1.7) * .05;
+    const f = base * (1 + wob - prog * .12 + (up && i > syll.length - 3 ? .25 : 0)) * (s.i === 0 ? 1.06 : 1);
+    voiceNote(t, step * .82, f, s.v, dest, null, off);
+    t += step;
+  });
+  const buf = await off.startRendering();
+  playFx(buf, c.voiceFx || 'dry', () => { speaking = false; if (wantRec) startRec(); });
+  return true;
 }
 
 /* ================= DÜRTME SESLERİ ================= */
@@ -1128,7 +1408,7 @@ requestAnimationFrame(frame);
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null, recOn = false, speaking = false, wantRec = false;
 if (SR) {
-  rec = new SR(); rec.lang = 'tr-TR'; rec.interimResults = true; rec.continuous = true;
+  rec = new SR(); rec.lang = 'en-US'; rec.interimResults = true; rec.continuous = true;
   rec.onstart = () => recOn = true;
   rec.onresult = e => {
     for (let i = e.resultIndex; i < e.results.length; i++) {
@@ -1149,46 +1429,38 @@ function startRec() { if (!rec || recOn || speaking || !wantRec) return; try { r
 function stopRec() { wantRec = false; if (rec && recOn) { try { rec.stop(); } catch (e) { } } }
 
 /* ================= BEYİN + KONUŞMA ================= */
-const SYSTEM = `Sen saksıda yaşayan dans eden bir peluş oyuncaksın. Küçük çocuklarla konuşuyorsun.
-Kurallar: Türkçe konuş. En fazla 2 kısa ve basit cümle. Neşeli, tatlı, nazik ol. Emoji ve madde işareti kullanma.`;
+const sysPrompt = () => 'You are a dancing plush toy talking to small children. Reply in ' +
+  LANGNAME[langCode] + ' only. At most 2 short simple sentences. Be cheerful, sweet and kind. No emoji, no bullet points.';
 let history = [];
 let cfgValue = ''; try { cfgValue = localStorage.getItem('kaktus-cfg') || ''; } catch (e) { }
 const cfg = () => (el('brainCfg').value || cfgValue).trim();
 async function askClaude(msgs) {
   const key = cfg(), h = { 'Content-Type': 'application/json' };
   if (key.startsWith('sk-')) { h['x-api-key'] = key; h['anthropic-version'] = '2023-06-01'; h['anthropic-dangerous-direct-browser-access'] = 'true'; }
-  const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: h, body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, system: SYSTEM, messages: msgs }) });
+  const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: h, body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, system: sysPrompt(), messages: msgs }) });
   if (!r.ok) throw new Error('claude ' + r.status);
   const d = await r.json();
   return (d.content || []).filter(b => b.type === 'text').map(b => b.text).join(' ').trim();
 }
 async function askOllama(msgs) {
   const host = cfg().startsWith('http') ? cfg() : 'http://localhost:11434';
-  const r = await fetch(host + '/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: 'llama3.2', stream: false, options: { temperature: .8, num_predict: 120 }, messages: [{ role: 'system', content: SYSTEM }, ...msgs] }) });
+  const r = await fetch(host + '/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: 'llama3.2', stream: false, options: { temperature: .8, num_predict: 120 }, messages: [{ role: 'system', content: sysPrompt() }, ...msgs] }) });
   if (!r.ok) throw new Error('ollama ' + r.status);
   const d = await r.json();
   return ((d.message && d.message.content) || '').trim();
 }
-const OFF = {
-  selam: ['Selam! Saksıdan bakıyordum, geldin demek.', 'Merhaba! Bugün çok neşeliyim.'],
-  nasil: ['Keyfim yerinde, hoplayasım var.', 'Çok iyiyim, biraz susadım ama olsun.'],
-  soru: ['Bilmiyorum ama çok güzel bir soru.', 'Hmm, düşünmem lazım. Sen ne dersin?', 'Belki evet, belki dans etmeliyiz.'],
-  emir: ['Tamam, hemen yapıyorum!', 'Bunu yapabilirim, izle beni.'],
-  isim: ['Benim adım {n}. Seninki ne?'],
-  sarki: ['Hemen söylüyorum, dinle!'],
-  genel: ['{w} dedin, çok hoşuma gitti.', 'Vay, {w}. Bir daha söyle!', '{w} mi? Ben de onu düşünüyordum.']
-};
+const charName = () => (L && L.names[charIx % CHARS.length]) || CHARS[charIx % CHARS.length].name;
 function offlineBrain(x) {
-  const t = x.toLowerCase();
-  if (!t) return 'Seni dinliyorum.';
-  if (/(selam|merhaba|günaydın|naber|hey)/.test(t)) return one(OFF.selam);
-  if (/nasılsın|napıyorsun|iyi misin/.test(t)) return one(OFF.nasil);
-  if (/(adın ne|ismin ne|kimsin)/.test(t)) return one(OFF.isim).replace('{n}', curChar().name);
-  if (/şarkı|türkü|söyle bana/.test(t)) { setTimeout(sing, 1200); return one(OFF.sarki); }
-  if (/[?]|neden|niye|nasıl|kim|ne zaman/.test(t)) return one(OFF.soru);
-  if (/(dans et|zıpla|yap)/.test(t)) { setTimeout(() => setState('dance'), 900); return one(OFF.emir); }
+  const t = x.toLowerCase(), o = L.off;
+  if (!t) return one(o.hi);
+  if (/(selam|merhaba|günaydın|naber|hey|hello|hi\b|hallo|salut|bonjour|hola|ciao|olá|привет|мерхаба|مرحبا|नमस्ते)/.test(t)) return one(o.hi);
+  if (/(nasılsın|napıyorsun|how are you|wie geht|ça va|cómo estás|come stai|como vai|как дела|كيف حالك|कैसे हो)/.test(t)) return one(o.how);
+  if (/(adın ne|ismin ne|kimsin|what is your name|your name|wie heißt|tu t'appelles|cómo te llamas|come ti chiami|seu nome|как тебя зовут|ما اسمك|तुम्हारा नाम)/.test(t)) return one(o.name).replace('{n}', charName());
+  if (/(şarkı|türkü|sing|lied|sing a song|chanson|canción|canzone|música|песня|أغنية|गाना)/.test(t)) { setTimeout(sing, 1200); return one(o.sing); }
+  if (/[?؟]|neden|niye|nasıl|kim|ne zaman|why|how|who|when|warum|wie|pourquoi|por qué|perché|porque|почему|لماذا|क्यों/.test(t)) return one(o.q);
+  if (/(dans et|zıpla|dance|jump|tanz|danse|baila|balla|dança|танцуй|ارقص|नाचो)/.test(t)) { setTimeout(() => { newDance(); setState('dance'); }, 900); return one(o.cmd); }
   const w = x.split(/\s+/).filter(s => s.length > 3).pop() || x;
-  return one(OFF.genel).replace('{w}', w);
+  return one(o.gen).replace('{w}', w);
 }
 async function ask(text) {
   const msgs = [...history, { role: 'user', content: text }], m = el('brain').value;
@@ -1205,12 +1477,13 @@ try { savedVoice = localStorage.getItem('kaktus-voice') || ''; } catch (e) { }
 function fillVoices() {
   const sy = window.speechSynthesis; if (!sy) return;
   voices = sy.getVoices() || []; if (!voices.length) return;
-  const tr = voices.filter(v => /^tr/i.test(v.lang)), list = tr.length ? tr : voices;
+  const pre = new RegExp('^' + langCode, 'i');
+  const tr = voices.filter(v => pre.test(v.lang)), list = tr.length ? tr : voices;
   el('voice').innerHTML = '';
   list.forEach(v => { const o = document.createElement('option'); o.value = v.name; o.textContent = (tr.length ? '' : '⚠ ') + v.name; el('voice').appendChild(o); });
   chosenVoice = list.find(v => v.name === savedVoice) || list[0] || null;
   if (chosenVoice) el('voice').value = chosenVoice.name;
-  if (!tr.length) diag('Telefonda Türkçe konuşma sesi kurulu değil. Ayarlar → Genel yönetim → Metin okuma → Türkçe verisini indir.');
+  if (!tr.length) diag('No ' + LANGNAME[langCode] + ' text-to-speech voice installed on this phone.');
 }
 if (window.speechSynthesis) { speechSynthesis.onvoiceschanged = fillVoices; fillVoices(); setTimeout(fillVoices, 700); }
 function speak(text) {
@@ -1220,8 +1493,10 @@ function speak(text) {
   const u = new SpeechSynthesisUtterance(text);
   if (!chosenVoice) fillVoices();
   if (chosenVoice) u.voice = chosenVoice;
-  u.lang = (chosenVoice && chosenVoice.lang) || 'tr-TR';
-  u.pitch = parseFloat(el('tone').value); u.rate = parseFloat(el('speed').value);
+  u.lang = (chosenVoice && chosenVoice.lang) || L.locale;
+  const tv = parseFloat(el('tone').value), sv = parseFloat(el('speed').value);
+  u.pitch = Math.min(2, Math.max(0, isFinite(tv) ? tv : (curChar().tone || 1.2)));
+  u.rate = Math.min(3, Math.max(.5, isFinite(sv) ? sv : (curChar().rate || 1)));
   fakeSeed = rnd(0, 9);
   speaking = true; if (rec && recOn) { try { rec.stop(); } catch (e) { } }
   u.onstart = () => { fakeTalk = true; setState('talking'); };
@@ -1235,8 +1510,17 @@ function speak(text) {
 }
 async function respond(text) {
   setState('thinking');
-  try { const a = await ask(text); bubble(a, 'cactus'); speak(a); }
+  try { const a = await ask(text); bubble(a, 'cactus'); await voiceOut(a); }
   catch (e) { setState(running ? 'listening' : 'idle'); diag('Cevap alınamadı (' + e.message + ').'); }
+}
+
+async function voiceOut(text) {
+  speaking = true;
+  if (rec && recOn) { try { rec.stop(); } catch (e) { } }
+  if (el('voiceMode').value === 'karakter') {
+    try { if (await speakSynth(text)) return; } catch (e) { }
+  }
+  speak(text);
 }
 
 /* ================= ARAYÜZ ================= */
@@ -1259,6 +1543,7 @@ function setMode(m) {
   mode = m;
   el('mParrot').setAttribute('aria-pressed', m === 'parrot');
   el('mSmart').setAttribute('aria-pressed', m === 'smart');
+  el('go').textContent = running ? L.stop : L.start;
   el('fxGrid').classList.toggle('on', m === 'parrot');
   el('talk').style.display = m === 'smart' ? 'flex' : 'none';
 }
@@ -1270,7 +1555,7 @@ el('voice').onchange = () => {
   savedVoice = el('voice').value;
   try { localStorage.setItem('kaktus-voice', savedVoice); } catch (e) { }
 };
-el('testVoice').onclick = () => { audio(); speak('Merhaba, ben ' + curChar().name + '. Beni böyle duyuyorsun.'); };
+el('testVoice').onclick = () => { audio(); voiceOut(one(L.off.hi)); };
 el('brainCfg').value = cfgValue;
 el('brainCfg').onchange = () => { cfgValue = el('brainCfg').value.trim(); try { localStorage.setItem('kaktus-cfg', cfgValue); } catch (e) { } };
 el('brain').onchange = () => {
@@ -1287,7 +1572,7 @@ async function startAll() {
     wantRec = true; startRec();
   }
   running = true; busy = false; floorLvl = .01;
-  el('go').classList.add('on'); el('go').textContent = '⏸ DUR';
+  el('go').classList.add('on'); el('go').textContent = L.stop;
   el('meter').classList.add('on');
   setState('listening');
 }
@@ -1295,20 +1580,33 @@ function stopAll() {
   running = false; busy = false; VAD.on = false; VAD.cool = 0; CAP.recording = false;
   CAP.chunks.length = 0; CAP.pre.length = 0; CAP.preLen = 0;
   stopPlayback();
-  stopRec(); clearTimeout(songTimer); try { speechSynthesis.cancel(); } catch (e) { }
+  stopRec(); clearTimeout(songTimer); clearNotes();
+  el('songBtn').classList.remove('on'); el('danceBtn').classList.remove('on');
+  try { speechSynthesis.cancel(); } catch (e) { }
   fakeTalk = false; speaking = false;
-  el('go').classList.remove('on'); el('go').textContent = '▶ BAŞLA';
+  el('go').classList.remove('on'); el('go').textContent = L.start;
   el('meter').classList.remove('on');
   setState('idle');
 }
 el('go').onclick = () => running ? stopAll() : startAll();
+function tap(b) { b.classList.remove('tap'); void b.offsetWidth; b.classList.add('tap'); }
 el('danceBtn').onclick = () => {
+  const b = el('danceBtn'); tap(b); b.classList.add('on');
   audio(); newDance(); setState('dance');
   clearTimeout(window.__d);
-  window.__d = setTimeout(() => { if (state === 'dance') setState(running ? 'listening' : 'idle'); }, 7000);
+  window.__d = setTimeout(() => {
+    b.classList.remove('on');
+    if (state === 'dance') setState(running ? 'listening' : 'idle');
+  }, 7000);
 };
-el('songBtn').onclick = () => sing();
+el('songBtn').onclick = () => { const b = el('songBtn'); tap(b); b.classList.add('on'); sing(); };
+el('go').addEventListener('click', () => tap(el('go')));
+el('mParrot').addEventListener('click', () => tap(el('mParrot')));
+el('mSmart').addEventListener('click', () => tap(el('mSmart')));
 
+let savedLang = 'auto'; try { savedLang = localStorage.getItem('kaktus-lang') || 'auto'; } catch (e) { }
+applyLang(savedLang === 'auto' ? detectLang() : savedLang, savedLang === 'auto');
+buildLangSelect();
 applyChar(charIx);
 setMode('parrot');
 (function boot() { const e0 = checkEnv(); if (e0) diag(e0); })();
