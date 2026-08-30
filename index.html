@@ -23,6 +23,8 @@
   .top{display:flex;align-items:center;justify-content:center;position:relative;height:34px}
   .top h1{font-size:19px;font-weight:800;margin:0}
   .top h1 span{color:var(--leaf)}
+  .langsel{position:absolute;left:0;top:0;height:34px;max-width:104px;background:rgba(255,255,255,.06);
+    border:1px solid var(--line);border-radius:12px;color:var(--dim);font:inherit;font-size:12.5px;font-weight:700;padding:0 6px}
   .gear{position:absolute;right:0;top:0;width:34px;height:34px;border:0;background:transparent;color:rgba(255,255,255,.28);font-size:17px;cursor:pointer}
 
   .stage{position:relative;margin:4px 0 12px;border-radius:24px;overflow:hidden;touch-action:pan-y;cursor:pointer;
@@ -99,6 +101,7 @@
 <div class="app">
 
 <div class="top">
+  <select class="langsel" id="lang" aria-label="Language"></select>
   <h1 id="title">Dans Eden <span>Kaktüs</span></h1>
   <button class="gear" id="gear" aria-label="Ayarlar">⚙</button>
 </div>
@@ -292,7 +295,6 @@
 <div class="settings" id="settings">
   <p id="setInfo"></p>
   <select id="voice" aria-label="Konuşma sesi"></select>
-  <select id="lang" aria-label="Dil"></select>
   <select id="voiceMode" aria-label="Konuşma sesi kaynağı">
     <option id="vCharOpt" value="karakter" selected></option>
     <option id="vPhoneOpt" value="telefon"></option>
@@ -489,7 +491,7 @@ const I18N = {
   en: { locale: 'en-US', dancing: 'Dancing', mimic: 'Mimic', chat: 'Chat', start: '▶ START', stop: '⏸ STOP',
     dance: '💃 Dance', song: '🎵 Song', hint: 'poke · swipe to change', songWord: 'Song',
     st: ['Sleeping', 'Listening', 'Thinking', 'Talking', 'Dancing', 'Singing'],
-    fx: ['Chipmunk', 'Giant', 'Robot', 'Cave', 'Alien', 'Radio', 'Choir', 'Underwater', 'Random'],
+    fx: ['Normal', 'Chipmunk', 'Giant', 'Robot', 'Cave', 'Alien', 'Radio', 'Choir', 'Underwater', 'Random'],
     names: ['Cactus', 'Bear', 'Robot', 'Dragon', 'Lanky', 'Tiny'],
     setInfo: 'Set the toy voice here. Answers come from the phone, no internet needed.',
     toneChar: 'Tone: character', speedChar: 'Speed: character', vChar: 'Voice: character', vPhone: 'Voice: phone reader',
@@ -501,7 +503,7 @@ const I18N = {
   tr: { locale: 'tr-TR', dancing: 'Dans Eden', mimic: 'Taklit', chat: 'Sohbet', start: '▶ BAŞLA', stop: '⏸ DUR',
     dance: '💃 Dans', song: '🎵 Şarkı', hint: 'dürt · sağa sola kaydır', songWord: 'Şarkı',
     st: ['Uyukluyor', 'Seni dinliyorum', 'Düşünüyor', 'Konuşuyor', 'Dans ediyor', 'Şarkı söylüyor'],
-    fx: ['Sincap', 'Dev', 'Robot', 'Mağara', 'Uzaylı', 'Telsiz', 'Koro', 'Su altı', 'Karışık'],
+    fx: ['Normal', 'Sincap', 'Dev', 'Robot', 'Mağara', 'Uzaylı', 'Telsiz', 'Koro', 'Su altı', 'Karışık'],
     names: ['Kaktüs', 'Ayıcık', 'Robot', 'Ejder', 'Uzun', 'Minik'],
     setInfo: 'Oyuncağın sesini buradan ayarla. Cevaplar telefonun içinden geliyor, internet gerekmez.',
     toneChar: 'Ton: karakterin kendi tonu', speedChar: 'Hız: karakterin hızı', vChar: 'Ses: karakterin kendi sesi', vPhone: 'Ses: telefonun okuyucusu',
@@ -513,7 +515,7 @@ const I18N = {
   de: { locale: 'de-DE', dancing: 'Tanzender', mimic: 'Nachplappern', chat: 'Plaudern', start: '▶ START', stop: '⏸ STOPP',
     dance: '💃 Tanzen', song: '🎵 Lied', hint: 'antippen · wischen zum Wechseln', songWord: 'Lied',
     st: ['Schläft', 'Hört zu', 'Denkt nach', 'Spricht', 'Tanzt', 'Singt'],
-    fx: ['Eichhörnchen', 'Riese', 'Roboter', 'Höhle', 'Alien', 'Funk', 'Chor', 'Unter Wasser', 'Zufall'],
+    fx: ['Normal', 'Eichhörnchen', 'Riese', 'Roboter', 'Höhle', 'Alien', 'Funk', 'Chor', 'Unter Wasser', 'Zufall'],
     names: ['Kaktus', 'Bärchen', 'Roboter', 'Drache', 'Langer', 'Kleiner'],
     setInfo: 'Stimme hier einstellen. Antworten kommen vom Handy, kein Internet nötig.',
     toneChar: 'Ton: Figur', speedChar: 'Tempo: Figur', vChar: 'Stimme: eigene Stimme', vPhone: 'Stimme: Handy-Vorleser',
@@ -525,7 +527,7 @@ const I18N = {
   fr: { locale: 'fr-FR', dancing: 'Le danseur', mimic: 'Imiter', chat: 'Discuter', start: '▶ DÉMARRER', stop: '⏸ STOP',
     dance: '💃 Danser', song: '🎵 Chanson', hint: 'touche · glisse pour changer', songWord: 'Chanson',
     st: ['Il dort', 'Il écoute', 'Il réfléchit', 'Il parle', 'Il danse', 'Il chante'],
-    fx: ['Écureuil', 'Géant', 'Robot', 'Grotte', 'Alien', 'Radio', 'Chorale', 'Sous l\'eau', 'Au hasard'],
+    fx: ['Normal', 'Écureuil', 'Géant', 'Robot', 'Grotte', 'Alien', 'Radio', 'Chorale', 'Sous l\'eau', 'Au hasard'],
     names: ['Cactus', 'Nounours', 'Robot', 'Dragon', 'Grand', 'Petit'],
     setInfo: 'Règle la voix ici. Les réponses viennent du téléphone, sans internet.',
     toneChar: 'Ton : personnage', speedChar: 'Vitesse : personnage', vChar: 'Voix : sa propre voix', vPhone: 'Voix : lecteur du téléphone',
@@ -537,7 +539,7 @@ const I18N = {
   es: { locale: 'es-ES', dancing: 'El bailarín', mimic: 'Imitar', chat: 'Charlar', start: '▶ EMPEZAR', stop: '⏸ PARAR',
     dance: '💃 Bailar', song: '🎵 Canción', hint: 'toca · desliza para cambiar', songWord: 'Canción',
     st: ['Durmiendo', 'Escuchando', 'Pensando', 'Hablando', 'Bailando', 'Cantando'],
-    fx: ['Ardilla', 'Gigante', 'Robot', 'Cueva', 'Alien', 'Radio', 'Coro', 'Bajo el agua', 'Al azar'],
+    fx: ['Normal', 'Ardilla', 'Gigante', 'Robot', 'Cueva', 'Alien', 'Radio', 'Coro', 'Bajo el agua', 'Al azar'],
     names: ['Cactus', 'Osito', 'Robot', 'Dragón', 'Largo', 'Chiqui'],
     setInfo: 'Ajusta la voz aquí. Las respuestas salen del teléfono, sin internet.',
     toneChar: 'Tono: personaje', speedChar: 'Velocidad: personaje', vChar: 'Voz: su propia voz', vPhone: 'Voz: lector del teléfono',
@@ -549,7 +551,7 @@ const I18N = {
   it: { locale: 'it-IT', dancing: 'Il ballerino', mimic: 'Imita', chat: 'Chiacchiera', start: '▶ AVVIA', stop: '⏸ STOP',
     dance: '💃 Balla', song: '🎵 Canzone', hint: 'tocca · scorri per cambiare', songWord: 'Canzone',
     st: ['Dorme', 'Ascolta', 'Pensa', 'Parla', 'Balla', 'Canta'],
-    fx: ['Scoiattolo', 'Gigante', 'Robot', 'Grotta', 'Alieno', 'Radio', 'Coro', 'Sott\'acqua', 'A caso'],
+    fx: ['Normale', 'Scoiattolo', 'Gigante', 'Robot', 'Grotta', 'Alieno', 'Radio', 'Coro', 'Sott\'acqua', 'A caso'],
     names: ['Cactus', 'Orsetto', 'Robot', 'Drago', 'Lungo', 'Piccolo'],
     setInfo: 'Regola la voce qui. Le risposte arrivano dal telefono, senza internet.',
     toneChar: 'Tono: personaggio', speedChar: 'Velocità: personaggio', vChar: 'Voce: la sua voce', vPhone: 'Voce: lettore del telefono',
@@ -561,7 +563,7 @@ const I18N = {
   pt: { locale: 'pt-BR', dancing: 'O dançarino', mimic: 'Imitar', chat: 'Conversar', start: '▶ COMEÇAR', stop: '⏸ PARAR',
     dance: '💃 Dançar', song: '🎵 Música', hint: 'cutuque · deslize para trocar', songWord: 'Música',
     st: ['Dormindo', 'Ouvindo', 'Pensando', 'Falando', 'Dançando', 'Cantando'],
-    fx: ['Esquilo', 'Gigante', 'Robô', 'Caverna', 'Alien', 'Rádio', 'Coral', 'Debaixo d\'água', 'Aleatório'],
+    fx: ['Normal', 'Esquilo', 'Gigante', 'Robô', 'Caverna', 'Alien', 'Rádio', 'Coral', 'Debaixo d\'água', 'Aleatório'],
     names: ['Cacto', 'Ursinho', 'Robô', 'Dragão', 'Comprido', 'Pequeno'],
     setInfo: 'Ajuste a voz aqui. As respostas vêm do telefone, sem internet.',
     toneChar: 'Tom: personagem', speedChar: 'Velocidade: personagem', vChar: 'Voz: a própria voz', vPhone: 'Voz: leitor do telefone',
@@ -573,7 +575,7 @@ const I18N = {
   ru: { locale: 'ru-RU', dancing: 'Танцующий', mimic: 'Повторюшка', chat: 'Болтать', start: '▶ СТАРТ', stop: '⏸ СТОП',
     dance: '💃 Танец', song: '🎵 Песня', hint: 'ткни · проведи для смены', songWord: 'Песня',
     st: ['Спит', 'Слушает', 'Думает', 'Говорит', 'Танцует', 'Поёт'],
-    fx: ['Бурундук', 'Великан', 'Робот', 'Пещера', 'Пришелец', 'Рация', 'Хор', 'Под водой', 'Случайно'],
+    fx: ['Обычный', 'Бурундук', 'Великан', 'Робот', 'Пещера', 'Пришелец', 'Рация', 'Хор', 'Под водой', 'Случайно'],
     names: ['Кактус', 'Мишка', 'Робот', 'Дракон', 'Длинный', 'Малыш'],
     setInfo: 'Настрой голос здесь. Ответы берутся из телефона, интернет не нужен.',
     toneChar: 'Тон: персонаж', speedChar: 'Скорость: персонаж', vChar: 'Голос: собственный', vPhone: 'Голос: чтец телефона',
@@ -585,7 +587,7 @@ const I18N = {
   ar: { locale: 'ar-SA', rtl: 1, dancing: 'الراقص', mimic: 'تقليد', chat: 'دردشة', start: '▶ ابدأ', stop: '⏸ توقف',
     dance: '💃 ارقص', song: '🎵 أغنية', hint: 'اضغط · اسحب للتبديل', songWord: 'أغنية',
     st: ['نائم', 'يستمع', 'يفكر', 'يتكلم', 'يرقص', 'يغني'],
-    fx: ['سنجاب', 'عملاق', 'روبوت', 'كهف', 'فضائي', 'لاسلكي', 'جوقة', 'تحت الماء', 'عشوائي'],
+    fx: ['عادي', 'سنجاب', 'عملاق', 'روبوت', 'كهف', 'فضائي', 'لاسلكي', 'جوقة', 'تحت الماء', 'عشوائي'],
     names: ['صبار', 'دبدوب', 'روبوت', 'تنين', 'طويل', 'صغير'],
     setInfo: 'اضبط الصوت هنا. الإجابات من الهاتف نفسه، بدون إنترنت.',
     toneChar: 'النغمة: الشخصية', speedChar: 'السرعة: الشخصية', vChar: 'الصوت: صوته الخاص', vPhone: 'الصوت: قارئ الهاتف',
@@ -597,7 +599,7 @@ const I18N = {
   hi: { locale: 'hi-IN', dancing: 'नाचने वाला', mimic: 'नकल', chat: 'बातचीत', start: '▶ शुरू', stop: '⏸ रुको',
     dance: '💃 नाचो', song: '🎵 गाना', hint: 'छुओ · बदलने के लिए स्वाइप करो', songWord: 'गाना',
     st: ['सो रहा है', 'सुन रहा है', 'सोच रहा है', 'बोल रहा है', 'नाच रहा है', 'गा रहा है'],
-    fx: ['गिलहरी', 'दानव', 'रोबोट', 'गुफा', 'एलियन', 'रेडियो', 'कोरस', 'पानी के नीचे', 'कोई भी'],
+    fx: ['सामान्य', 'गिलहरी', 'दानव', 'रोबोट', 'गुफा', 'एलियन', 'रेडियो', 'कोरस', 'पानी के नीचे', 'कोई भी'],
     names: ['कैक्टस', 'भालू', 'रोबोट', 'ड्रैगन', 'लंबू', 'नन्हा'],
     setInfo: 'आवाज़ यहाँ चुनो। जवाब फ़ोन से आते हैं, इंटरनेट नहीं चाहिए।',
     toneChar: 'सुर: किरदार', speedChar: 'गति: किरदार', vChar: 'आवाज़: अपनी आवाज़', vPhone: 'आवाज़: फ़ोन का वाचक',
@@ -862,8 +864,8 @@ function shaper(amount) {
 }
 
 /* ================= EFEKTLER ================= */
-const FX = ['sincap', 'dev', 'robot', 'yanki', 'uzayli', 'telefon', 'koro', 'suyalti', 'rastgele'];
-const FXUI = { sincap: ['🐿️', 'Sincap'], dev: ['👹', 'Dev'], robot: ['🤖', 'Robot'], yanki: ['🕳️', 'Mağara'], uzayli: ['👽', 'Uzaylı'], telefon: ['📞', 'Telsiz'], koro: ['👥', 'Koro'], suyalti: ['🐠', 'Su altı'], rastgele: ['🎲', 'Karışık'] };
+const FX = ['dry', 'sincap', 'dev', 'robot', 'yanki', 'uzayli', 'telefon', 'koro', 'suyalti', 'rastgele'];
+const FXUI = { dry: ['🎙️', 'Normal'], sincap: ['🐿️', 'Sincap'], dev: ['👹', 'Dev'], robot: ['🤖', 'Robot'], yanki: ['🕳️', 'Mağara'], uzayli: ['👽', 'Uzaylı'], telefon: ['📞', 'Telsiz'], koro: ['👥', 'Koro'], suyalti: ['🐠', 'Su altı'], rastgele: ['🎲', 'Karışık'] };
 let fx = 'sincap', live = null;
 function trim(buf, sec) {
   const max = Math.round(ac.sampleRate * sec);
@@ -951,7 +953,8 @@ function playFx(buffer, kind, after) {
     lfo.connect(dep); dep.connect(lp.frequency); lfo.start(); extras.push(lfo);
     s.connect(lp); lp.connect(out); lp.connect(rev(.35, 2, 2));
   }
-  fakeTalk = false; setState('talking', (FXUI[k] || ['', 'Konuşuyor'])[1]);
+  const li = FX.indexOf(k);
+  fakeTalk = false; setState('talking', li >= 0 && L ? L.fx[li] : '');
   let ended = false;
   const finish = () => {
     if (ended) return; ended = true;
@@ -1124,33 +1127,98 @@ function sing() {
 /* ============ KARAKTERİN KENDİ SESİ ============ */
 // Tarayıcı, telefonun okuyucusunun sesini yakalamamıza izin vermiyor.
 // O yüzden konuşmayı biz üretip taklit modundaki efekt zincirinden geçiriyoruz.
-const TRVOW = { 'a': 'a', 'e': 'e', 'ı': 'u', 'i': 'i', 'o': 'o', 'ö': 'o', 'u': 'u', 'ü': 'i' };
+const TRVOW = { 'a': 'a', 'e': 'e', 'ı': 'u', 'i': 'i', 'o': 'o', 'ö': 'o', 'u': 'u', 'ü': 'i',
+  'á': 'a', 'à': 'a', 'â': 'a', 'ä': 'e', 'é': 'e', 'è': 'e', 'ê': 'e', 'í': 'i', 'î': 'i',
+  'ó': 'o', 'ô': 'o', 'ö': 'o', 'ú': 'u', 'û': 'u', 'ü': 'i', 'y': 'i' };
+// ünsüz sınıfları: konuşmanın anlaşılırlığı bunlardan geliyor
+const CONS = {
+  p: ['stop', 3600], t: ['stop', 5000], k: ['stop', 2600], 'ç': ['aff', 3200],
+  b: ['vstop', 900], d: ['vstop', 1600], g: ['vstop', 1100], 'ğ': ['glide', 900],
+  f: ['fric', 4200], s: ['fric', 6200], 'ş': ['fric', 3400], h: ['fric', 1500],
+  v: ['vfric', 1200], z: ['vfric', 5200], j: ['vfric', 3000], c: ['aff', 2600],
+  m: ['nas', 300], n: ['nas', 420], l: ['glide', 700], r: ['trill', 1300]
+};
+function conSeg(ctx, dest, at, kind, hz, base) {
+  const dur = kind === 'stop' || kind === 'vstop' ? .05 : kind === 'trill' ? .06 : .075;
+  if (kind === 'nas' || kind === 'glide' || kind === 'trill') {
+    const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = base * .92;
+    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = hz; bp.Q.value = 5;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(.0001, at); g.gain.exponentialRampToValueAtTime(kind === 'nas' ? .18 : .26, at + .015);
+    g.gain.exponentialRampToValueAtTime(.0001, at + dur);
+    if (kind === 'trill') { const lfo = ctx.createOscillator(); lfo.frequency.value = 32;
+      const ld = ctx.createGain(); ld.gain.value = .12; lfo.connect(ld); ld.connect(g.gain); lfo.start(at); lfo.stop(at + dur); }
+    o.connect(bp); bp.connect(g); g.connect(dest); o.start(at); o.stop(at + dur + .01);
+    return dur;
+  }
+  const n = ctx.createBufferSource(), nb = ctx.createBuffer(1, Math.round(ctx.sampleRate * dur), ctx.sampleRate);
+  const nd = nb.getChannelData(0);
+  for (let i = 0; i < nd.length; i++) nd[i] = (Math.random() * 2 - 1);
+  n.buffer = nb;
+  const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = hz; bp.Q.value = kind === 'fric' ? 1.4 : 2.6;
+  const g = ctx.createGain();
+  if (kind === 'stop' || kind === 'aff') {
+    g.gain.setValueAtTime(.0001, at); g.gain.exponentialRampToValueAtTime(.34, at + .008);
+    g.gain.exponentialRampToValueAtTime(.0001, at + dur);
+  } else {
+    g.gain.setValueAtTime(.0001, at); g.gain.exponentialRampToValueAtTime(.2, at + .02);
+    g.gain.setValueAtTime(.2, at + dur * .6); g.gain.exponentialRampToValueAtTime(.0001, at + dur);
+  }
+  n.connect(bp); bp.connect(g); g.connect(dest); n.start(at);
+  if (kind === 'vstop' || kind === 'vfric') {
+    const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = base * .8;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 500;
+    const vg = ctx.createGain(); vg.gain.setValueAtTime(.16, at); vg.gain.exponentialRampToValueAtTime(.0001, at + dur);
+    o.connect(lp); lp.connect(vg); vg.connect(dest); o.start(at); o.stop(at + dur + .01);
+  }
+  return dur;
+}
+function fxNow() {
+  const k = fx === 'rastgele' ? FX[1 + Math.floor(Math.random() * (FX.length - 2))] : fx;
+  return k;
+}
 async function speakSynth(text) {
   audio();
   const sr = ac.sampleRate, c = curChar();
-  const syll = [];
-  text.toLowerCase().split(/\s+/).slice(0, 14).forEach((w, wi) => {
-    let n = 0;
-    for (const ch2 of w) if (TRVOW[ch2]) { syll.push({ v: TRVOW[ch2], w: wi, i: n++ }); }
-    if (n) syll.push(null);                       // kelime arası kısa duraklama
-  });
-  if (!syll.length) return false;
-  const step = .135, dur = syll.length * step + .5;
-  const off = new OfflineAudioContext(1, Math.ceil(sr * dur), sr);
+  const words = text.toLowerCase().replace(/[^\p{L}\s?!.,]/gu, '').split(/\s+/).filter(Boolean).slice(0, 16);
+  if (!words.length) return false;
+  const off = new OfflineAudioContext(1, Math.ceil(sr * 12), sr);
   const dest = off.createGain(); dest.gain.value = .9; dest.connect(off.destination);
   const base = 165 * (c.tone || 1.2);
   const up = /[?]\s*$/.test(text);
-  let t = .05;
-  syll.forEach((s, i) => {
-    if (!s) { t += step * .6; return; }
-    const prog = i / syll.length;
-    const wob = Math.sin(i * 1.7) * .05;
-    const f = base * (1 + wob - prog * .12 + (up && i > syll.length - 3 ? .25 : 0)) * (s.i === 0 ? 1.06 : 1);
-    voiceNote(t, step * .82, f, s.v, dest, null, off);
-    t += step;
+  let t = .06, syl = 0, total = 0;
+  words.forEach((w, wi) => {
+    const chars = [...w];
+    let vowelsInWord = 0;
+    chars.forEach(ch2 => {
+      if (TRVOW[ch2] && ch2 !== 'y') vowelsInWord++;
+    });
+    const wordStart = t;
+    chars.forEach((ch2, ci) => {
+      if (t > 11) return;
+      const v = TRVOW[ch2];
+      if (v && !(ch2 === 'y' && ci === 0)) {
+        const prog = syl / Math.max(6, vowelsInWord * words.length);
+        const stress = ci === 0 || chars.length < 3 ? 1.07 : 1;
+        const rise = up && wi >= words.length - 1 ? .22 : 0;
+        const f = base * (1 + Math.sin(syl * 1.6) * .04 - prog * .1 + rise) * stress;
+        const d = .115 + (vowelsInWord === 1 ? .045 : 0);
+        voiceNote(t, d, f, v, dest, null, off);
+        t += d * .96; syl++;
+      } else if (CONS[ch2]) {
+        const [kind, hz] = CONS[ch2];
+        t += conSeg(off, dest, t, kind, hz, base) * .9;
+      }
+    });
+    if (t === wordStart) t += .05;
+    t += .075;                                  // kelime arası duraklama
+    total = t;
   });
   const buf = await off.startRendering();
-  playFx(buf, c.voiceFx || 'dry', () => { speaking = false; if (wantRec) startRec(); });
+  const cut = Math.min(buf.length, Math.ceil((total + .25) * sr));
+  const out = ac.createBuffer(1, cut, sr);
+  out.getChannelData(0).set(buf.getChannelData(0).subarray(0, cut));
+  playFx(out, fxNow(), () => { speaking = false; if (wantRec) startRec(); });
   return true;
 }
 
@@ -1486,6 +1554,8 @@ function fillVoices() {
   if (!tr.length) diag('No ' + LANGNAME[langCode] + ' text-to-speech voice installed on this phone.');
 }
 if (window.speechSynthesis) { speechSynthesis.onvoiceschanged = fillVoices; fillVoices(); setTimeout(fillVoices, 700); }
+const TTSFX = { dry: [1, 1], sincap: [1.9, 1.12], dev: [.35, .85], robot: [.5, 1.3], yanki: [1.05, .95],
+  uzayli: [1.75, 1.2], telefon: [1.15, 1.08], koro: [.85, .95], suyalti: [.45, .88] };
 function speak(text) {
   const sy = window.speechSynthesis;
   if (!sy) { setState(running ? 'listening' : 'idle'); return; }
@@ -1495,8 +1565,11 @@ function speak(text) {
   if (chosenVoice) u.voice = chosenVoice;
   u.lang = (chosenVoice && chosenVoice.lang) || L.locale;
   const tv = parseFloat(el('tone').value), sv = parseFloat(el('speed').value);
-  u.pitch = Math.min(2, Math.max(0, isFinite(tv) ? tv : (curChar().tone || 1.2)));
-  u.rate = Math.min(3, Math.max(.5, isFinite(sv) ? sv : (curChar().rate || 1)));
+  const m = TTSFX[fxNow()] || [1, 1];
+  const bp = isFinite(tv) ? tv : (curChar().tone || 1.2);
+  const br = isFinite(sv) ? sv : (curChar().rate || 1);
+  u.pitch = Math.min(2, Math.max(0, bp * m[0]));
+  u.rate = Math.min(3, Math.max(.5, br * m[1]));
   fakeSeed = rnd(0, 9);
   speaking = true; if (rec && recOn) { try { rec.stop(); } catch (e) { } }
   u.onstart = () => { fakeTalk = true; setState('talking'); };
@@ -1544,7 +1617,7 @@ function setMode(m) {
   el('mParrot').setAttribute('aria-pressed', m === 'parrot');
   el('mSmart').setAttribute('aria-pressed', m === 'smart');
   el('go').textContent = running ? L.stop : L.start;
-  el('fxGrid').classList.toggle('on', m === 'parrot');
+  el('fxGrid').classList.add('on');
   el('talk').style.display = m === 'smart' ? 'flex' : 'none';
 }
 el('mParrot').onclick = () => setMode('parrot');
