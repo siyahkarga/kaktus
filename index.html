@@ -862,6 +862,7 @@ function shaper(amount) {
 const FX = ['dry', 'sincap', 'dev', 'robot', 'yanki', 'uzayli', 'telefon', 'koro', 'suyalti', 'rastgele'];
 const FXUI = { dry: ['🎙️', 'Normal'], sincap: ['🐿️', 'Sincap'], dev: ['👹', 'Dev'], robot: ['🤖', 'Robot'], yanki: ['🕳️', 'Mağara'], uzayli: ['👽', 'Uzaylı'], telefon: ['📞', 'Telsiz'], koro: ['👥', 'Koro'], suyalti: ['🐠', 'Su altı'], rastgele: ['🎲', 'Karışık'] };
 let fx = 'sincap', live = null;
+const fxByMode = { parrot: 'sincap', smart: 'dry' };   // sohbet varsayilani: efektsiz, dogal ses
 function trim(buf, sec) {
   const max = Math.round(ac.sampleRate * sec);
   if (buf.length <= max) return buf;
@@ -1595,7 +1596,7 @@ FX.forEach(k => {
   const b = document.createElement('button');
   b.innerHTML = '<b>' + FXUI[k][0] + '</b>' + FXUI[k][1];
   b.setAttribute('aria-pressed', k === fx);
-  b.onclick = () => { fx = k; [...el('fxGrid').children].forEach(c => c.setAttribute('aria-pressed', c === b)); };
+  b.onclick = () => { fx = k; fxByMode[mode] = k; [...el('fxGrid').children].forEach(c => c.setAttribute('aria-pressed', c === b)); };
   el('fxGrid').appendChild(b);
 });
 function setMode(m) {
@@ -1605,6 +1606,8 @@ function setMode(m) {
   el('mSmart').setAttribute('aria-pressed', m === 'smart');
   el('go').textContent = running ? L.stop : L.start;
   el('fxGrid').classList.add('on');
+  fx = fxByMode[m] || 'dry';
+  [...el('fxGrid').children].forEach((c, i) => c.setAttribute('aria-pressed', FX[i] === fx));
 }
 el('mParrot').onclick = () => setMode('parrot');
 el('mSmart').onclick = () => setMode('smart');
