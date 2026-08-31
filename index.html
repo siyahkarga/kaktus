@@ -377,7 +377,7 @@
   <input id="brainCfg" type="password" placeholder="sk-ant-… (isteğe bağlı)" autocomplete="off">
 </div>
 
-<p class="ver" id="ver">v22</p>
+<p class="ver" id="ver">v23</p>
 </div>
 </div>
 </div>
@@ -1756,6 +1756,8 @@ CHARS.forEach((c, i) => {
 el('arrL').onclick = () => switchChar(-1);
 el('arrR').onclick = () => switchChar(1);
 function setMode(m) {
+  if (m === mode && running) return;
+  const wasRunning = running;
   if (running) stopAll();
   mode = m;
   el('mParrot').setAttribute('aria-pressed', m === 'parrot');
@@ -1764,6 +1766,7 @@ function setMode(m) {
   el('fxGrid').classList.add('on');
   fx = fxByMode[m] || 'dry';
   [...el('fxGrid').children].forEach((c, i) => c.setAttribute('aria-pressed', FX[i] === fx));
+  if (wasRunning) startAll();   // çalışırken mod değişti: yeni modda kaldığı yerden devam
 }
 el('mParrot').onclick = () => setMode('parrot');
 el('mSmart').onclick = () => setMode('smart');
@@ -1842,7 +1845,6 @@ el('panel').addEventListener('change', () => armOvTimer(OV_WAIT));
 // başlat / dans / şarkı: panel çekilsin, karakter tam ekran izlensin
 ['danceBtn', 'songBtn'].forEach(id =>
   el(id).addEventListener('click', () => setTimeout(() => showOverlay(false), 350)));
-el('go').addEventListener('click', () => setTimeout(() => { if (running) showOverlay(false); }, 400));
 function sendTyped() {
   const v = el('typeIn').value.trim();
   if (!v || busy || speaking) return;
@@ -1850,7 +1852,11 @@ function sendTyped() {
 }
 el('typeGo').onclick = sendTyped;
 el('typeIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); sendTyped(); } });
-el('go').onclick = () => running ? stopAll() : startAll();
+el('go').onclick = async () => {
+  if (running) { stopAll(); return; }
+  await startAll();
+  if (running) showOverlay(false);   // BAŞLA başarılıysa overlay hemen çekilsin
+};
 let focusTimer = null;
 function focusStage() {
   clearTimeout(focusTimer);
