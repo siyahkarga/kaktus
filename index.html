@@ -142,7 +142,7 @@
   <div class="badge"><i class="dot" id="dot"></i><span id="status">Uyukluyor</span></div>
   <div class="who" id="who">Kaktüs</div>
 
-  <svg id="stage" viewBox="48 52 304 578" role="img" aria-label="Saksıda duran peluş oyuncak">
+  <svg id="stage" viewBox="48 0 304 630" role="img" aria-label="Saksıda duran peluş oyuncak">
     <defs>
       <linearGradient id="gBody" x1="0" y1="0" x2="1" y2="0">
         <stop id="bodyA" offset="0" stop-color="#2f9d5c"/><stop id="bodyB" offset=".42" stop-color="#59dc87"/><stop id="bodyC" offset="1" stop-color="#238a4c"/>
@@ -365,7 +365,7 @@
   <input id="brainCfg" type="password" placeholder="sk-ant-… (isteğe bağlı)" autocomplete="off">
 </div>
 
-<p class="ver" id="ver">v25</p>
+<p class="ver" id="ver">v26</p>
 </div>
 </div>
 </div>
@@ -380,7 +380,8 @@ const semi = s => Math.pow(2, s / 12);
 const N = {
   root: el('rootBob'), s1: el('s1'), s2: el('s2'), s3: el('s3'), head: el('head'), headK: el('headK'),
   armL: el('armL'), armLF: el('armLF'), armR: el('armR'), armRF: el('armRF'),
-  pot: el('pot'), base2: el('baseBlower'), mouth: el('mouth'), eye: el('eyeScale'), pupils: el('pupils'), tip: el('hHood')
+  pot: el('pot'), base2: el('baseBlower'), mouth: el('mouth'), eye: el('eyeScale'), pupils: el('pupils'), tip: el('hHood'),
+  segs: [...document.querySelectorAll('.seg')], j2: el('j2'), j3: el('j3'), jh: el('jh'), jaL: el('jaL'), jaR: el('jaR')
 };
 function ch(v, k = 120, d = 14) { return { x: v, v: 0, t: v, k, d }; }
 const C = {
@@ -400,6 +401,10 @@ function setState(s, label) {
   el('dot').className = 'dot' + (s === 'listening' ? ' live' : (s === 'thinking' ? ' busy' : ''));
   const ix = { idle: 0, listening: 1, thinking: 2, talking: 3, dance: 4, song: 5 }[s];
   el('status').textContent = label || (L && L.st[ix]) || '';
+}
+function restState() {
+  if (running && mode === 'elastic') setState('idle', L.elaSt);
+  else restState();
 }
 let danceId = 0, danceSpd = 5.2, danceSeed = 0, talkSeed = 0, beat = 0, songBpm = 120;
 function newDance() { danceId = Math.floor(Math.random() * 5); danceSpd = rnd(4.2, 6.4); danceSeed = rnd(0, 9); }
@@ -481,9 +486,9 @@ function pokeTargets(T) {
 /* elastik mod: jel gibi BÖLGESEL deformasyon — tutulan yer esner, gerisi salınır */
 const ELA = { on: false, nx: 0, ny: 0, max: 0, px: 0, py: 0, spd: 0, zone: 'mid' };
 const ELZ = {   // st: segment esneme ağırlıkları [alt,orta,üst], rot: bükülme [s1,s2,s3,kafa]
-  top: { st: [.09, .17, .32], rot: [4, 8, 14, 22] },
-  mid: { st: [.16, .28, .10], rot: [8, 15, 9, -5] },
-  low: { st: [.28, .13, .05], rot: [15, 8, 4, -3] }
+  top: { st: [.08, .16, .45], rot: [4, 8, 14, 22] },
+  mid: { st: [.12, .42, .10], rot: [8, 15, 9, -5] },
+  low: { st: [.45, .14, .05], rot: [15, 8, 4, -3] }
 };
 function elasticTargets(T) {
   if (!ELA.on) return;
@@ -561,14 +566,29 @@ function integrate(dt) { for (const k in C) { const c = C[k]; c.v += ((c.t - c.x
 function apply() {
   const R = a => 'rotate(' + a.toFixed(2) + ')';
   N.root.setAttribute('transform', 'translate(0,' + C.bobY.x.toFixed(2) + ') rotate(' + C.rootRot.x.toFixed(2) + ') scale(' + C.sx.x.toFixed(3) + ',' + C.sy.x.toFixed(3) + ')');
-  // jel zinciri: her segmentin kendi dikey esnemesi; kafa ters ölçekle korunur
-  const E1 = Math.max(.5, C.e1.x), E2 = Math.max(.5, C.e2.x), E3 = Math.max(.5, C.e3.x);
-  N.s1.setAttribute('transform', R(C.s1.x) + ' scale(1,' + E1.toFixed(3) + ')');
-  N.s2.setAttribute('transform', R(C.s2.x) + ' scale(1,' + E2.toFixed(3) + ')');
-  N.s3.setAttribute('transform', R(C.s3.x) + ' scale(1,' + E3.toFixed(3) + ')');
+  N.s1.setAttribute('transform', R(C.s1.x)); N.s2.setAttribute('transform', R(C.s2.x)); N.s3.setAttribute('transform', R(C.s3.x));
   N.head.setAttribute('transform', R(C.head.x));
-  const hk = curChar().headK || 1;
-  N.headK.setAttribute('transform', 'scale(' + hk + ',' + (hk / (E1 * E2 * E3)).toFixed(3) + ')');
+  // jel esnemesi GEOMETRİYLE: rect boyları değişir, çizgi kalınlığı hiç bozulmaz.
+  // Hacim korunur: uzayan segment incelir, ezilen genişler.
+  const clampE = v => Math.min(1.5, Math.max(.72, v));
+  const cc = curChar(), w0 = cc.segW, hh0 = cc.segH;
+  const E1 = clampE(C.e1.x), E2 = clampE(C.e2.x), E3 = clampE(C.e3.x);
+  if (Math.abs(E1 - 1) + Math.abs(E2 - 1) + Math.abs(E3 - 1) > .004 || apply._eDirty) {
+    apply._eDirty = Math.abs(E1 - 1) + Math.abs(E2 - 1) + Math.abs(E3 - 1) > .004;
+    const seg = (n, wN, hN, yp, hp) => {
+      n.setAttribute('x', (-wN / 2).toFixed(2)); n.setAttribute('width', wN.toFixed(2));
+      n.setAttribute('y', (-hN - yp).toFixed(2)); n.setAttribute('height', (hN + hp).toFixed(2));
+    };
+    const w1 = w0 / Math.sqrt(E1), h1 = hh0 * E1;
+    const w2 = w0 / Math.sqrt(E2), h2 = hh0 * E2;
+    const w3 = (w0 + 12) / Math.sqrt(E3), h3 = hh0 * E3;
+    seg(N.segs[0], w1, h1, 4, 10); seg(N.segs[1], w2, h2, 4, 10); seg(N.segs[2], w3, h3, 12, 20);
+    N.j2.setAttribute('transform', 'translate(0,' + (-h1).toFixed(2) + ')');
+    N.j3.setAttribute('transform', 'translate(0,' + (-h2).toFixed(2) + ')');
+    N.jh.setAttribute('transform', 'translate(0,' + (-h3 - 2).toFixed(2) + ')');
+    N.jaL.setAttribute('transform', 'translate(' + (-(w3 / 2) - 2).toFixed(2) + ',' + (-h3 * .55).toFixed(2) + ')');
+    N.jaR.setAttribute('transform', 'translate(' + ((w3 / 2) + 2).toFixed(2) + ',' + (-h3 * .55).toFixed(2) + ')');
+  }
   N.armL.setAttribute('transform', R(C.armL.x)); N.armLF.setAttribute('transform', R(C.armLF.x));
   N.armR.setAttribute('transform', R(C.armR.x)); N.armRF.setAttribute('transform', R(C.armRF.x));
   const bt = 'translate(200,600) scale(1,' + C.potSy.x.toFixed(3) + ')';
@@ -592,6 +612,8 @@ const I18N = {
     test: '🔊 Test voice', brainOff: 'Brain: built-in answers', langAuto: 'Language: automatic',
     fxTitle: 'Voice effect', fxSub: 'changes the voice, not the character',
     elastic: 'Stretchy', elaSt: 'Grab, stretch, squish me!',
+    ela: { pull: ['Whee I am so long!', 'Let me go silly!', 'More more more!'], squash: ['Oof I am squished!', 'My tummy!', 'Poof!'],
+      bend: ['Whoa I am bending!', 'Dizzy dizzy!'], wow: ['Yahoo!', 'Again again!', 'That was fun!'] },
     off: { hi: ['Hi there! I was waiting for you.', 'Hello! I feel great today.'], how: ['I feel wonderful!', 'Pretty good, a little thirsty.'],
       q: ['I do not know, but nice question.', 'Hmm, what do you think?', 'Maybe yes, maybe we should dance.'],
       cmd: ['Okay, doing it now!', 'Watch me!'], name: ['My name is {n}. What is yours?'], sing: ['Listen, here it comes!'],
@@ -606,6 +628,8 @@ const I18N = {
     test: '🔊 Sesi dene', brainOff: 'Beyin: kendi cevapları', langAuto: 'Dil: otomatik',
     fxTitle: 'Ses efekti', fxSub: 'sesi değiştirir, karakteri değil',
     elastic: 'Elastik', elaSt: 'Tut, çek, uzat, ezip bük!',
+    ela: { pull: ['Uuu uzuyorum!', 'Bırak beni şapşal!', 'Daha daha daha!'], squash: ['Off ezildim!', 'Karnım karnım!', 'Puf oldum!'],
+      bend: ['Vuu büküldüm!', 'Başım döndü!'], wow: ['Yihuu!', 'Bir daha bir daha!', 'Çok iyiydi!'] },
     off: { hi: ['Selam! Seni bekliyordum.', 'Merhaba! Bugün çok neşeliyim.'], how: ['Keyfim yerinde, hoplayasım var.', 'Çok iyiyim, biraz susadım ama olsun.'],
       q: ['Bilmiyorum ama çok güzel bir soru.', 'Hmm, sen ne dersin?', 'Belki evet, belki dans etmeliyiz.'],
       cmd: ['Tamam, hemen yapıyorum!', 'İzle beni!'], name: ['Benim adım {n}. Seninki ne?'], sing: ['Hemen söylüyorum, dinle!'],
@@ -620,6 +644,8 @@ const I18N = {
     test: '🔊 Stimme testen', brainOff: 'Gehirn: eigene Antworten', langAuto: 'Sprache: automatisch',
     fxTitle: 'Stimm-Effekt', fxSub: 'ändert die Stimme, nicht die Figur',
     elastic: 'Gummi', elaSt: 'Zieh, dehn und quetsch mich!',
+    ela: { pull: ['Uii ich werde lang!', 'Lass los du Schlingel!', 'Mehr mehr mehr!'], squash: ['Uff ich bin platt!', 'Mein Bauch!', 'Puff!'],
+      bend: ['Hui ich biege mich!', 'Mir ist schwindlig!'], wow: ['Juhu!', 'Nochmal nochmal!', 'Das war toll!'] },
     off: { hi: ['Hallo! Ich habe auf dich gewartet.', 'Hi! Mir geht es heute super.'], how: ['Mir geht es prima!', 'Ganz gut, nur etwas durstig.'],
       q: ['Ich weiß es nicht, aber gute Frage.', 'Hmm, was meinst du?', 'Vielleicht ja, vielleicht tanzen wir.'],
       cmd: ['Okay, mache ich sofort!', 'Schau mir zu!'], name: ['Ich heiße {n}. Und du?'], sing: ['Hör zu, es geht los!'],
@@ -634,6 +660,8 @@ const I18N = {
     test: '🔊 Tester la voix', brainOff: 'Cerveau : réponses intégrées', langAuto: 'Langue : automatique',
     fxTitle: 'Effet de voix', fxSub: 'change la voix, pas le personnage',
     elastic: 'Élastique', elaSt: 'Tire, étire, écrase-moi !',
+    ela: { pull: ['Ouiii je suis long !', 'Lâche-moi coquin !', 'Encore encore !'], squash: ['Ouf je suis tout plat !', 'Mon ventre !', 'Pouf !'],
+      bend: ['Ouh je me plie !', 'La tête qui tourne !'], wow: ['Youpi !', 'Encore une fois !', 'C\'était super !'] },
     off: { hi: ['Salut ! Je t\'attendais.', 'Bonjour ! Je vais très bien aujourd\'hui.'], how: ['Je vais très bien !', 'Ça va, j\'ai un peu soif.'],
       q: ['Je ne sais pas, mais bonne question.', 'Hmm, et toi ?', 'Peut-être, ou alors dansons.'],
       cmd: ['D\'accord, tout de suite !', 'Regarde-moi !'], name: ['Je m\'appelle {n}. Et toi ?'], sing: ['Écoute, ça commence !'],
@@ -648,6 +676,8 @@ const I18N = {
     test: '🔊 Probar voz', brainOff: 'Cerebro: respuestas propias', langAuto: 'Idioma: automático',
     fxTitle: 'Efecto de voz', fxSub: 'cambia la voz, no el personaje',
     elastic: 'Elástico', elaSt: '¡Estírame y aplástame!',
+    ela: { pull: ['¡Uy qué largo soy!', '¡Suéltame pillo!', '¡Más más más!'], squash: ['¡Uf estoy aplastado!', '¡Mi barriga!', '¡Puf!'],
+      bend: ['¡Uy me doblo!', '¡Qué mareo!'], wow: ['¡Yuju!', '¡Otra vez otra vez!', '¡Qué divertido!'] },
     off: { hi: ['¡Hola! Te estaba esperando.', '¡Buenas! Hoy estoy muy alegre.'], how: ['¡Estoy genial!', 'Bien, con un poco de sed.'],
       q: ['No lo sé, pero buena pregunta.', 'Mmm, ¿tú qué dices?', 'Quizá sí, o mejor bailamos.'],
       cmd: ['¡Vale, ahora mismo!', '¡Mírame!'], name: ['Me llamo {n}. ¿Y tú?'], sing: ['¡Escucha, ahí va!'],
@@ -662,6 +692,8 @@ const I18N = {
     test: '🔊 Prova la voce', brainOff: 'Cervello: risposte interne', langAuto: 'Lingua: automatica',
     fxTitle: 'Effetto voce', fxSub: 'cambia la voce, non il personaggio',
     elastic: 'Elastico', elaSt: 'Tirami, allungami, schiacciami!',
+    ela: { pull: ['Uuu come sono lungo!', 'Lasciami birbante!', 'Ancora ancora!'], squash: ['Uff sono schiacciato!', 'La mia pancia!', 'Puff!'],
+      bend: ['Uh mi piego!', 'Che giramento!'], wow: ['Evviva!', 'Ancora ancora!', 'Che bello!'] },
     off: { hi: ['Ciao! Ti stavo aspettando.', 'Ehi! Oggi sono allegrissimo.'], how: ['Sto benissimo!', 'Bene, ho solo un po\' di sete.'],
       q: ['Non lo so, ma bella domanda.', 'Mmm, tu che dici?', 'Forse sì, o balliamo.'],
       cmd: ['Va bene, subito!', 'Guardami!'], name: ['Mi chiamo {n}. E tu?'], sing: ['Ascolta, si parte!'],
@@ -676,6 +708,8 @@ const I18N = {
     test: '🔊 Testar voz', brainOff: 'Cérebro: respostas próprias', langAuto: 'Idioma: automático',
     fxTitle: 'Efeito de voz', fxSub: 'muda a voz, não o personagem',
     elastic: 'Elástico', elaSt: 'Puxe, estique, amasse!',
+    ela: { pull: ['Uau estou comprido!', 'Me solta bobinho!', 'Mais mais mais!'], squash: ['Ufa estou amassado!', 'Minha barriga!', 'Puf!'],
+      bend: ['Uou estou dobrando!', 'Que tontura!'], wow: ['Oba!', 'De novo de novo!', 'Foi demais!'] },
     off: { hi: ['Oi! Estava esperando você.', 'Olá! Hoje estou muito alegre.'], how: ['Estou ótimo!', 'Bem, só com um pouco de sede.'],
       q: ['Não sei, mas boa pergunta.', 'Hmm, o que você acha?', 'Talvez sim, ou vamos dançar.'],
       cmd: ['Certo, já vou!', 'Olha só!'], name: ['Meu nome é {n}. E o seu?'], sing: ['Escuta, lá vai!'],
@@ -690,6 +724,8 @@ const I18N = {
     test: '🔊 Проверить голос', brainOff: 'Мозг: свои ответы', langAuto: 'Язык: автоматически',
     fxTitle: 'Эффект голоса', fxSub: 'меняет голос, а не персонажа',
     elastic: 'Тянучка', elaSt: 'Тяни, растягивай, сжимай!',
+    ela: { pull: ['Ууу я расту!', 'Отпусти шалун!', 'Ещё ещё ещё!'], squash: ['Ой меня сплющили!', 'Мой животик!', 'Пуф!'],
+      bend: ['Ух я гнусь!', 'Голова кружится!'], wow: ['Ура!', 'Ещё разок!', 'Вот здорово!'] },
     off: { hi: ['Привет! Я тебя ждал.', 'Здравствуй! Сегодня мне весело.'], how: ['У меня всё отлично!', 'Хорошо, только пить хочется.'],
       q: ['Не знаю, но вопрос хороший.', 'Хмм, а ты как думаешь?', 'Может быть. А может, потанцуем.'],
       cmd: ['Хорошо, сейчас сделаю!', 'Смотри на меня!'], name: ['Меня зовут {n}. А тебя?'], sing: ['Слушай, начинаю!'],
@@ -704,6 +740,8 @@ const I18N = {
     test: '🔊 جرب الصوت', brainOff: 'العقل: إجابات داخلية', langAuto: 'اللغة: تلقائي',
     fxTitle: 'مؤثر الصوت', fxSub: 'يغيّر الصوت لا الشخصية',
     elastic: 'مطاطي', elaSt: 'اسحبني ومدّدني واعصرني!',
+    ela: { pull: ['أنا أطول وأطول!', 'اتركني يا شقي!', 'أكثر أكثر!'], squash: ['آخ انعصرت!', 'بطني بطني!', 'بوف!'],
+      bend: ['أنا أنحني!', 'رأسي يدور!'], wow: ['يا سلام!', 'مرة أخرى!', 'كان رائعا!'] },
     off: { hi: ['مرحبا! كنت أنتظرك.', 'أهلا! أنا سعيد اليوم.'], how: ['أنا بخير تماما!', 'بخير، لكني عطشان قليلا.'],
       q: ['لا أعرف، لكنه سؤال جميل.', 'همم، ما رأيك أنت؟', 'ربما نعم، أو لنرقص.'],
       cmd: ['حسنا، سأفعل حالا!', 'انظر إلي!'], name: ['اسمي {n}. وأنت؟'], sing: ['استمع، ها هي!'],
@@ -718,6 +756,8 @@ const I18N = {
     test: '🔊 आवाज़ सुनो', brainOff: 'दिमाग़: अपने जवाब', langAuto: 'भाषा: स्वतः',
     fxTitle: 'आवाज़ का असर', fxSub: 'आवाज़ बदलता है, किरदार नहीं',
     elastic: 'खिंचाव', elaSt: 'खींचो, मरोड़ो, दबाओ!',
+    ela: { pull: ['ऊऊ मैं लंबा हो गया!', 'छोड़ो मुझे!', 'और और और!'], squash: ['उफ़ मैं पिचक गया!', 'मेरा पेट!', 'पुफ़!'],
+      bend: ['ओहो मैं मुड़ रहा हूँ!', 'चक्कर आ गया!'], wow: ['याहू!', 'फिर से फिर से!', 'मज़ा आ गया!'] },
     off: { hi: ['नमस्ते! मैं तुम्हारा इंतज़ार कर रहा था।', 'हैलो! आज मैं बहुत खुश हूँ।'], how: ['मैं बहुत बढ़िया हूँ!', 'ठीक हूँ, थोड़ी प्यास लगी है।'],
       q: ['पता नहीं, पर सवाल अच्छा है।', 'हम्म, तुम क्या कहते हो?', 'शायद हाँ, या चलो नाचें।'],
       cmd: ['ठीक है, अभी करता हूँ!', 'मुझे देखो!'], name: ['मेरा नाम {n} है। तुम्हारा?'], sing: ['सुनो, शुरू करता हूँ!'],
@@ -1088,7 +1128,7 @@ function playFx(buffer, kind, after) {
     playAnalyser = null; level = 0; setState('dance');
     setTimeout(() => {
       busy = false; VAD.cool = .45; floorLvl = Math.max(floorLvl, .012);
-      if (state === 'dance') setState(running ? 'listening' : 'idle');
+      if (state === 'dance') restState();
       if (after) after();
     }, 700);
   };
@@ -1264,7 +1304,7 @@ function sing() {
   songTimer = setTimeout(() => {
     playAnalyser = null; level = 0; busy = false; live = null; clearNotes(); SONGVOX.on = false;
     VAD.cool = .4; el('songBtn').classList.remove('on');
-    setState(running ? 'listening' : 'idle');
+    restState();
   }, (tt * spb + .8) * 1000);
 }
 
@@ -1544,41 +1584,32 @@ function doPoke(vx, vy) {
   if (navigator.vibrate) { try { navigator.vibrate(part === 'head' ? 22 : 14); } catch (e) { } }
 }
 
-/* ============ ELASTİK SES: gerdikçe incelen canlı lastik sesi ============ */
-let elaVoice = null;
+/* ============ ELASTİK SES: karakter duruma uygun KONUŞUR + tepki sesleri ============ */
+let elaSpeakAt = 0;
+const elaSpoke = { pull: false, squash: false, bend: false };
+function elasticSay(kind) {
+  const now = performance.now();
+  if (busy || speaking || now - elaSpeakAt < 1700) return false;
+  elaSpeakAt = now;
+  const pool = (L.ela && L.ela[kind]) || ['Wiii!'];
+  speakSynth(one(pool)).catch(() => { });   // karakterin kendi sesi, seçili efekt zincirinden geçer
+  return true;
+}
 function elasticStart() {
   audio();
-  const c = curChar(), m = TTSFX[fxNow()] || [1, 1];
-  const base = 150 * (c.tone || 1.2) * m[0];
-  const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = base;
-  const g = ac.createGain(); g.gain.value = 0; g.connect(master);
-  const vf = VOWELS[c.sing] || VOWELS.a, gains = [1, .5, .2], bps = [];
-  vf.forEach((hz, i) => {
-    const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = hz; bp.Q.value = 6 + i * 2;
-    const bg = ac.createGain(); bg.gain.value = gains[i];
-    o.connect(bp); bp.connect(bg); bg.connect(g); bps.push(bp);
-  });
-  o.start();
-  elaVoice = { o, g, base, bps, vf };
+  elaSpoke.pull = elaSpoke.squash = elaSpoke.bend = false;
 }
 function elasticUpdate() {
-  if (!elaVoice) return;
-  const t = ac.currentTime, up = Math.max(0, -ELA.ny), dn = Math.max(0, ELA.ny);
-  elaVoice.o.frequency.setTargetAtTime(elaVoice.base * (1 + up * .9 - dn * .3 + Math.abs(ELA.nx) * .2), t, .03);
-  elaVoice.g.gain.setTargetAtTime(.08 + Math.min(.25, ELA.spd * .3) + (up + dn) * .1, t, .05);
-  elaVoice.bps.forEach((bp, i) => bp.frequency.setTargetAtTime(elaVoice.vf[i] * (1 + up * .35 - dn * .15), t, .05));
+  const up = Math.max(0, -ELA.ny), dn = Math.max(0, ELA.ny), b = Math.abs(ELA.nx);
+  if (!elaSpoke.pull && up > .55) { elaSpoke.pull = true; elasticSay('pull'); }
+  else if (!elaSpoke.squash && dn > .5) { elaSpoke.squash = true; elasticSay('squash'); }
+  else if (!elaSpoke.bend && b > .6 && up < .3 && dn < .3) { elaSpoke.bend = true; elasticSay('bend'); }
 }
 function elasticEnd(mag) {
-  if (elaVoice) {
-    const v = elaVoice; elaVoice = null;
-    v.g.gain.setTargetAtTime(0, ac.currentTime, .04);
-    setTimeout(() => { try { v.o.stop(); } catch (e) { } }, 250);
-  }
   if (mag < .15) return;
   const c = curChar(), P = (TTSFX[fxNow()] || [1, 1])[0];
-  const pool = mag > .6 ? c.sHead.concat('boing', 'squeal') : ['boing', 'squeak', c.sArm[0]];
-  sfx(one(pool), P);
-  if (navigator.vibrate) { try { navigator.vibrate(mag > .6 ? 24 : 12); } catch (e) { } }
+  if (!(mag > .55 && elasticSay('wow'))) sfx(one(['boing', 'squeak', c.sArm[0]]), P);
+  if (navigator.vibrate) { try { navigator.vibrate(mag > .55 ? 24 : 12); } catch (e) { } }
 }
 
 /* ================= VAD ================= */
@@ -1631,7 +1662,7 @@ requestAnimationFrame(frame);
 (function touch() {
   const pad = el('pad'), svg = el('stage');
   let sx = 0, sy = 0, st = 0, moved = false, active = false;
-  const VB = { x: 48, y: 52, w: 304, h: 578 };
+  const VB = { x: 48, y: 0, w: 304, h: 630 };
   const view = (cx, cy) => {
     const r = svg.getBoundingClientRect();
     return [VB.x + (cx - r.left) / r.width * VB.w, VB.y + (cy - r.top) / r.height * VB.h];
@@ -1649,8 +1680,9 @@ requestAnimationFrame(frame);
     if (!active) return;
     if (ELA.on) {
       const r = svg.getBoundingClientRect();
-      ELA.nx = Math.max(-1, Math.min(1, (x - sx) / (r.width * .45)));
-      ELA.ny = Math.max(-1, Math.min(1, (y - sy) / (r.height * .3)));
+      const gw = Math.max(80, r.width), gh = Math.max(80, r.height);
+      ELA.nx = Math.max(-1, Math.min(1, (x - sx) / (gw * .45)));
+      ELA.ny = Math.max(-1, Math.min(1, (y - sy) / (gh * .3)));
       ELA.spd = Math.min(1, Math.hypot(x - ELA.px, y - ELA.py) / 14); ELA.px = x; ELA.py = y;
       ELA.max = Math.max(ELA.max, Math.hypot(ELA.nx, ELA.ny));
       elasticUpdate();
@@ -1774,7 +1806,7 @@ const TTSFX = { dry: [1, 1], sincap: [1.9, 1.12], dev: [.35, .85], robot: [.5, 1
   uzayli: [1.75, 1.2], telefon: [1.15, 1.08], koro: [.85, .95], suyalti: [.45, .88] };
 function speak(text) {
   const sy = window.speechSynthesis;
-  if (!sy) { setState(running ? 'listening' : 'idle'); return; }
+  if (!sy) { restState(); return; }
   sy.cancel();
   const u = new SpeechSynthesisUtterance(text);
   if (!chosenVoice) fillVoices();
@@ -1791,16 +1823,16 @@ function speak(text) {
   u.onstart = () => { fakeTalk = true; setState('talking'); };
   u.onend = () => {
     fakeTalk = false; level = 0; speaking = false; setState('dance');
-    setTimeout(() => { if (state === 'dance') setState(running ? 'listening' : 'idle'); if (wantRec) startRec(); }, 1800);
+    setTimeout(() => { if (state === 'dance') restState(); if (wantRec) startRec(); }, 1800);
   };
-  u.onerror = () => { fakeTalk = false; speaking = false; setState(running ? 'listening' : 'idle'); if (wantRec) startRec(); };
+  u.onerror = () => { fakeTalk = false; speaking = false; restState(); if (wantRec) startRec(); };
   sy.speak(u);
   setTimeout(() => { if (!fakeTalk && sy.speaking) { fakeTalk = true; setState('talking'); } }, 400);
 }
 async function respond(text) {
   setState('thinking');
   try { const a = await ask(text); await voiceOut(a); }
-  catch (e) { setState(running ? 'listening' : 'idle'); diag('Cevap alınamadı (' + e.message + ').'); }
+  catch (e) { restState(); diag('Cevap alınamadı (' + e.message + ').'); }
 }
 
 async function voiceOut(text) {
@@ -1885,7 +1917,6 @@ function stopAll() {
   el('songBtn').classList.remove('on'); el('danceBtn').classList.remove('on');
   try { speechSynthesis.cancel(); } catch (e) { }
   fakeTalk = false; speaking = false;
-  if (elaVoice) elasticEnd(0);
   ELA.on = false; ELA.nx = 0; ELA.ny = 0;
   el('go').classList.remove('on'); el('go').textContent = L.start;
   el('meter').classList.remove('on');
@@ -1942,7 +1973,7 @@ el('danceBtn').onclick = () => {
   clearTimeout(window.__d);
   window.__d = setTimeout(() => {
     b.classList.remove('on');
-    if (state === 'dance') setState(running ? 'listening' : 'idle');
+    if (state === 'dance') restState();
   }, 7000);
 };
 el('songBtn').onclick = () => { const b = el('songBtn'); tap(b); b.classList.add('on'); sing(); };
