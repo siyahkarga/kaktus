@@ -68,13 +68,13 @@
   .fxTitle{margin:11px 2px 5px;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
   .fxTitle span{opacity:.7;font-weight:600;text-transform:none;letter-spacing:0}
 
-  .menu{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));z-index:6;
+  .menu{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));z-index:11;
     width:64px;height:44px;border:1px solid var(--line);border-radius:16px;background:rgba(0,0,0,.42);
     color:rgba(255,255,255,.85);font-size:20px;cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
   .menu:active{background:rgba(255,255,255,.16)}
   .overlay{position:fixed;inset:0;z-index:10;display:none;background:rgba(8,10,30,.35)}
   .overlay.on{display:flex;align-items:flex-end;justify-content:center}
-  .panel{width:100%;max-width:460px;padding:12px 12px calc(12px + env(safe-area-inset-bottom));
+  .panel{width:100%;max-width:460px;padding:12px 12px calc(64px + env(safe-area-inset-bottom));
     border-radius:24px 24px 0 0;border:1px solid var(--line);border-bottom:0;
     background:rgba(15,18,48,.84);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
     max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain}
@@ -367,7 +367,7 @@
   <input id="brainCfg" type="password" placeholder="sk-ant-… (isteğe bağlı)" autocomplete="off">
 </div>
 
-<p class="ver" id="ver">v19</p>
+<p class="ver" id="ver">v20</p>
 </div>
 </div>
 </div>
@@ -1804,27 +1804,29 @@ function showTypebar(on) {
 }
 /* ============ OVERLAY: butonlar istenince görünür ============ */
 let ovTimer = null;
+const OV_WAIT = 3000;
 function armOvTimer(ms) {
   clearTimeout(ovTimer);
   ovTimer = setTimeout(() => {
     const a = document.activeElement;
     // yazı yazılırken (örn. API anahtarı) paneli kapatma
-    if (a && a.tagName === 'INPUT' && el('panel').contains(a)) { armOvTimer(2500); return; }
+    if (a && a.tagName === 'INPUT' && el('panel').contains(a)) { armOvTimer(OV_WAIT); return; }
     showOverlay(false);
   }, ms);
 }
 function showOverlay(on) {
   el('overlay').classList.toggle('on', !!on);
+  el('menuBtn').textContent = on ? '✕' : '☰';
   clearTimeout(ovTimer);
-  if (on) armOvTimer(2500);
+  if (on) armOvTimer(OV_WAIT);
 }
 el('menuBtn').onclick = () => showOverlay(!el('overlay').classList.contains('on'));
 el('overlay').addEventListener('pointerdown', e => {
   if (e.target === el('overlay')) showOverlay(false);
-  else armOvTimer(2500);
+  else armOvTimer(OV_WAIT);
 });
-el('panel').addEventListener('input', () => armOvTimer(2500));
-el('panel').addEventListener('change', () => armOvTimer(2500));
+el('panel').addEventListener('input', () => armOvTimer(OV_WAIT));
+el('panel').addEventListener('change', () => armOvTimer(OV_WAIT));
 // başlat / dans / şarkı: panel çekilsin, karakter tam ekran izlensin
 ['go', 'danceBtn', 'songBtn'].forEach(id =>
   el(id).addEventListener('click', () => setTimeout(() => showOverlay(false), 350)));
