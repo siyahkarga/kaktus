@@ -82,13 +82,6 @@
   .fxWrap .fxTitle{margin:0 2px 5px;text-align:center;text-shadow:0 1px 4px rgba(0,0,0,.6)}
   body.ovon .badge,body.ovon .who,body.ovon .hint,body.ovon .dots,body.ovon .navArr,body.ovon .diag{opacity:0}
 
-  .typebar{display:none;position:fixed;left:12px;right:12px;bottom:calc(66px + env(safe-area-inset-bottom));
-    z-index:5;max-width:436px;margin:0 auto;gap:8px}
-  .typebar.on{display:flex}
-  .typebar input{flex:1;min-width:0;background:rgba(0,0,0,.3);border:1px solid var(--line);color:var(--cream);
-    font:inherit;font-size:16px;padding:12px 14px;border-radius:14px;-webkit-user-select:text;user-select:text}
-  .typebar button{border:0;background:var(--aqua);color:#062b34;font:inherit;font-weight:900;font-size:18px;
-    padding:0 18px;border-radius:14px;cursor:pointer}
 
   .modes{display:flex;gap:9px;width:min(340px,100%)}
   .modes button{flex:1;border:2px solid var(--line);background:rgba(10,14,40,.45);color:var(--dim);font:inherit;font-weight:800;
@@ -319,11 +312,6 @@
 
 <div class="dots" id="charDots" role="group" aria-label="Karakter seç"></div>
 
-<div class="typebar" id="typebar">
-  <input id="typeIn" type="text" autocomplete="off" maxlength="120">
-  <button id="typeGo" aria-label="Gönder">➤</button>
-</div>
-
 <p class="diag" id="diag"></p>
 
 <button class="menu" id="menuBtn" aria-label="Menü">☰</button>
@@ -339,7 +327,7 @@
 
 <div class="modes" role="group" aria-label="Oyun modu">
   <button id="mParrot" aria-pressed="true"><b>🦜</b>Taklit</button>
-  <button id="mSmart" aria-pressed="false"><b>💬</b>Sohbet</button>
+  <button id="mElastic" aria-pressed="false"><b>🤏</b>Elastik</button>
 </div>
 
 <button class="go" id="go">▶ BAŞLA</button>
@@ -377,7 +365,7 @@
   <input id="brainCfg" type="password" placeholder="sk-ant-… (isteğe bağlı)" autocomplete="off">
 </div>
 
-<p class="ver" id="ver">v23</p>
+<p class="ver" id="ver">v24</p>
 </div>
 </div>
 </div>
@@ -489,6 +477,24 @@ function pokeTargets(T) {
   }
   T.rootRot.t += 5 * e * (poke.side || 1);
 }
+/* elastik mod: sürükleme deformasyonu */
+const ELA = { on: false, nx: 0, ny: 0, max: 0, px: 0, py: 0, spd: 0 };
+function elasticTargets(T) {
+  if (!ELA.on) return;
+  const nx = ELA.nx, up = Math.max(0, -ELA.ny), dn = Math.max(0, ELA.ny);
+  T.sy.t += up * .55 - dn * .35;
+  T.sx.t += dn * .32 - up * .22;
+  T.bobY.t -= up * 26 - dn * 6;
+  T.potSy.t -= dn * .12;
+  T.s1.t += nx * 8; T.s2.t += nx * 12; T.s3.t += nx * 16; T.head.t += nx * 20;
+  T.rootRot.t += nx * 7;
+  T.armL.t += -up * 40 + nx * 18; T.armR.t += up * 40 + nx * 18;
+  T.armLF.t += -up * 25; T.armRF.t += up * 25;
+  T.eye.t = Math.max(.45, 1 + up * .35 - dn * .4);
+  T.mouth.t = Math.max(T.mouth.t, .2 + (up + dn + Math.abs(nx)) * .55);
+  T.mouthW.t = 1 + dn * .45 - up * .3;
+  T.pupX.t += nx * 6; T.pupY.t += ELA.ny * 5;
+}
 function targets(t) {
   const T = C, a = level;
   T.pupX.t = 0; T.pupY.t = 0; T.eye.t = 1; T.mouthW.t = 1;
@@ -541,6 +547,7 @@ function targets(t) {
     danceTargets(T, t * danceSpd);
   }
   pokeTargets(T);
+  elasticTargets(T);
 }
 function integrate(dt) { for (const k in C) { const c = C[k]; c.v += ((c.t - c.x) * c.k - c.v * c.d) * dt; c.x += c.v * dt; } }
 function apply() {
@@ -569,8 +576,8 @@ const I18N = {
     setInfo: 'Set the toy voice here. Answers come from the phone, no internet needed.',
     toneChar: 'Tone: character', speedChar: 'Speed: character', vChar: 'Voice: character', vPhone: 'Voice: phone reader',
     test: '🔊 Test voice', brainOff: 'Brain: built-in answers', langAuto: 'Language: automatic',
-    fxTitle: 'Voice effect', fxSub: 'changes the voice, not the character', typeHint: 'Type something to chat…',
-    noSpeech: 'This browser can\'t turn speech into text — type to chat instead.',
+    fxTitle: 'Voice effect', fxSub: 'changes the voice, not the character',
+    elastic: 'Stretchy', elaSt: 'Grab, stretch, squish me!',
     off: { hi: ['Hi there! I was waiting for you.', 'Hello! I feel great today.'], how: ['I feel wonderful!', 'Pretty good, a little thirsty.'],
       q: ['I do not know, but nice question.', 'Hmm, what do you think?', 'Maybe yes, maybe we should dance.'],
       cmd: ['Okay, doing it now!', 'Watch me!'], name: ['My name is {n}. What is yours?'], sing: ['Listen, here it comes!'],
@@ -583,8 +590,8 @@ const I18N = {
     setInfo: 'Oyuncağın sesini buradan ayarla. Cevaplar telefonun içinden geliyor, internet gerekmez.',
     toneChar: 'Ton: karakterin kendi tonu', speedChar: 'Hız: karakterin hızı', vChar: 'Ses: karakterin kendi sesi', vPhone: 'Ses: telefonun okuyucusu',
     test: '🔊 Sesi dene', brainOff: 'Beyin: kendi cevapları', langAuto: 'Dil: otomatik',
-    fxTitle: 'Ses efekti', fxSub: 'sesi değiştirir, karakteri değil', typeHint: 'Bir şeyler yaz, cevaplasın…',
-    noSpeech: 'Bu tarayıcı konuşmayı yazıya çeviremiyor — yazarak sohbet edebilirsin.',
+    fxTitle: 'Ses efekti', fxSub: 'sesi değiştirir, karakteri değil',
+    elastic: 'Elastik', elaSt: 'Tut, çek, uzat, ezip bük!',
     off: { hi: ['Selam! Seni bekliyordum.', 'Merhaba! Bugün çok neşeliyim.'], how: ['Keyfim yerinde, hoplayasım var.', 'Çok iyiyim, biraz susadım ama olsun.'],
       q: ['Bilmiyorum ama çok güzel bir soru.', 'Hmm, sen ne dersin?', 'Belki evet, belki dans etmeliyiz.'],
       cmd: ['Tamam, hemen yapıyorum!', 'İzle beni!'], name: ['Benim adım {n}. Seninki ne?'], sing: ['Hemen söylüyorum, dinle!'],
@@ -597,8 +604,8 @@ const I18N = {
     setInfo: 'Stimme hier einstellen. Antworten kommen vom Handy, kein Internet nötig.',
     toneChar: 'Ton: Figur', speedChar: 'Tempo: Figur', vChar: 'Stimme: eigene Stimme', vPhone: 'Stimme: Handy-Vorleser',
     test: '🔊 Stimme testen', brainOff: 'Gehirn: eigene Antworten', langAuto: 'Sprache: automatisch',
-    fxTitle: 'Stimm-Effekt', fxSub: 'ändert die Stimme, nicht die Figur', typeHint: 'Schreib etwas…',
-    noSpeech: 'Spracherkennung geht in diesem Browser nicht — tippe zum Plaudern.',
+    fxTitle: 'Stimm-Effekt', fxSub: 'ändert die Stimme, nicht die Figur',
+    elastic: 'Gummi', elaSt: 'Zieh, dehn und quetsch mich!',
     off: { hi: ['Hallo! Ich habe auf dich gewartet.', 'Hi! Mir geht es heute super.'], how: ['Mir geht es prima!', 'Ganz gut, nur etwas durstig.'],
       q: ['Ich weiß es nicht, aber gute Frage.', 'Hmm, was meinst du?', 'Vielleicht ja, vielleicht tanzen wir.'],
       cmd: ['Okay, mache ich sofort!', 'Schau mir zu!'], name: ['Ich heiße {n}. Und du?'], sing: ['Hör zu, es geht los!'],
@@ -611,8 +618,8 @@ const I18N = {
     setInfo: 'Règle la voix ici. Les réponses viennent du téléphone, sans internet.',
     toneChar: 'Ton : personnage', speedChar: 'Vitesse : personnage', vChar: 'Voix : sa propre voix', vPhone: 'Voix : lecteur du téléphone',
     test: '🔊 Tester la voix', brainOff: 'Cerveau : réponses intégrées', langAuto: 'Langue : automatique',
-    fxTitle: 'Effet de voix', fxSub: 'change la voix, pas le personnage', typeHint: 'Écris quelque chose…',
-    noSpeech: 'La reconnaissance vocale ne marche pas ici — écris pour discuter.',
+    fxTitle: 'Effet de voix', fxSub: 'change la voix, pas le personnage',
+    elastic: 'Élastique', elaSt: 'Tire, étire, écrase-moi !',
     off: { hi: ['Salut ! Je t\'attendais.', 'Bonjour ! Je vais très bien aujourd\'hui.'], how: ['Je vais très bien !', 'Ça va, j\'ai un peu soif.'],
       q: ['Je ne sais pas, mais bonne question.', 'Hmm, et toi ?', 'Peut-être, ou alors dansons.'],
       cmd: ['D\'accord, tout de suite !', 'Regarde-moi !'], name: ['Je m\'appelle {n}. Et toi ?'], sing: ['Écoute, ça commence !'],
@@ -625,8 +632,8 @@ const I18N = {
     setInfo: 'Ajusta la voz aquí. Las respuestas salen del teléfono, sin internet.',
     toneChar: 'Tono: personaje', speedChar: 'Velocidad: personaje', vChar: 'Voz: su propia voz', vPhone: 'Voz: lector del teléfono',
     test: '🔊 Probar voz', brainOff: 'Cerebro: respuestas propias', langAuto: 'Idioma: automático',
-    fxTitle: 'Efecto de voz', fxSub: 'cambia la voz, no el personaje', typeHint: 'Escribe algo…',
-    noSpeech: 'El reconocimiento de voz no funciona aquí — escribe para charlar.',
+    fxTitle: 'Efecto de voz', fxSub: 'cambia la voz, no el personaje',
+    elastic: 'Elástico', elaSt: '¡Estírame y aplástame!',
     off: { hi: ['¡Hola! Te estaba esperando.', '¡Buenas! Hoy estoy muy alegre.'], how: ['¡Estoy genial!', 'Bien, con un poco de sed.'],
       q: ['No lo sé, pero buena pregunta.', 'Mmm, ¿tú qué dices?', 'Quizá sí, o mejor bailamos.'],
       cmd: ['¡Vale, ahora mismo!', '¡Mírame!'], name: ['Me llamo {n}. ¿Y tú?'], sing: ['¡Escucha, ahí va!'],
@@ -639,8 +646,8 @@ const I18N = {
     setInfo: 'Regola la voce qui. Le risposte arrivano dal telefono, senza internet.',
     toneChar: 'Tono: personaggio', speedChar: 'Velocità: personaggio', vChar: 'Voce: la sua voce', vPhone: 'Voce: lettore del telefono',
     test: '🔊 Prova la voce', brainOff: 'Cervello: risposte interne', langAuto: 'Lingua: automatica',
-    fxTitle: 'Effetto voce', fxSub: 'cambia la voce, non il personaggio', typeHint: 'Scrivi qualcosa…',
-    noSpeech: 'Il riconoscimento vocale non funziona qui — scrivi per chiacchierare.',
+    fxTitle: 'Effetto voce', fxSub: 'cambia la voce, non il personaggio',
+    elastic: 'Elastico', elaSt: 'Tirami, allungami, schiacciami!',
     off: { hi: ['Ciao! Ti stavo aspettando.', 'Ehi! Oggi sono allegrissimo.'], how: ['Sto benissimo!', 'Bene, ho solo un po\' di sete.'],
       q: ['Non lo so, ma bella domanda.', 'Mmm, tu che dici?', 'Forse sì, o balliamo.'],
       cmd: ['Va bene, subito!', 'Guardami!'], name: ['Mi chiamo {n}. E tu?'], sing: ['Ascolta, si parte!'],
@@ -653,8 +660,8 @@ const I18N = {
     setInfo: 'Ajuste a voz aqui. As respostas vêm do telefone, sem internet.',
     toneChar: 'Tom: personagem', speedChar: 'Velocidade: personagem', vChar: 'Voz: a própria voz', vPhone: 'Voz: leitor do telefone',
     test: '🔊 Testar voz', brainOff: 'Cérebro: respostas próprias', langAuto: 'Idioma: automático',
-    fxTitle: 'Efeito de voz', fxSub: 'muda a voz, não o personagem', typeHint: 'Escreva algo…',
-    noSpeech: 'O reconhecimento de voz não funciona aqui — escreva para conversar.',
+    fxTitle: 'Efeito de voz', fxSub: 'muda a voz, não o personagem',
+    elastic: 'Elástico', elaSt: 'Puxe, estique, amasse!',
     off: { hi: ['Oi! Estava esperando você.', 'Olá! Hoje estou muito alegre.'], how: ['Estou ótimo!', 'Bem, só com um pouco de sede.'],
       q: ['Não sei, mas boa pergunta.', 'Hmm, o que você acha?', 'Talvez sim, ou vamos dançar.'],
       cmd: ['Certo, já vou!', 'Olha só!'], name: ['Meu nome é {n}. E o seu?'], sing: ['Escuta, lá vai!'],
@@ -667,8 +674,8 @@ const I18N = {
     setInfo: 'Настрой голос здесь. Ответы берутся из телефона, интернет не нужен.',
     toneChar: 'Тон: персонаж', speedChar: 'Скорость: персонаж', vChar: 'Голос: собственный', vPhone: 'Голос: чтец телефона',
     test: '🔊 Проверить голос', brainOff: 'Мозг: свои ответы', langAuto: 'Язык: автоматически',
-    fxTitle: 'Эффект голоса', fxSub: 'меняет голос, а не персонажа', typeHint: 'Напиши что-нибудь…',
-    noSpeech: 'Распознавание речи здесь не работает — пиши, чтобы поболтать.',
+    fxTitle: 'Эффект голоса', fxSub: 'меняет голос, а не персонажа',
+    elastic: 'Тянучка', elaSt: 'Тяни, растягивай, сжимай!',
     off: { hi: ['Привет! Я тебя ждал.', 'Здравствуй! Сегодня мне весело.'], how: ['У меня всё отлично!', 'Хорошо, только пить хочется.'],
       q: ['Не знаю, но вопрос хороший.', 'Хмм, а ты как думаешь?', 'Может быть. А может, потанцуем.'],
       cmd: ['Хорошо, сейчас сделаю!', 'Смотри на меня!'], name: ['Меня зовут {n}. А тебя?'], sing: ['Слушай, начинаю!'],
@@ -681,8 +688,8 @@ const I18N = {
     setInfo: 'اضبط الصوت هنا. الإجابات من الهاتف نفسه، بدون إنترنت.',
     toneChar: 'النغمة: الشخصية', speedChar: 'السرعة: الشخصية', vChar: 'الصوت: صوته الخاص', vPhone: 'الصوت: قارئ الهاتف',
     test: '🔊 جرب الصوت', brainOff: 'العقل: إجابات داخلية', langAuto: 'اللغة: تلقائي',
-    fxTitle: 'مؤثر الصوت', fxSub: 'يغيّر الصوت لا الشخصية', typeHint: 'اكتب شيئًا…',
-    noSpeech: 'التعرف على الكلام لا يعمل هنا — اكتب للدردشة.',
+    fxTitle: 'مؤثر الصوت', fxSub: 'يغيّر الصوت لا الشخصية',
+    elastic: 'مطاطي', elaSt: 'اسحبني ومدّدني واعصرني!',
     off: { hi: ['مرحبا! كنت أنتظرك.', 'أهلا! أنا سعيد اليوم.'], how: ['أنا بخير تماما!', 'بخير، لكني عطشان قليلا.'],
       q: ['لا أعرف، لكنه سؤال جميل.', 'همم، ما رأيك أنت؟', 'ربما نعم، أو لنرقص.'],
       cmd: ['حسنا، سأفعل حالا!', 'انظر إلي!'], name: ['اسمي {n}. وأنت؟'], sing: ['استمع، ها هي!'],
@@ -695,8 +702,8 @@ const I18N = {
     setInfo: 'आवाज़ यहाँ चुनो। जवाब फ़ोन से आते हैं, इंटरनेट नहीं चाहिए।',
     toneChar: 'सुर: किरदार', speedChar: 'गति: किरदार', vChar: 'आवाज़: अपनी आवाज़', vPhone: 'आवाज़: फ़ोन का वाचक',
     test: '🔊 आवाज़ सुनो', brainOff: 'दिमाग़: अपने जवाब', langAuto: 'भाषा: स्वतः',
-    fxTitle: 'आवाज़ का असर', fxSub: 'आवाज़ बदलता है, किरदार नहीं', typeHint: 'कुछ लिखो…',
-    noSpeech: 'यह ब्राउज़र बोली को लिखाई में नहीं बदल सकता — लिखकर बात करो।',
+    fxTitle: 'आवाज़ का असर', fxSub: 'आवाज़ बदलता है, किरदार नहीं',
+    elastic: 'खिंचाव', elaSt: 'खींचो, मरोड़ो, दबाओ!',
     off: { hi: ['नमस्ते! मैं तुम्हारा इंतज़ार कर रहा था।', 'हैलो! आज मैं बहुत खुश हूँ।'], how: ['मैं बहुत बढ़िया हूँ!', 'ठीक हूँ, थोड़ी प्यास लगी है।'],
       q: ['पता नहीं, पर सवाल अच्छा है।', 'हम्म, तुम क्या कहते हो?', 'शायद हाँ, या चलो नाचें।'],
       cmd: ['ठीक है, अभी करता हूँ!', 'मुझे देखो!'], name: ['मेरा नाम {n} है। तुम्हारा?'], sing: ['सुनो, शुरू करता हूँ!'],
@@ -720,17 +727,16 @@ function applyLang(code, auto) {
   document.documentElement.lang = langCode;
   document.documentElement.dir = L.rtl ? 'rtl' : 'ltr';
   el('mParrot').innerHTML = '<b>🦜</b>' + L.mimic;
-  el('mSmart').innerHTML = '<b>💬</b>' + L.chat;
+  el('mElastic').innerHTML = '<b>🤏</b>' + L.elastic;
   el('go').textContent = running ? L.stop : L.start;
   el('danceBtn').textContent = L.dance;
   el('songBtn').textContent = L.song;
-  el('hint').textContent = L.hint;
+  el('hint').textContent = mode === 'elastic' ? L.elaSt : L.hint;
   el('setInfo').textContent = L.setInfo;
   el('testVoice').textContent = L.test;
   el('brainOffOpt').textContent = L.brainOff;
   el('vCharOpt').textContent = L.vChar; el('vPhoneOpt').textContent = L.vPhone;
   el('fxTitle').innerHTML = '🔊 ' + L.fxTitle + ' <span>· ' + L.fxSub + '</span>';
-  el('typeIn').placeholder = L.typeHint;
   [...el('fxGrid').children].forEach((b, i) => { b.innerHTML = '<b>' + FXUI[FX[i]][0] + '</b>' + L.fx[i]; });
   if (rec) rec.lang = L.locale;
   applyChar(charIx);
@@ -971,7 +977,7 @@ function shaper(amount) {
 const FX = ['dry', 'sincap', 'dev', 'robot', 'yanki', 'uzayli', 'telefon', 'koro', 'suyalti', 'rastgele'];
 const FXUI = { dry: ['🎙️', 'Normal'], sincap: ['🐿️', 'Sincap'], dev: ['👹', 'Dev'], robot: ['🤖', 'Robot'], yanki: ['🕳️', 'Mağara'], uzayli: ['👽', 'Uzaylı'], telefon: ['📞', 'Telsiz'], koro: ['👥', 'Koro'], suyalti: ['🐠', 'Su altı'], rastgele: ['🎲', 'Karışık'] };
 let fx = 'sincap', live = null;
-const fxByMode = { parrot: 'sincap', smart: 'dry' };   // sohbet varsayilani: efektsiz, dogal ses
+const fxByMode = { parrot: 'sincap', elastic: 'dry' };   // elastik varsayilani: dogal ses
 function trim(buf, sec) {
   const max = Math.round(ac.sampleRate * sec);
   if (buf.length <= max) return buf;
@@ -1355,8 +1361,9 @@ async function speakSynth(text) {
 }
 
 /* ================= DÜRTME SESLERİ ================= */
-function sfx(name) {
+function sfx(name, pmul) {
   audio();
+  const P = pmul || 1;   // seçili ses efektinin tonu (elastik modda)
   const t = ac.currentTime, out = ac.createGain(); out.gain.value = .5; out.connect(master);
   const noiseSrc = dur => {
     const b = ac.createBuffer(1, Math.round(ac.sampleRate * dur), ac.sampleRate), d = b.getChannelData(0);
@@ -1365,7 +1372,7 @@ function sfx(name) {
   };
   const tone = (type, f0, f1, dur, vol) => {
     const o = ac.createOscillator(); o.type = type;
-    o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    o.frequency.setValueAtTime(f0 * P, t); o.frequency.exponentialRampToValueAtTime(f1 * P, t + dur);
     const g = ac.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
     o.connect(g); g.connect(out); o.start(t); o.stop(t + dur + .02); return o;
   };
@@ -1375,7 +1382,7 @@ function sfx(name) {
     const ld = ac.createGain(); ld.gain.value = 70; lfo.connect(ld); ld.connect(o.frequency); lfo.start(t); lfo.stop(t + .36);
   } else if (name === 'squeak') {
     const o = ac.createOscillator(); o.type = 'sawtooth';
-    o.frequency.setValueAtTime(760, t); o.frequency.exponentialRampToValueAtTime(1900, t + .09); o.frequency.exponentialRampToValueAtTime(900, t + .17);
+    o.frequency.setValueAtTime(760 * P, t); o.frequency.exponentialRampToValueAtTime(1900 * P, t + .09); o.frequency.exponentialRampToValueAtTime(900 * P, t + .17);
     const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1500; bp.Q.value = 4;
     const g = ac.createGain(); g.gain.setValueAtTime(.45, t); g.gain.exponentialRampToValueAtTime(.001, t + .18);
     o.connect(bp); bp.connect(g); g.connect(out); o.start(t); o.stop(t + .2);
@@ -1387,7 +1394,7 @@ function sfx(name) {
   } else if (name === 'giggle') {
     [0, .085, .17, .255].forEach((off, i) => {
       const o = ac.createOscillator(); o.type = 'triangle';
-      const f = 620 + i * 90 + rnd(-40, 40);
+      const f = (620 + i * 90 + rnd(-40, 40)) * P;
       o.frequency.setValueAtTime(f, t + off); o.frequency.exponentialRampToValueAtTime(f * 1.35, t + off + .05);
       const g = ac.createGain(); g.gain.setValueAtTime(.001, t + off);
       g.gain.linearRampToValueAtTime(.35, t + off + .015); g.gain.exponentialRampToValueAtTime(.001, t + off + .07);
@@ -1410,7 +1417,7 @@ function sfx(name) {
     tone('sawtooth', 120, 60, .5, .25);
   } else if (name === 'beep') {
     [[0, 880], [.09, 1320], [.18, 1760]].forEach(([off, f]) => {
-      const o = ac.createOscillator(); o.type = 'square'; o.frequency.value = f;
+      const o = ac.createOscillator(); o.type = 'square'; o.frequency.value = f * P;
       const g = ac.createGain(); g.gain.setValueAtTime(.001, t + off);
       g.gain.linearRampToValueAtTime(.28, t + off + .01); g.gain.exponentialRampToValueAtTime(.001, t + off + .07);
       o.connect(g); g.connect(out); o.start(t + off); o.stop(t + off + .08);
@@ -1422,11 +1429,11 @@ function sfx(name) {
     const ws = shaper(8); o.connect(ws); ws.connect(g); g.connect(out); o.start(t); o.stop(t + .26);
   } else if (name === 'laugh') {
     const outG = ac.createGain(); outG.gain.value = .45; outG.connect(master);
-    const base = 240 * (curChar().tone || 1.2), n = 3 + Math.floor(Math.random() * 2);
+    const base = 240 * (curChar().tone || 1.2) * P, n = 3 + Math.floor(Math.random() * 2);
     for (let i = 0; i < n; i++) voiceNote(t + .02 + i * .155, .11, base * Math.pow(.93, i), i % 2 ? 'a' : 'e', outG, null);
   } else if (name === 'titter') {
     const outG = ac.createGain(); outG.gain.value = .4; outG.connect(master);
-    const base = 420 * (curChar().tone || 1.4);
+    const base = 420 * (curChar().tone || 1.4) * P;
     for (let i = 0; i < 5; i++) voiceNote(t + .02 + i * .095, .07, base * (i % 2 ? 1.08 : 1), 'i', outG, null);
   } else if (name === 'raspberry') {
     const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = 78;
@@ -1443,7 +1450,7 @@ function sfx(name) {
     tone('sine', 150, 95, .28, .3);
   } else if (name === 'squeal') {
     const o = ac.createOscillator(); o.type = 'triangle';
-    o.frequency.setValueAtTime(500, t); o.frequency.exponentialRampToValueAtTime(2200, t + .16); o.frequency.exponentialRampToValueAtTime(1400, t + .3);
+    o.frequency.setValueAtTime(500 * P, t); o.frequency.exponentialRampToValueAtTime(2200 * P, t + .16); o.frequency.exponentialRampToValueAtTime(1400 * P, t + .3);
     const g = ac.createGain(); g.gain.setValueAtTime(.35, t); g.gain.exponentialRampToValueAtTime(.001, t + .32);
     o.connect(g); g.connect(out); o.start(t); o.stop(t + .34);
   } else if (name === 'drum') {
@@ -1518,8 +1525,46 @@ function doPoke(vx, vy) {
   poke = { t: 0, d: 1, part, side: vx < 200 ? -1 : 1, style: c.poke };
   let pool = (part === 'head' ? c.sHead : part === 'arm' ? c.sArm : c.sBase).slice();
   if (pool.length > 1) pool = pool.filter(s => s !== lastSfx);
-  const pick = one(pool); lastSfx = pick; sfx(pick);
+  const pick = one(pool); lastSfx = pick;
+  sfx(pick, mode === 'elastic' ? (TTSFX[fxNow()] || [1, 1])[0] : 1);
   if (navigator.vibrate) { try { navigator.vibrate(part === 'head' ? 22 : 14); } catch (e) { } }
+}
+
+/* ============ ELASTİK SES: gerdikçe incelen canlı lastik sesi ============ */
+let elaVoice = null;
+function elasticStart() {
+  audio();
+  const c = curChar(), m = TTSFX[fxNow()] || [1, 1];
+  const base = 150 * (c.tone || 1.2) * m[0];
+  const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = base;
+  const g = ac.createGain(); g.gain.value = 0; g.connect(master);
+  const vf = VOWELS[c.sing] || VOWELS.a, gains = [1, .5, .2], bps = [];
+  vf.forEach((hz, i) => {
+    const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = hz; bp.Q.value = 6 + i * 2;
+    const bg = ac.createGain(); bg.gain.value = gains[i];
+    o.connect(bp); bp.connect(bg); bg.connect(g); bps.push(bp);
+  });
+  o.start();
+  elaVoice = { o, g, base, bps, vf };
+}
+function elasticUpdate() {
+  if (!elaVoice) return;
+  const t = ac.currentTime, up = Math.max(0, -ELA.ny), dn = Math.max(0, ELA.ny);
+  elaVoice.o.frequency.setTargetAtTime(elaVoice.base * (1 + up * .9 - dn * .3 + Math.abs(ELA.nx) * .2), t, .03);
+  elaVoice.g.gain.setTargetAtTime(.08 + Math.min(.25, ELA.spd * .3) + (up + dn) * .1, t, .05);
+  elaVoice.bps.forEach((bp, i) => bp.frequency.setTargetAtTime(elaVoice.vf[i] * (1 + up * .35 - dn * .15), t, .05));
+}
+function elasticEnd(mag) {
+  if (elaVoice) {
+    const v = elaVoice; elaVoice = null;
+    v.g.gain.setTargetAtTime(0, ac.currentTime, .04);
+    setTimeout(() => { try { v.o.stop(); } catch (e) { } }, 250);
+  }
+  if (mag < .15) return;
+  const c = curChar(), P = (TTSFX[fxNow()] || [1, 1])[0];
+  const pool = mag > .6 ? c.sHead.concat('boing', 'squeal') : ['boing', 'squeak', c.sArm[0]];
+  sfx(one(pool), P);
+  if (navigator.vibrate) { try { navigator.vibrate(mag > .6 ? 24 : 12); } catch (e) { } }
 }
 
 /* ================= VAD ================= */
@@ -1577,10 +1622,33 @@ requestAnimationFrame(frame);
     const r = svg.getBoundingClientRect();
     return [VB.x + (cx - r.left) / r.width * VB.w, VB.y + (cy - r.top) / r.height * VB.h];
   };
-  const down = (x, y) => { sx = x; sy = y; st = performance.now(); moved = false; active = true; };
-  const move = (x, y) => { if (active && Math.abs(x - sx) > 14) moved = true; };
+  const down = (x, y) => {
+    sx = x; sy = y; st = performance.now(); moved = false; active = true;
+    if (mode === 'elastic') { ELA.on = true; ELA.nx = 0; ELA.ny = 0; ELA.max = 0; ELA.px = x; ELA.py = y; ELA.spd = 0; elasticStart(); }
+  };
+  const move = (x, y) => {
+    if (!active) return;
+    if (ELA.on) {
+      const r = svg.getBoundingClientRect();
+      ELA.nx = Math.max(-1, Math.min(1, (x - sx) / (r.width * .45)));
+      ELA.ny = Math.max(-1, Math.min(1, (y - sy) / (r.height * .3)));
+      ELA.spd = Math.min(1, Math.hypot(x - ELA.px, y - ELA.py) / 14); ELA.px = x; ELA.py = y;
+      ELA.max = Math.max(ELA.max, Math.hypot(ELA.nx, ELA.ny));
+      elasticUpdate();
+      moved = true; return;
+    }
+    if (Math.abs(x - sx) > 14) moved = true;
+  };
   const up = (x, y) => {
     if (!active) return; active = false;
+    if (ELA.on) {
+      const mag = ELA.max;
+      ELA.on = false; ELA.nx = 0; ELA.ny = 0;
+      if (mag < .12 && performance.now() - st < 500) { elasticEnd(0); const v = view(x, y); doPoke(v[0], v[1]); }
+      else elasticEnd(mag);
+      el('hint').style.display = 'none';
+      return;
+    }
     const dx = x - sx, dy = y - sy;
     if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { switchChar(dx < 0 ? 1 : -1); return; }
     if (!moved && performance.now() - st < 800) { const v = view(x, y); doPoke(v[0], v[1]); el('hint').style.display = 'none'; }
@@ -1590,7 +1658,7 @@ requestAnimationFrame(frame);
     pad.addEventListener('pointerdown', e => { if (onArr(e)) return; down(e.clientX, e.clientY); });
     pad.addEventListener('pointermove', e => move(e.clientX, e.clientY));
     pad.addEventListener('pointerup', e => { if (onArr(e)) return; up(e.clientX, e.clientY); });
-    pad.addEventListener('pointercancel', () => active = false);
+    pad.addEventListener('pointercancel', () => { active = false; if (ELA.on) { ELA.on = false; ELA.nx = 0; ELA.ny = 0; elasticEnd(0); } });
   } else {
     pad.addEventListener('touchstart', e => { if (onArr(e)) return; const t = e.changedTouches[0]; down(t.clientX, t.clientY); }, { passive: true });
     pad.addEventListener('touchmove', e => { const t = e.changedTouches[0]; move(t.clientX, t.clientY); }, { passive: true });
@@ -1603,14 +1671,6 @@ requestAnimationFrame(frame);
 /* ================= TANIMA ================= */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null, recOn = false, speaking = false, wantRec = false;
-// Brave, Google'ın tanıma sunucusunu engelliyor; Firefox/iOS'ta API hiç yok.
-// srBroken olduğunda sohbet modu yazı çubuğuna düşer.
-let srBroken = !SR;
-try { if (navigator.brave && navigator.brave.isBrave) navigator.brave.isBrave().then(b => { if (b) srBroken = true; }); } catch (e) { }
-function speechFail() {
-  srBroken = true; wantRec = false;
-  if (running && mode === 'smart') { showTypebar(true); diag(L.noSpeech); }
-}
 if (SR) {
   rec = new SR(); rec.lang = 'en-US'; rec.interimResults = true; rec.continuous = true;
   rec.onstart = () => recOn = true;
@@ -1622,11 +1682,7 @@ if (SR) {
       if (e.results[i].isFinal) respond(txt);
     }
   };
-  rec.onerror = e => {
-    recOn = false;
-    if (e.error === 'no-speech' || e.error === 'aborted') return;
-    speechFail();
-  };
+  rec.onerror = () => recOn = false;
   rec.onend = () => { recOn = false; if (wantRec && !speaking) setTimeout(startRec, 350); };
 }
 function startRec() { if (!rec || recOn || speaking || !wantRec) return; try { rec.start(); } catch (e) { } }
@@ -1740,7 +1796,7 @@ FX.forEach(k => {
     fx = k; fxByMode[mode] = k;
     [...el('fxGrid').children].forEach(c => c.setAttribute('aria-pressed', c === b));
     // sesli önizleme: efektin ses olduğu kulakla anlaşılsın
-    if (!busy && !speaking && !(running && mode === 'smart' && recOn)) {
+    if (!busy && !speaking) {
       if (lastRec) playFx(lastRec, k);
       else speakSynth(one(L.off.hi)).catch(() => { });
     }
@@ -1761,15 +1817,18 @@ function setMode(m) {
   if (running) stopAll();
   mode = m;
   el('mParrot').setAttribute('aria-pressed', m === 'parrot');
-  el('mSmart').setAttribute('aria-pressed', m === 'smart');
+  el('mElastic').setAttribute('aria-pressed', m === 'elastic');
   el('go').textContent = running ? L.stop : L.start;
   el('fxGrid').classList.add('on');
   fx = fxByMode[m] || 'dry';
   [...el('fxGrid').children].forEach((c, i) => c.setAttribute('aria-pressed', FX[i] === fx));
+  // elastik modda çekiştirme hemen çalışır, ipucunu göster
+  el('hint').textContent = m === 'elastic' ? L.elaSt : L.hint;
+  if (m === 'elastic') el('hint').style.display = '';
   if (wasRunning) startAll();   // çalışırken mod değişti: yeni modda kaldığı yerden devam
 }
 el('mParrot').onclick = () => setMode('parrot');
-el('mSmart').onclick = () => setMode('smart');
+el('mElastic').onclick = () => setMode('elastic');
 el('gear').onclick = () => el('settings').classList.toggle('on');
 el('voice').onchange = () => {
   chosenVoice = voices.find(v => v.name === el('voice').value) || chosenVoice;
@@ -1786,16 +1845,13 @@ el('brain').onchange = () => {
 };
 async function startAll() {
   audio();
-  if (mode === 'parrot') { if (!(await ensureMic())) return; showTypebar(false); }
-  else {
-    releaseMic();
-    if (srBroken) { showTypebar(true); diag(L.noSpeech); }
-    else { showTypebar(false); wantRec = true; startRec(); }
-  }
+  if (mode === 'parrot') { if (!(await ensureMic())) return; }
+  else releaseMic();                          // elastik: mikrofon gerekmez
   running = true; busy = false; floorLvl = .01; startedOnce = true;
   el('go').classList.add('on'); el('go').textContent = L.stop;
-  el('meter').classList.add('on');
-  setState('listening');
+  el('meter').classList.toggle('on', mode === 'parrot');
+  if (mode === 'elastic') setState('idle', L.elaSt);
+  else setState('listening');
 }
 function stopAll() {
   running = false; busy = false; VAD.on = false; VAD.cool = 0; CAP.recording = false;
@@ -1805,15 +1861,11 @@ function stopAll() {
   el('songBtn').classList.remove('on'); el('danceBtn').classList.remove('on');
   try { speechSynthesis.cancel(); } catch (e) { }
   fakeTalk = false; speaking = false;
-  showTypebar(false);
+  if (elaVoice) elasticEnd(0);
+  ELA.on = false; ELA.nx = 0; ELA.ny = 0;
   el('go').classList.remove('on'); el('go').textContent = L.start;
   el('meter').classList.remove('on');
   setState('idle');
-}
-function showTypebar(on) {
-  el('typebar').classList.toggle('on', !!on);
-  el('charDots').style.display = on ? 'none' : 'flex';
-  if (on) setTimeout(() => { try { el('typeIn').focus(); } catch (e) { } }, 60);
 }
 /* ============ OVERLAY: butonlar istenince görünür ============ */
 let ovTimer = null, startedOnce = false;
@@ -1845,13 +1897,6 @@ el('panel').addEventListener('change', () => armOvTimer(OV_WAIT));
 // başlat / dans / şarkı: panel çekilsin, karakter tam ekran izlensin
 ['danceBtn', 'songBtn'].forEach(id =>
   el(id).addEventListener('click', () => setTimeout(() => showOverlay(false), 350)));
-function sendTyped() {
-  const v = el('typeIn').value.trim();
-  if (!v || busy || speaking) return;
-  el('typeIn').value = ''; heardPulse = .6; respond(v);
-}
-el('typeGo').onclick = sendTyped;
-el('typeIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); sendTyped(); } });
 el('go').onclick = async () => {
   if (running) { stopAll(); return; }
   await startAll();
@@ -1879,7 +1924,7 @@ el('danceBtn').onclick = () => {
 el('songBtn').onclick = () => { const b = el('songBtn'); tap(b); b.classList.add('on'); sing(); };
 el('go').addEventListener('click', () => tap(el('go')));
 el('mParrot').addEventListener('click', () => tap(el('mParrot')));
-el('mSmart').addEventListener('click', () => tap(el('mSmart')));
+el('mElastic').addEventListener('click', () => tap(el('mElastic')));
 
 let savedLang = 'auto'; try { savedLang = localStorage.getItem('kaktus-lang') || 'auto'; } catch (e) { }
 applyLang(savedLang === 'auto' ? detectLang() : savedLang, savedLang === 'auto');
