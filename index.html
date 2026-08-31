@@ -365,7 +365,7 @@
   <input id="brainCfg" type="password" placeholder="sk-ant-… (isteğe bağlı)" autocomplete="off">
 </div>
 
-<p class="ver" id="ver">v31</p>
+<p class="ver" id="ver">v32</p>
 </div>
 </div>
 </div>
@@ -1419,6 +1419,7 @@ async function speakSynth(text) {
   const dest = off.createGain(); dest.gain.value = .9; dest.connect(off.destination);
   const base = 165 * (c.tone || 1.2);
   const up = /[?]\s*$/.test(text);
+  const excl = /!\s*$/.test(text);
   let t = .06, syl = 0, total = 0;
   words.forEach((w, wi) => {
     const chars = [...w];
@@ -1433,8 +1434,9 @@ async function speakSynth(text) {
       if (v && !(ch2 === 'y' && ci === 0)) {
         const prog = syl / Math.max(6, vowelsInWord * words.length);
         const stress = ci === 0 || chars.length < 3 ? 1.07 : 1;
-        const rise = up && wi >= words.length - 1 ? .22 : 0;
-        const f = base * (1 + Math.sin(syl * 1.6) * .04 - prog * .1 + rise) * stress;
+        const rise = (up || excl) && wi >= words.length - 1 ? (up ? .22 : .3) : 0;
+        // şen, iniş çıkışlı çizgi film melodisi
+        const f = base * (1 + Math.sin(syl * 2.1) * .13 - prog * .08 + rise) * stress;
         const d = .115 + (vowelsInWord === 1 ? .045 : 0);
         voiceNote(t, d, f, v, dest, null, off);
         t += d * .96; syl++;
@@ -1641,9 +1643,10 @@ function elasticSay(kind) {
   let pool = ((L.ela && L.ela[kind]) || ['Wiii!']).filter(p => p !== elaLastSaid);
   if (!pool.length) pool = (L.ela && L.ela[kind]) || ['Wiii!'];
   const txt = one(pool); elaLastSaid = txt;
-  // Sohbet modundaki yöntem: metni telefonun okuyucusu seslendirir,
-  // ton/hız seçili efekte göre şekillenir; TTS yoksa karakter sentezi devreye girer.
-  voiceOut(txt);
+  // Deniz kuralı: elastikte TTS/insan sesi ASLA yok. Telefon okuyucuları perde ayarını
+  // çoğu zaman yok sayıp düz insan sesi çıkarıyor ve tarayıcı TTS'i efekt zincirine sokamıyor.
+  // Bu yüzden konuşma her zaman karakterin çizgi film sentez sesiyle, seçili efektin içinden geçer.
+  speakSynth(txt).catch(() => { });
   return true;
 }
 function elasticStart() {
