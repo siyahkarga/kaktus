@@ -31,7 +31,8 @@
     background:radial-gradient(75% 50% at 50% 20%,rgba(64,196,221,.16),rgba(64,196,221,0) 70%),
       linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--line)}
   .stage{display:flex;justify-content:center}
-  .stage svg{display:block;height:54dvh;width:auto;max-width:100%;pointer-events:none}
+  .stage svg{display:block;height:52vh;width:auto;max-width:100%;pointer-events:none}
+  @supports (height:1dvh){ .stage svg{height:clamp(240px, min(52dvh, 92vw), 460px)} }
   .badge{position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;
     color:var(--dim);background:rgba(0,0,0,.32);border:1px solid var(--line);padding:7px 13px;border-radius:999px;pointer-events:none}
   .who{position:absolute;top:10px;right:12px;font-size:12px;font-weight:700;color:var(--dim);
@@ -41,7 +42,7 @@
   .dot.busy{background:var(--sun)}
   @keyframes pulse{50%{opacity:.25}}
   .hint{position:absolute;left:0;right:0;bottom:26px;text-align:center;font-size:12px;color:rgba(255,255,255,.35);pointer-events:none}
-  .notes{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .notes{position:absolute;top:0;right:0;bottom:0;left:0;inset:0;pointer-events:none;overflow:hidden}
   .nf{position:absolute;bottom:24%;font-size:23px;opacity:0;animation:fly 1.7s ease-out forwards;text-shadow:0 2px 7px rgba(0,0,0,.45)}
   @keyframes fly{0%{opacity:0;transform:translateY(0) scale(.5)}18%{opacity:1}100%{opacity:0;transform:translateY(-150px) scale(1.2) rotate(var(--r))}}
   .song{position:absolute;top:46px;left:0;right:0;text-align:center;font-size:13px;font-weight:700;color:var(--sun);
@@ -314,7 +315,7 @@
 </div>
 
 <p class="diag" id="diag"></p>
-<p class="ver" id="ver">v16</p>
+<p class="ver" id="ver">v17</p>
 </div>
 
 <script>
@@ -1182,7 +1183,9 @@ async function speakSynth(text) {
   const sr = ac.sampleRate, c = curChar();
   const words = text.toLowerCase().replace(/[^\p{L}\s?!.,]/gu, '').split(/\s+/).filter(Boolean).slice(0, 16);
   if (!words.length) return false;
-  const off = new OfflineAudioContext(1, Math.ceil(sr * 12), sr);
+  const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  if (!OAC) return false;
+  const off = new OAC(1, Math.ceil(sr * 12), sr);
   const dest = off.createGain(); dest.gain.value = .9; dest.connect(off.destination);
   const base = 165 * (c.tone || 1.2);
   const up = /[?]\s*$/.test(text);
@@ -1214,7 +1217,13 @@ async function speakSynth(text) {
     t += .075;                                  // kelime arası duraklama
     total = t;
   });
-  const buf = await off.startRendering();
+  const buf = await new Promise((res, rej) => {
+    let done = false;
+    off.oncomplete = e => { if (!done) { done = true; res(e.renderedBuffer); } };
+    const r = off.startRendering();
+    if (r && r.then) r.then(b => { if (!done) { done = true; res(b); } }, rej);
+    setTimeout(() => { if (!done) rej(new Error('render timeout')); }, 4000);
+  });
   const cut = Math.min(buf.length, Math.ceil((total + .25) * sr));
   const out = ac.createBuffer(1, cut, sr);
   out.getChannelData(0).set(buf.getChannelData(0).subarray(0, cut));
@@ -1660,8 +1669,8 @@ let focusTimer = null;
 function focusStage() {
   clearTimeout(focusTimer);
   focusTimer = setTimeout(() => {
-    const y = el('pad').getBoundingClientRect().top + window.scrollY - 8;
-    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+    const y = Math.max(0, el('pad').getBoundingClientRect().top + window.scrollY - 8);
+    try { window.scrollTo({ top: y, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, y); }
   }, 1000);
 }
 function tap(b) { b.classList.remove('tap'); void b.offsetWidth; b.classList.add('tap'); focusStage(); }
@@ -1685,7 +1694,13 @@ applyLang(savedLang === 'auto' ? detectLang() : savedLang, savedLang === 'auto')
 buildLangSelect();
 applyChar(charIx);
 setMode('parrot');
-(function boot() { const e0 = checkEnv(); if (e0) diag(e0); })();
+(function boot() {
+  const e0 = checkEnv(); if (e0) diag(e0);
+  const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (iOS && !e0) diag('iPhone: yan taraftaki sessiz anahtarı kapalıysa oyun sesi duyulmaz.');
+  if (!window.speechSynthesis) { el('voiceMode').value = 'karakter'; }
+})();
 </script>
 </body>
 </html>
