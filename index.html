@@ -31,7 +31,7 @@
     background:radial-gradient(75% 50% at 50% 20%,rgba(64,196,221,.16),rgba(64,196,221,0) 70%),
       linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
     display:flex;justify-content:center;align-items:flex-end}
-  .stage svg{display:block;height:100%;width:auto;max-width:100%;pointer-events:none}
+  .stage svg{display:block;height:100%;width:auto;max-width:100%;pointer-events:none;overflow:visible}
   .badge{position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;
     color:var(--dim);background:rgba(0,0,0,.32);border:1px solid var(--line);padding:7px 13px;border-radius:999px;pointer-events:none}
   .who{position:absolute;top:10px;right:12px;font-size:12px;font-weight:700;color:var(--dim);
@@ -365,7 +365,7 @@
   <input id="brainCfg" type="password" placeholder="sk-ant-… (isteğe bağlı)" autocomplete="off">
 </div>
 
-<p class="ver" id="ver">v27</p>
+<p class="ver" id="ver">v28</p>
 </div>
 </div>
 </div>
@@ -592,9 +592,13 @@ function apply() {
   // Hacim korunur: uzayan parça incelir, ezilen genişler. jx* = yatay kayma (jel sürüklenmesi).
   const clampE = v => Math.min(1.5, Math.max(.72, v));
   const cc = curChar(), w0 = cc.segW, hh0 = cc.segH;
-  const E1 = clampE(C.e1.x), E2 = clampE(C.e2.x), E3 = clampE(C.e3.x);
-  const AL = Math.min(1.75, Math.max(.85, C.eaL.x)), AR = Math.min(1.75, Math.max(.85, C.eaR.x));
-  const JX2 = C.jx2.x, JX3 = C.jx3.x, JXH = C.jxh.x;
+  const mech = cc.ela === 'mech';               // robot: teleskopik uzar, kademeli, incelmez
+  const qz = v => mech ? 1 + Math.round((v - 1) / .12) * .12 : v;
+  const qx = v => mech ? Math.round(v / 8) * 8 : v;
+  const thin = v => mech ? 1 : Math.pow(v, .65); // organikler esnedikçe belirgin incelir
+  const E1 = qz(clampE(C.e1.x)), E2 = qz(clampE(C.e2.x)), E3 = qz(clampE(C.e3.x));
+  const AL = qz(Math.min(1.75, Math.max(.85, C.eaL.x))), AR = qz(Math.min(1.75, Math.max(.85, C.eaR.x)));
+  const JX2 = qx(C.jx2.x), JX3 = qx(C.jx3.x), JXH = qx(C.jxh.x);
   const dev = Math.abs(E1 - 1) + Math.abs(E2 - 1) + Math.abs(E3 - 1) + Math.abs(AL - 1) + Math.abs(AR - 1)
     + (Math.abs(JX2) + Math.abs(JX3) + Math.abs(JXH)) / 60;
   if (dev > .004 || apply._eDirty) {
@@ -603,9 +607,9 @@ function apply() {
       n.setAttribute('x', (-wN / 2).toFixed(2)); n.setAttribute('width', wN.toFixed(2));
       n.setAttribute('y', (-hN - yp).toFixed(2)); n.setAttribute('height', (hN + hp).toFixed(2));
     };
-    const w1 = w0 / Math.sqrt(E1), h1 = hh0 * E1;
-    const w2 = w0 / Math.sqrt(E2), h2 = hh0 * E2;
-    const w3 = (w0 + 12) / Math.sqrt(E3), h3 = hh0 * E3;
+    const w1 = w0 / thin(E1), h1 = hh0 * E1;
+    const w2 = w0 / thin(E2), h2 = hh0 * E2;
+    const w3 = (w0 + 12) / thin(E3), h3 = hh0 * E3;
     seg(N.segs[0], w1, h1, 4, 10); seg(N.segs[1], w2, h2, 4, 10); seg(N.segs[2], w3, h3, 12, 20);
     N.j2.setAttribute('transform', 'translate(' + JX2.toFixed(2) + ',' + (-h1).toFixed(2) + ')');
     N.j3.setAttribute('transform', 'translate(' + JX3.toFixed(2) + ',' + (-h2).toFixed(2) + ')');
@@ -613,7 +617,7 @@ function apply() {
     N.jaL.setAttribute('transform', 'translate(' + (-(w3 / 2) - 2).toFixed(2) + ',' + (-h3 * .55).toFixed(2) + ')');
     N.jaR.setAttribute('transform', 'translate(' + ((w3 / 2) + 2).toFixed(2) + ',' + (-h3 * .55).toFixed(2) + ')');
     const armGeo = (rU, rF, jf, A) => {
-      const awN = cc.armW / Math.sqrt(A), ahN = cc.armH * A;
+      const awN = cc.armW / thin(A), ahN = cc.armH * A;
       [rU, rF].forEach(n => {
         n.setAttribute('x', (-awN / 2).toFixed(2)); n.setAttribute('width', awN.toFixed(2));
         n.setAttribute('y', (-ahN).toFixed(2)); n.setAttribute('height', (ahN + 8).toFixed(2));
@@ -861,7 +865,7 @@ const CHARS = [
   {
     name: 'Robot', voiceFx: 'robot', mood: 'komik', body: ['#8f9bb8', '#d5def0', '#6b7796'], acc: ['#ff5c8a', '#ffa3c0', '#c93b68'],
     pot: ['#3a4463', '#6a769a', '#252c45'], rim: '#9aa6c8', line: '#3a4463', accLine: '#3a4463',
-    head: 'hAnt', face: 'square', eyes: 'eSquare', mouth: 'mGrill', pat: null, ex: 'ex-bolt', base: 'blower',
+    head: 'hAnt', face: 'square', eyes: 'eSquare', mouth: 'mGrill', pat: null, ex: 'ex-bolt', base: 'blower', ela: 'mech',
     segW: 44, segH: 56, armW: 30, armH: 62, headK: .95, segRx: 7, armRx: 7, twist: false,
     sHead: ['beep', 'glitch'], sArm: ['servo', 'zap'], sBase: ['clank', 'servo'], poke: 'shake', tone: 1.55, rate: 1.1, sing: 'i'
   },
@@ -1627,15 +1631,23 @@ function elasticSay(kind) {
   if (busy || speaking || now - elaSpeakAt < 1700) return false;
   elaSpeakAt = now;
   const pool = (L.ela && L.ela[kind]) || ['Wiii!'];
-  speakSynth(one(pool)).catch(() => { });   // karakterin kendi sesi, seçili efekt zincirinden geçer
+  // Sohbet modundaki yöntem: metni telefonun okuyucusu seslendirir,
+  // ton/hız seçili efekte göre şekillenir; TTS yoksa karakter sentezi devreye girer.
+  voiceOut(one(pool));
   return true;
 }
 function elasticStart() {
   audio();
   elaSpoke.pull = elaSpoke.squash = elaSpoke.bend = false;
+  ELA.qstep = 0;
 }
 function elasticUpdate() {
   const up = Math.max(0, -ELA.ny), dn = Math.max(0, ELA.ny), b = Math.abs(ELA.nx);
+  // robot: her uzama kademesinde servo sesi
+  if (curChar().ela === 'mech') {
+    const q = Math.round((Math.abs(ELA.nx) + Math.abs(ELA.ny)) * 3);
+    if (q !== ELA.qstep) { ELA.qstep = q; sfx('servo', (TTSFX[fxNow()] || [1, 1])[0]); }
+  }
   if (ELA.zone === 'armL' || ELA.zone === 'armR') {
     if (!elaSpoke.pull && Math.hypot(ELA.nx, ELA.ny) > .55) { elaSpoke.pull = true; elasticSay('pull'); }
     return;
@@ -1846,7 +1858,7 @@ const TTSFX = { dry: [1, 1], sincap: [1.9, 1.12], dev: [.35, .85], robot: [.5, 1
   uzayli: [1.75, 1.2], telefon: [1.15, 1.08], koro: [.85, .95], suyalti: [.45, .88] };
 function speak(text) {
   const sy = window.speechSynthesis;
-  if (!sy) { restState(); return; }
+  if (!sy) { speaking = false; restState(); return; }
   sy.cancel();
   const u = new SpeechSynthesisUtterance(text);
   if (!chosenVoice) fillVoices();
