@@ -52,6 +52,29 @@
   .meter.on{display:block}
   .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--aqua),var(--hot))}
 
+  .navArr{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:54px;border:1px solid var(--line);
+    border-radius:14px;background:rgba(0,0,0,.32);color:rgba(255,255,255,.8);font:inherit;font-size:26px;font-weight:800;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;padding:0 0 3px}
+  .navArr:active{background:rgba(255,255,255,.18)}
+  #arrL{left:8px;animation:nudgeL 1.6s ease-in-out 3}
+  #arrR{right:8px;animation:nudgeR 1.6s ease-in-out 3}
+  @keyframes nudgeR{0%,100%{transform:translateY(-50%)}50%{transform:translateY(-50%) translateX(4px)}}
+  @keyframes nudgeL{0%,100%{transform:translateY(-50%)}50%{transform:translateY(-50%) translateX(-4px)}}
+  .dots{display:flex;justify-content:center;gap:8px;margin:0 0 8px}
+  .cdot{width:10px;height:10px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.22);cursor:pointer;
+    transition:transform .15s,background .15s}
+  .cdot.on{background:var(--leaf);transform:scale(1.4)}
+
+  .fxTitle{margin:11px 2px 5px;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+  .fxTitle span{opacity:.7;font-weight:600;text-transform:none;letter-spacing:0}
+
+  .typebar{display:none;gap:8px;margin-top:10px}
+  .typebar.on{display:flex}
+  .typebar input{flex:1;min-width:0;background:rgba(0,0,0,.3);border:1px solid var(--line);color:var(--cream);
+    font:inherit;font-size:16px;padding:12px 14px;border-radius:14px;-webkit-user-select:text;user-select:text}
+  .typebar button{border:0;background:var(--aqua);color:#062b34;font:inherit;font-weight:900;font-size:18px;
+    padding:0 18px;border-radius:14px;cursor:pointer}
+
   .modes{display:flex;gap:10px}
   .modes button{flex:1;border:2px solid var(--line);background:var(--panel);color:var(--dim);font:inherit;font-weight:800;
     font-size:16px;padding:10px 6px;border-radius:18px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
@@ -64,7 +87,7 @@
   .go:active{transform:translateY(4px);box-shadow:0 3px 0 #2b8a52}
   .go.on{background:linear-gradient(180deg,#ff8fb0,var(--hot));box-shadow:0 7px 0 #b23258;color:#fff}
 
-  .grid{display:none;gap:7px;margin-top:9px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+  .grid{display:none;gap:7px;margin-top:0;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
   .grid.on{display:flex}
   .grid::-webkit-scrollbar{display:none}
   .grid button{flex:0 0 auto;min-width:64px;border:2px solid var(--line);background:var(--panel);color:var(--cream);font:inherit;
@@ -275,7 +298,11 @@
   <div class="song" id="songName"></div>
   <div class="hint" id="hint">dürt · sağa sola kaydır</div>
   <div class="meter" id="meter"><i id="meterFill"></i></div>
+  <button class="navArr" id="arrL" aria-label="Önceki karakter">‹</button>
+  <button class="navArr" id="arrR" aria-label="Sonraki karakter">›</button>
 </div>
+
+<div class="dots" id="charDots" role="group" aria-label="Karakter seç"></div>
 
 <div class="modes" role="group" aria-label="Oyun modu">
   <button id="mParrot" aria-pressed="true"><b>🦜</b>Taklit</button>
@@ -284,6 +311,12 @@
 
 <button class="go" id="go">▶ BAŞLA</button>
 
+<div class="typebar" id="typebar">
+  <input id="typeIn" type="text" autocomplete="off" maxlength="120">
+  <button id="typeGo" aria-label="Gönder">➤</button>
+</div>
+
+<div class="fxTitle" id="fxTitle">🔊 Ses efekti</div>
 <div class="grid on" id="fxGrid" role="group" aria-label="Ses efekti"></div>
 
 <div class="pair">
@@ -315,7 +348,7 @@
 </div>
 
 <p class="diag" id="diag"></p>
-<p class="ver" id="ver">v17</p>
+<p class="ver" id="ver">v18</p>
 </div>
 
 <script>
@@ -496,6 +529,8 @@ const I18N = {
     setInfo: 'Set the toy voice here. Answers come from the phone, no internet needed.',
     toneChar: 'Tone: character', speedChar: 'Speed: character', vChar: 'Voice: character', vPhone: 'Voice: phone reader',
     test: '🔊 Test voice', brainOff: 'Brain: built-in answers', langAuto: 'Language: automatic',
+    fxTitle: 'Voice effect', fxSub: 'changes the voice, not the character', typeHint: 'Type something to chat…',
+    noSpeech: 'This browser can\'t turn speech into text — type to chat instead.',
     off: { hi: ['Hi there! I was waiting for you.', 'Hello! I feel great today.'], how: ['I feel wonderful!', 'Pretty good, a little thirsty.'],
       q: ['I do not know, but nice question.', 'Hmm, what do you think?', 'Maybe yes, maybe we should dance.'],
       cmd: ['Okay, doing it now!', 'Watch me!'], name: ['My name is {n}. What is yours?'], sing: ['Listen, here it comes!'],
@@ -508,6 +543,8 @@ const I18N = {
     setInfo: 'Oyuncağın sesini buradan ayarla. Cevaplar telefonun içinden geliyor, internet gerekmez.',
     toneChar: 'Ton: karakterin kendi tonu', speedChar: 'Hız: karakterin hızı', vChar: 'Ses: karakterin kendi sesi', vPhone: 'Ses: telefonun okuyucusu',
     test: '🔊 Sesi dene', brainOff: 'Beyin: kendi cevapları', langAuto: 'Dil: otomatik',
+    fxTitle: 'Ses efekti', fxSub: 'sesi değiştirir, karakteri değil', typeHint: 'Bir şeyler yaz, cevaplasın…',
+    noSpeech: 'Bu tarayıcı konuşmayı yazıya çeviremiyor — yazarak sohbet edebilirsin.',
     off: { hi: ['Selam! Seni bekliyordum.', 'Merhaba! Bugün çok neşeliyim.'], how: ['Keyfim yerinde, hoplayasım var.', 'Çok iyiyim, biraz susadım ama olsun.'],
       q: ['Bilmiyorum ama çok güzel bir soru.', 'Hmm, sen ne dersin?', 'Belki evet, belki dans etmeliyiz.'],
       cmd: ['Tamam, hemen yapıyorum!', 'İzle beni!'], name: ['Benim adım {n}. Seninki ne?'], sing: ['Hemen söylüyorum, dinle!'],
@@ -520,6 +557,8 @@ const I18N = {
     setInfo: 'Stimme hier einstellen. Antworten kommen vom Handy, kein Internet nötig.',
     toneChar: 'Ton: Figur', speedChar: 'Tempo: Figur', vChar: 'Stimme: eigene Stimme', vPhone: 'Stimme: Handy-Vorleser',
     test: '🔊 Stimme testen', brainOff: 'Gehirn: eigene Antworten', langAuto: 'Sprache: automatisch',
+    fxTitle: 'Stimm-Effekt', fxSub: 'ändert die Stimme, nicht die Figur', typeHint: 'Schreib etwas…',
+    noSpeech: 'Spracherkennung geht in diesem Browser nicht — tippe zum Plaudern.',
     off: { hi: ['Hallo! Ich habe auf dich gewartet.', 'Hi! Mir geht es heute super.'], how: ['Mir geht es prima!', 'Ganz gut, nur etwas durstig.'],
       q: ['Ich weiß es nicht, aber gute Frage.', 'Hmm, was meinst du?', 'Vielleicht ja, vielleicht tanzen wir.'],
       cmd: ['Okay, mache ich sofort!', 'Schau mir zu!'], name: ['Ich heiße {n}. Und du?'], sing: ['Hör zu, es geht los!'],
@@ -532,6 +571,8 @@ const I18N = {
     setInfo: 'Règle la voix ici. Les réponses viennent du téléphone, sans internet.',
     toneChar: 'Ton : personnage', speedChar: 'Vitesse : personnage', vChar: 'Voix : sa propre voix', vPhone: 'Voix : lecteur du téléphone',
     test: '🔊 Tester la voix', brainOff: 'Cerveau : réponses intégrées', langAuto: 'Langue : automatique',
+    fxTitle: 'Effet de voix', fxSub: 'change la voix, pas le personnage', typeHint: 'Écris quelque chose…',
+    noSpeech: 'La reconnaissance vocale ne marche pas ici — écris pour discuter.',
     off: { hi: ['Salut ! Je t\'attendais.', 'Bonjour ! Je vais très bien aujourd\'hui.'], how: ['Je vais très bien !', 'Ça va, j\'ai un peu soif.'],
       q: ['Je ne sais pas, mais bonne question.', 'Hmm, et toi ?', 'Peut-être, ou alors dansons.'],
       cmd: ['D\'accord, tout de suite !', 'Regarde-moi !'], name: ['Je m\'appelle {n}. Et toi ?'], sing: ['Écoute, ça commence !'],
@@ -544,6 +585,8 @@ const I18N = {
     setInfo: 'Ajusta la voz aquí. Las respuestas salen del teléfono, sin internet.',
     toneChar: 'Tono: personaje', speedChar: 'Velocidad: personaje', vChar: 'Voz: su propia voz', vPhone: 'Voz: lector del teléfono',
     test: '🔊 Probar voz', brainOff: 'Cerebro: respuestas propias', langAuto: 'Idioma: automático',
+    fxTitle: 'Efecto de voz', fxSub: 'cambia la voz, no el personaje', typeHint: 'Escribe algo…',
+    noSpeech: 'El reconocimiento de voz no funciona aquí — escribe para charlar.',
     off: { hi: ['¡Hola! Te estaba esperando.', '¡Buenas! Hoy estoy muy alegre.'], how: ['¡Estoy genial!', 'Bien, con un poco de sed.'],
       q: ['No lo sé, pero buena pregunta.', 'Mmm, ¿tú qué dices?', 'Quizá sí, o mejor bailamos.'],
       cmd: ['¡Vale, ahora mismo!', '¡Mírame!'], name: ['Me llamo {n}. ¿Y tú?'], sing: ['¡Escucha, ahí va!'],
@@ -556,6 +599,8 @@ const I18N = {
     setInfo: 'Regola la voce qui. Le risposte arrivano dal telefono, senza internet.',
     toneChar: 'Tono: personaggio', speedChar: 'Velocità: personaggio', vChar: 'Voce: la sua voce', vPhone: 'Voce: lettore del telefono',
     test: '🔊 Prova la voce', brainOff: 'Cervello: risposte interne', langAuto: 'Lingua: automatica',
+    fxTitle: 'Effetto voce', fxSub: 'cambia la voce, non il personaggio', typeHint: 'Scrivi qualcosa…',
+    noSpeech: 'Il riconoscimento vocale non funziona qui — scrivi per chiacchierare.',
     off: { hi: ['Ciao! Ti stavo aspettando.', 'Ehi! Oggi sono allegrissimo.'], how: ['Sto benissimo!', 'Bene, ho solo un po\' di sete.'],
       q: ['Non lo so, ma bella domanda.', 'Mmm, tu che dici?', 'Forse sì, o balliamo.'],
       cmd: ['Va bene, subito!', 'Guardami!'], name: ['Mi chiamo {n}. E tu?'], sing: ['Ascolta, si parte!'],
@@ -568,6 +613,8 @@ const I18N = {
     setInfo: 'Ajuste a voz aqui. As respostas vêm do telefone, sem internet.',
     toneChar: 'Tom: personagem', speedChar: 'Velocidade: personagem', vChar: 'Voz: a própria voz', vPhone: 'Voz: leitor do telefone',
     test: '🔊 Testar voz', brainOff: 'Cérebro: respostas próprias', langAuto: 'Idioma: automático',
+    fxTitle: 'Efeito de voz', fxSub: 'muda a voz, não o personagem', typeHint: 'Escreva algo…',
+    noSpeech: 'O reconhecimento de voz não funciona aqui — escreva para conversar.',
     off: { hi: ['Oi! Estava esperando você.', 'Olá! Hoje estou muito alegre.'], how: ['Estou ótimo!', 'Bem, só com um pouco de sede.'],
       q: ['Não sei, mas boa pergunta.', 'Hmm, o que você acha?', 'Talvez sim, ou vamos dançar.'],
       cmd: ['Certo, já vou!', 'Olha só!'], name: ['Meu nome é {n}. E o seu?'], sing: ['Escuta, lá vai!'],
@@ -580,6 +627,8 @@ const I18N = {
     setInfo: 'Настрой голос здесь. Ответы берутся из телефона, интернет не нужен.',
     toneChar: 'Тон: персонаж', speedChar: 'Скорость: персонаж', vChar: 'Голос: собственный', vPhone: 'Голос: чтец телефона',
     test: '🔊 Проверить голос', brainOff: 'Мозг: свои ответы', langAuto: 'Язык: автоматически',
+    fxTitle: 'Эффект голоса', fxSub: 'меняет голос, а не персонажа', typeHint: 'Напиши что-нибудь…',
+    noSpeech: 'Распознавание речи здесь не работает — пиши, чтобы поболтать.',
     off: { hi: ['Привет! Я тебя ждал.', 'Здравствуй! Сегодня мне весело.'], how: ['У меня всё отлично!', 'Хорошо, только пить хочется.'],
       q: ['Не знаю, но вопрос хороший.', 'Хмм, а ты как думаешь?', 'Может быть. А может, потанцуем.'],
       cmd: ['Хорошо, сейчас сделаю!', 'Смотри на меня!'], name: ['Меня зовут {n}. А тебя?'], sing: ['Слушай, начинаю!'],
@@ -592,6 +641,8 @@ const I18N = {
     setInfo: 'اضبط الصوت هنا. الإجابات من الهاتف نفسه، بدون إنترنت.',
     toneChar: 'النغمة: الشخصية', speedChar: 'السرعة: الشخصية', vChar: 'الصوت: صوته الخاص', vPhone: 'الصوت: قارئ الهاتف',
     test: '🔊 جرب الصوت', brainOff: 'العقل: إجابات داخلية', langAuto: 'اللغة: تلقائي',
+    fxTitle: 'مؤثر الصوت', fxSub: 'يغيّر الصوت لا الشخصية', typeHint: 'اكتب شيئًا…',
+    noSpeech: 'التعرف على الكلام لا يعمل هنا — اكتب للدردشة.',
     off: { hi: ['مرحبا! كنت أنتظرك.', 'أهلا! أنا سعيد اليوم.'], how: ['أنا بخير تماما!', 'بخير، لكني عطشان قليلا.'],
       q: ['لا أعرف، لكنه سؤال جميل.', 'همم، ما رأيك أنت؟', 'ربما نعم، أو لنرقص.'],
       cmd: ['حسنا، سأفعل حالا!', 'انظر إلي!'], name: ['اسمي {n}. وأنت؟'], sing: ['استمع، ها هي!'],
@@ -604,6 +655,8 @@ const I18N = {
     setInfo: 'आवाज़ यहाँ चुनो। जवाब फ़ोन से आते हैं, इंटरनेट नहीं चाहिए।',
     toneChar: 'सुर: किरदार', speedChar: 'गति: किरदार', vChar: 'आवाज़: अपनी आवाज़', vPhone: 'आवाज़: फ़ोन का वाचक',
     test: '🔊 आवाज़ सुनो', brainOff: 'दिमाग़: अपने जवाब', langAuto: 'भाषा: स्वतः',
+    fxTitle: 'आवाज़ का असर', fxSub: 'आवाज़ बदलता है, किरदार नहीं', typeHint: 'कुछ लिखो…',
+    noSpeech: 'यह ब्राउज़र बोली को लिखाई में नहीं बदल सकता — लिखकर बात करो।',
     off: { hi: ['नमस्ते! मैं तुम्हारा इंतज़ार कर रहा था।', 'हैलो! आज मैं बहुत खुश हूँ।'], how: ['मैं बहुत बढ़िया हूँ!', 'ठीक हूँ, थोड़ी प्यास लगी है।'],
       q: ['पता नहीं, पर सवाल अच्छा है।', 'हम्म, तुम क्या कहते हो?', 'शायद हाँ, या चलो नाचें।'],
       cmd: ['ठीक है, अभी करता हूँ!', 'मुझे देखो!'], name: ['मेरा नाम {n} है। तुम्हारा?'], sing: ['सुनो, शुरू करता हूँ!'],
@@ -636,6 +689,8 @@ function applyLang(code, auto) {
   el('testVoice').textContent = L.test;
   el('brainOffOpt').textContent = L.brainOff;
   el('vCharOpt').textContent = L.vChar; el('vPhoneOpt').textContent = L.vPhone;
+  el('fxTitle').innerHTML = '🔊 ' + L.fxTitle + ' <span>· ' + L.fxSub + '</span>';
+  el('typeIn').placeholder = L.typeHint;
   [...el('fxGrid').children].forEach((b, i) => { b.innerHTML = '<b>' + FXUI[FX[i]][0] + '</b>' + L.fx[i]; });
   if (rec) rec.lang = L.locale;
   applyChar(charIx);
@@ -744,6 +799,8 @@ function applyChar(i) {
   document.querySelectorAll('.ex-belly').forEach(n => n.setAttribute('stroke', c.line));
   const hs = el('hoodShape'); if (hs) hs.setAttribute('stroke', c.accLine);
   const nm = (L && L.names[i % CHARS.length]) || c.name;
+  const ds = el('charDots');
+  if (ds) [...ds.children].forEach((d, n) => d.classList.toggle('on', n === i % CHARS.length));
   el('who').textContent = nm;
   el('title').innerHTML = L.dancing + ' <span>' + nm + '</span>';
   setDynOption('tone', c.tone, L.toneChar);
@@ -751,6 +808,13 @@ function applyChar(i) {
   try { localStorage.setItem('kaktus-char', String(i % CHARS.length)); } catch (e) { }
 }
 const curChar = () => CHARS[charIx % CHARS.length];
+function switchTo(i, dir) {
+  if (i === charIx % CHARS.length) return;
+  charIx = i; applyChar(charIx); sfx('whoosh');
+  poke = { t: 0, d: .8, part: 'arm', side: dir > 0 ? 1 : -1 };
+  el('hint').style.display = 'none';
+}
+function switchChar(dir) { switchTo((charIx + (dir > 0 ? 1 : CHARS.length - 1)) % CHARS.length, dir); }
 
 /* ================= SES ================= */
 let ac = null, master = null, micStream = null, proc = null, playAnalyser = null, pbuf = null, lastRec = null;
@@ -1459,32 +1523,35 @@ requestAnimationFrame(frame);
   const up = (x, y) => {
     if (!active) return; active = false;
     const dx = x - sx, dy = y - sy;
-    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
-      charIx = (charIx + (dx < 0 ? 1 : CHARS.length - 1)) % CHARS.length;
-      applyChar(charIx); sfx('whoosh');
-      poke = { t: 0, d: .8, part: 'arm', side: dx < 0 ? 1 : -1 };
-      el('hint').style.display = 'none';
-      return;
-    }
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { switchChar(dx < 0 ? 1 : -1); return; }
     if (!moved && performance.now() - st < 800) { const v = view(x, y); doPoke(v[0], v[1]); el('hint').style.display = 'none'; }
   };
+  const onArr = e => e.target && e.target.closest && e.target.closest('.navArr');
   if (window.PointerEvent) {
-    pad.addEventListener('pointerdown', e => down(e.clientX, e.clientY));
+    pad.addEventListener('pointerdown', e => { if (onArr(e)) return; down(e.clientX, e.clientY); });
     pad.addEventListener('pointermove', e => move(e.clientX, e.clientY));
-    pad.addEventListener('pointerup', e => up(e.clientX, e.clientY));
+    pad.addEventListener('pointerup', e => { if (onArr(e)) return; up(e.clientX, e.clientY); });
     pad.addEventListener('pointercancel', () => active = false);
   } else {
-    pad.addEventListener('touchstart', e => { const t = e.changedTouches[0]; down(t.clientX, t.clientY); }, { passive: true });
+    pad.addEventListener('touchstart', e => { if (onArr(e)) return; const t = e.changedTouches[0]; down(t.clientX, t.clientY); }, { passive: true });
     pad.addEventListener('touchmove', e => { const t = e.changedTouches[0]; move(t.clientX, t.clientY); }, { passive: true });
-    pad.addEventListener('touchend', e => { const t = e.changedTouches[0]; up(t.clientX, t.clientY); });
-    pad.addEventListener('mousedown', e => down(e.clientX, e.clientY));
-    pad.addEventListener('mouseup', e => up(e.clientX, e.clientY));
+    pad.addEventListener('touchend', e => { if (onArr(e)) return; const t = e.changedTouches[0]; up(t.clientX, t.clientY); });
+    pad.addEventListener('mousedown', e => { if (onArr(e)) return; down(e.clientX, e.clientY); });
+    pad.addEventListener('mouseup', e => { if (onArr(e)) return; up(e.clientX, e.clientY); });
   }
 })();
 
 /* ================= TANIMA ================= */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null, recOn = false, speaking = false, wantRec = false;
+// Brave, Google'ın tanıma sunucusunu engelliyor; Firefox/iOS'ta API hiç yok.
+// srBroken olduğunda sohbet modu yazı çubuğuna düşer.
+let srBroken = !SR;
+try { if (navigator.brave && navigator.brave.isBrave) navigator.brave.isBrave().then(b => { if (b) srBroken = true; }); } catch (e) { }
+function speechFail() {
+  srBroken = true; wantRec = false;
+  if (running && mode === 'smart') { showTypebar(true); diag(L.noSpeech); }
+}
 if (SR) {
   rec = new SR(); rec.lang = 'en-US'; rec.interimResults = true; rec.continuous = true;
   rec.onstart = () => recOn = true;
@@ -1498,8 +1565,8 @@ if (SR) {
   };
   rec.onerror = e => {
     recOn = false;
-    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') diag('Ses tanıma bu tarayıcıda kapalı (Brave engelliyor). Chrome ile aç.');
-    else if (e.error === 'network') diag('Ses tanıma sunucusuna ulaşılamadı. Chrome ile dene.');
+    if (e.error === 'no-speech' || e.error === 'aborted') return;
+    speechFail();
   };
   rec.onend = () => { recOn = false; if (wantRec && !speaking) setTimeout(startRec, 350); };
 }
@@ -1610,9 +1677,25 @@ FX.forEach(k => {
   const b = document.createElement('button');
   b.innerHTML = '<b>' + FXUI[k][0] + '</b>' + FXUI[k][1];
   b.setAttribute('aria-pressed', k === fx);
-  b.onclick = () => { fx = k; fxByMode[mode] = k; [...el('fxGrid').children].forEach(c => c.setAttribute('aria-pressed', c === b)); };
+  b.onclick = () => {
+    fx = k; fxByMode[mode] = k;
+    [...el('fxGrid').children].forEach(c => c.setAttribute('aria-pressed', c === b));
+    // sesli önizleme: efektin ses olduğu kulakla anlaşılsın
+    if (!busy && !speaking && !(running && mode === 'smart' && recOn)) {
+      if (lastRec) playFx(lastRec, k);
+      else speakSynth(one(L.off.hi)).catch(() => { });
+    }
+  };
   el('fxGrid').appendChild(b);
 });
+CHARS.forEach((c, i) => {
+  const d = document.createElement('button');
+  d.className = 'cdot'; d.setAttribute('aria-label', c.name);
+  d.onclick = () => switchTo(i, i > charIx % CHARS.length ? 1 : -1);
+  el('charDots').appendChild(d);
+});
+el('arrL').onclick = () => switchChar(-1);
+el('arrR').onclick = () => switchChar(1);
 function setMode(m) {
   if (running) stopAll();
   mode = m;
@@ -1641,11 +1724,11 @@ el('brain').onchange = () => {
 };
 async function startAll() {
   audio();
-  if (mode === 'parrot') { if (!(await ensureMic())) return; }
+  if (mode === 'parrot') { if (!(await ensureMic())) return; showTypebar(false); }
   else {
     releaseMic();
-    if (!SR) { diag('Bu tarayıcıda ses tanıma yok. Chrome ile aç.'); return; }
-    wantRec = true; startRec();
+    if (srBroken) { showTypebar(true); diag(L.noSpeech); }
+    else { showTypebar(false); wantRec = true; startRec(); }
   }
   running = true; busy = false; floorLvl = .01;
   el('go').classList.add('on'); el('go').textContent = L.stop;
@@ -1660,10 +1743,22 @@ function stopAll() {
   el('songBtn').classList.remove('on'); el('danceBtn').classList.remove('on');
   try { speechSynthesis.cancel(); } catch (e) { }
   fakeTalk = false; speaking = false;
+  showTypebar(false);
   el('go').classList.remove('on'); el('go').textContent = L.start;
   el('meter').classList.remove('on');
   setState('idle');
 }
+function showTypebar(on) {
+  el('typebar').classList.toggle('on', !!on);
+  if (on) setTimeout(() => { try { el('typeIn').focus(); } catch (e) { } }, 60);
+}
+function sendTyped() {
+  const v = el('typeIn').value.trim();
+  if (!v || busy || speaking) return;
+  el('typeIn').value = ''; heardPulse = .6; respond(v);
+}
+el('typeGo').onclick = sendTyped;
+el('typeIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); sendTyped(); } });
 el('go').onclick = () => running ? stopAll() : startAll();
 let focusTimer = null;
 function focusStage() {
