@@ -365,7 +365,7 @@
   <input id="brainCfg" type="password" placeholder="sk-ant-… (isteğe bağlı)" autocomplete="off">
 </div>
 
-<p class="ver" id="ver">v30</p>
+<p class="ver" id="ver">v31</p>
 </div>
 </div>
 </div>
@@ -533,6 +533,10 @@ function targets(t) {
   T.pupX.t = 0; T.pupY.t = 0; T.eye.t = 1; T.mouthW.t = 1;
   T.e1.t = 1; T.e2.t = 1; T.e3.t = 1;
   T.eaL.t = 1; T.eaR.t = 1; T.jx2.t = 0; T.jx3.t = 0; T.jxh.t = 0;
+  // sürüklerken parmağa yapış (sert yay), bırakınca yumuşayıp salın
+  const ek = ELA.on ? 700 : 130, ed = ELA.on ? 46 : 9;
+  T.e1.k = T.e2.k = T.e3.k = T.eaL.k = T.eaR.k = T.jx2.k = T.jx3.k = T.jxh.k = ek;
+  T.e1.d = T.e2.d = T.e3.d = T.eaL.d = T.eaR.d = T.jx2.d = T.jx3.d = T.jxh.d = ed;
   if (state === 'idle') {
     const s = Math.sin(t * 1.1);
     T.s1.t = s * 2.2; T.s2.t = Math.sin(t * 1.1 - .5) * 3; T.s3.t = Math.sin(t * 1.1 - 1) * 3.5; T.head.t = -s * 3;
@@ -645,14 +649,14 @@ const I18N = {
   en: { locale: 'en-US', dancing: 'Dancing', mimic: 'Mimic', chat: 'Chat', start: '▶ START', stop: '⏸ STOP',
     dance: '💃 Dance', song: '🎵 Song', hint: 'poke · swipe to change', songWord: 'Song',
     st: ['Sleeping', 'Listening', 'Thinking', 'Talking', 'Dancing', 'Singing'],
-    fx: ['Normal', 'Chipmunk', 'Giant', 'Robot', 'Cave', 'Alien', 'Radio', 'Choir', 'Underwater', 'Random'],
+    fx: ['Chipmunk', 'Giant', 'Robot', 'Cave', 'Alien', 'Radio', 'Choir', 'Underwater', 'Random'],
     names: ['Cactus', 'Bear', 'Robot', 'Dragon', 'Lanky', 'Tiny'],
     setInfo: 'Set the toy voice here. Answers come from the phone, no internet needed.',
     toneChar: 'Tone: character', speedChar: 'Speed: character', vChar: 'Voice: character', vPhone: 'Voice: phone reader',
     test: '🔊 Test voice', brainOff: 'Brain: built-in answers', langAuto: 'Language: automatic',
     fxTitle: 'Voice effect', fxSub: 'changes the voice, not the character',
     elastic: 'Stretchy', elaSt: 'Grab, stretch, squish me!',
-    ela: { pull: ['Whee I am so long!', 'Let me go silly!', 'More more more!'], squash: ['Oof I am squished!', 'My tummy!', 'Poof!'],
+    ela: { pull: ['Whee I am so long!', 'I am like bubble gum!', 'More more more!'], squash: ['Oof I am squished!', 'My tummy!', 'Poof!'],
       bend: ['Whoa I am bending!', 'Dizzy dizzy!'], wow: ['Yahoo!', 'Again again!', 'That was fun!'] },
     off: { hi: ['Hi there! I was waiting for you.', 'Hello! I feel great today.'], how: ['I feel wonderful!', 'Pretty good, a little thirsty.'],
       q: ['I do not know, but nice question.', 'Hmm, what do you think?', 'Maybe yes, maybe we should dance.'],
@@ -661,14 +665,14 @@ const I18N = {
   tr: { locale: 'tr-TR', dancing: 'Dans Eden', mimic: 'Taklit', chat: 'Sohbet', start: '▶ BAŞLA', stop: '⏸ DUR',
     dance: '💃 Dans', song: '🎵 Şarkı', hint: 'dürt · sağa sola kaydır', songWord: 'Şarkı',
     st: ['Uyukluyor', 'Seni dinliyorum', 'Düşünüyor', 'Konuşuyor', 'Dans ediyor', 'Şarkı söylüyor'],
-    fx: ['Normal', 'Sincap', 'Dev', 'Robot', 'Mağara', 'Uzaylı', 'Telsiz', 'Koro', 'Su altı', 'Karışık'],
+    fx: ['Sincap', 'Dev', 'Robot', 'Mağara', 'Uzaylı', 'Telsiz', 'Koro', 'Su altı', 'Karışık'],
     names: ['Kaktüs', 'Ayıcık', 'Robot', 'Ejder', 'Uzun', 'Minik'],
     setInfo: 'Oyuncağın sesini buradan ayarla. Cevaplar telefonun içinden geliyor, internet gerekmez.',
     toneChar: 'Ton: karakterin kendi tonu', speedChar: 'Hız: karakterin hızı', vChar: 'Ses: karakterin kendi sesi', vPhone: 'Ses: telefonun okuyucusu',
     test: '🔊 Sesi dene', brainOff: 'Beyin: kendi cevapları', langAuto: 'Dil: otomatik',
     fxTitle: 'Ses efekti', fxSub: 'sesi değiştirir, karakteri değil',
     elastic: 'Elastik', elaSt: 'Tut, çek, uzat, ezip bük!',
-    ela: { pull: ['Uuu uzuyorum!', 'Bırak beni şapşal!', 'Daha daha daha!'], squash: ['Off ezildim!', 'Karnım karnım!', 'Puf oldum!'],
+    ela: { pull: ['Uuu uzuyorum!', 'Sakız gibiyim!', 'Daha daha daha!'], squash: ['Off ezildim!', 'Karnım karnım!', 'Puf oldum!'],
       bend: ['Vuu büküldüm!', 'Başım döndü!'], wow: ['Yihuu!', 'Bir daha bir daha!', 'Çok iyiydi!'] },
     off: { hi: ['Selam! Seni bekliyordum.', 'Merhaba! Bugün çok neşeliyim.'], how: ['Keyfim yerinde, hoplayasım var.', 'Çok iyiyim, biraz susadım ama olsun.'],
       q: ['Bilmiyorum ama çok güzel bir soru.', 'Hmm, sen ne dersin?', 'Belki evet, belki dans etmeliyiz.'],
@@ -677,14 +681,14 @@ const I18N = {
   de: { locale: 'de-DE', dancing: 'Tanzender', mimic: 'Nachplappern', chat: 'Plaudern', start: '▶ START', stop: '⏸ STOPP',
     dance: '💃 Tanzen', song: '🎵 Lied', hint: 'antippen · wischen zum Wechseln', songWord: 'Lied',
     st: ['Schläft', 'Hört zu', 'Denkt nach', 'Spricht', 'Tanzt', 'Singt'],
-    fx: ['Normal', 'Eichhörnchen', 'Riese', 'Roboter', 'Höhle', 'Alien', 'Funk', 'Chor', 'Unter Wasser', 'Zufall'],
+    fx: ['Eichhörnchen', 'Riese', 'Roboter', 'Höhle', 'Alien', 'Funk', 'Chor', 'Unter Wasser', 'Zufall'],
     names: ['Kaktus', 'Bärchen', 'Roboter', 'Drache', 'Langer', 'Kleiner'],
     setInfo: 'Stimme hier einstellen. Antworten kommen vom Handy, kein Internet nötig.',
     toneChar: 'Ton: Figur', speedChar: 'Tempo: Figur', vChar: 'Stimme: eigene Stimme', vPhone: 'Stimme: Handy-Vorleser',
     test: '🔊 Stimme testen', brainOff: 'Gehirn: eigene Antworten', langAuto: 'Sprache: automatisch',
     fxTitle: 'Stimm-Effekt', fxSub: 'ändert die Stimme, nicht die Figur',
     elastic: 'Gummi', elaSt: 'Zieh, dehn und quetsch mich!',
-    ela: { pull: ['Uii ich werde lang!', 'Lass los du Schlingel!', 'Mehr mehr mehr!'], squash: ['Uff ich bin platt!', 'Mein Bauch!', 'Puff!'],
+    ela: { pull: ['Uii ich werde lang!', 'Ich bin wie Kaugummi!', 'Mehr mehr mehr!'], squash: ['Uff ich bin platt!', 'Mein Bauch!', 'Puff!'],
       bend: ['Hui ich biege mich!', 'Mir ist schwindlig!'], wow: ['Juhu!', 'Nochmal nochmal!', 'Das war toll!'] },
     off: { hi: ['Hallo! Ich habe auf dich gewartet.', 'Hi! Mir geht es heute super.'], how: ['Mir geht es prima!', 'Ganz gut, nur etwas durstig.'],
       q: ['Ich weiß es nicht, aber gute Frage.', 'Hmm, was meinst du?', 'Vielleicht ja, vielleicht tanzen wir.'],
@@ -693,14 +697,14 @@ const I18N = {
   fr: { locale: 'fr-FR', dancing: 'Le danseur', mimic: 'Imiter', chat: 'Discuter', start: '▶ DÉMARRER', stop: '⏸ STOP',
     dance: '💃 Danser', song: '🎵 Chanson', hint: 'touche · glisse pour changer', songWord: 'Chanson',
     st: ['Il dort', 'Il écoute', 'Il réfléchit', 'Il parle', 'Il danse', 'Il chante'],
-    fx: ['Normal', 'Écureuil', 'Géant', 'Robot', 'Grotte', 'Alien', 'Radio', 'Chorale', 'Sous l\'eau', 'Au hasard'],
+    fx: ['Écureuil', 'Géant', 'Robot', 'Grotte', 'Alien', 'Radio', 'Chorale', 'Sous l\'eau', 'Au hasard'],
     names: ['Cactus', 'Nounours', 'Robot', 'Dragon', 'Grand', 'Petit'],
     setInfo: 'Règle la voix ici. Les réponses viennent du téléphone, sans internet.',
     toneChar: 'Ton : personnage', speedChar: 'Vitesse : personnage', vChar: 'Voix : sa propre voix', vPhone: 'Voix : lecteur du téléphone',
     test: '🔊 Tester la voix', brainOff: 'Cerveau : réponses intégrées', langAuto: 'Langue : automatique',
     fxTitle: 'Effet de voix', fxSub: 'change la voix, pas le personnage',
     elastic: 'Élastique', elaSt: 'Tire, étire, écrase-moi !',
-    ela: { pull: ['Ouiii je suis long !', 'Lâche-moi coquin !', 'Encore encore !'], squash: ['Ouf je suis tout plat !', 'Mon ventre !', 'Pouf !'],
+    ela: { pull: ['Ouiii je suis long !', 'Je suis un chewing-gum !', 'Encore encore !'], squash: ['Ouf je suis tout plat !', 'Mon ventre !', 'Pouf !'],
       bend: ['Ouh je me plie !', 'La tête qui tourne !'], wow: ['Youpi !', 'Encore une fois !', 'C\'était super !'] },
     off: { hi: ['Salut ! Je t\'attendais.', 'Bonjour ! Je vais très bien aujourd\'hui.'], how: ['Je vais très bien !', 'Ça va, j\'ai un peu soif.'],
       q: ['Je ne sais pas, mais bonne question.', 'Hmm, et toi ?', 'Peut-être, ou alors dansons.'],
@@ -709,14 +713,14 @@ const I18N = {
   es: { locale: 'es-ES', dancing: 'El bailarín', mimic: 'Imitar', chat: 'Charlar', start: '▶ EMPEZAR', stop: '⏸ PARAR',
     dance: '💃 Bailar', song: '🎵 Canción', hint: 'toca · desliza para cambiar', songWord: 'Canción',
     st: ['Durmiendo', 'Escuchando', 'Pensando', 'Hablando', 'Bailando', 'Cantando'],
-    fx: ['Normal', 'Ardilla', 'Gigante', 'Robot', 'Cueva', 'Alien', 'Radio', 'Coro', 'Bajo el agua', 'Al azar'],
+    fx: ['Ardilla', 'Gigante', 'Robot', 'Cueva', 'Alien', 'Radio', 'Coro', 'Bajo el agua', 'Al azar'],
     names: ['Cactus', 'Osito', 'Robot', 'Dragón', 'Largo', 'Chiqui'],
     setInfo: 'Ajusta la voz aquí. Las respuestas salen del teléfono, sin internet.',
     toneChar: 'Tono: personaje', speedChar: 'Velocidad: personaje', vChar: 'Voz: su propia voz', vPhone: 'Voz: lector del teléfono',
     test: '🔊 Probar voz', brainOff: 'Cerebro: respuestas propias', langAuto: 'Idioma: automático',
     fxTitle: 'Efecto de voz', fxSub: 'cambia la voz, no el personaje',
     elastic: 'Elástico', elaSt: '¡Estírame y aplástame!',
-    ela: { pull: ['¡Uy qué largo soy!', '¡Suéltame pillo!', '¡Más más más!'], squash: ['¡Uf estoy aplastado!', '¡Mi barriga!', '¡Puf!'],
+    ela: { pull: ['¡Uy qué largo soy!', '¡Soy como un chicle!', '¡Más más más!'], squash: ['¡Uf estoy aplastado!', '¡Mi barriga!', '¡Puf!'],
       bend: ['¡Uy me doblo!', '¡Qué mareo!'], wow: ['¡Yuju!', '¡Otra vez otra vez!', '¡Qué divertido!'] },
     off: { hi: ['¡Hola! Te estaba esperando.', '¡Buenas! Hoy estoy muy alegre.'], how: ['¡Estoy genial!', 'Bien, con un poco de sed.'],
       q: ['No lo sé, pero buena pregunta.', 'Mmm, ¿tú qué dices?', 'Quizá sí, o mejor bailamos.'],
@@ -725,14 +729,14 @@ const I18N = {
   it: { locale: 'it-IT', dancing: 'Il ballerino', mimic: 'Imita', chat: 'Chiacchiera', start: '▶ AVVIA', stop: '⏸ STOP',
     dance: '💃 Balla', song: '🎵 Canzone', hint: 'tocca · scorri per cambiare', songWord: 'Canzone',
     st: ['Dorme', 'Ascolta', 'Pensa', 'Parla', 'Balla', 'Canta'],
-    fx: ['Normale', 'Scoiattolo', 'Gigante', 'Robot', 'Grotta', 'Alieno', 'Radio', 'Coro', 'Sott\'acqua', 'A caso'],
+    fx: ['Scoiattolo', 'Gigante', 'Robot', 'Grotta', 'Alieno', 'Radio', 'Coro', 'Sott\'acqua', 'A caso'],
     names: ['Cactus', 'Orsetto', 'Robot', 'Drago', 'Lungo', 'Piccolo'],
     setInfo: 'Regola la voce qui. Le risposte arrivano dal telefono, senza internet.',
     toneChar: 'Tono: personaggio', speedChar: 'Velocità: personaggio', vChar: 'Voce: la sua voce', vPhone: 'Voce: lettore del telefono',
     test: '🔊 Prova la voce', brainOff: 'Cervello: risposte interne', langAuto: 'Lingua: automatica',
     fxTitle: 'Effetto voce', fxSub: 'cambia la voce, non il personaggio',
     elastic: 'Elastico', elaSt: 'Tirami, allungami, schiacciami!',
-    ela: { pull: ['Uuu come sono lungo!', 'Lasciami birbante!', 'Ancora ancora!'], squash: ['Uff sono schiacciato!', 'La mia pancia!', 'Puff!'],
+    ela: { pull: ['Uuu come sono lungo!', 'Sono una gomma da masticare!', 'Ancora ancora!'], squash: ['Uff sono schiacciato!', 'La mia pancia!', 'Puff!'],
       bend: ['Uh mi piego!', 'Che giramento!'], wow: ['Evviva!', 'Ancora ancora!', 'Che bello!'] },
     off: { hi: ['Ciao! Ti stavo aspettando.', 'Ehi! Oggi sono allegrissimo.'], how: ['Sto benissimo!', 'Bene, ho solo un po\' di sete.'],
       q: ['Non lo so, ma bella domanda.', 'Mmm, tu che dici?', 'Forse sì, o balliamo.'],
@@ -741,14 +745,14 @@ const I18N = {
   pt: { locale: 'pt-BR', dancing: 'O dançarino', mimic: 'Imitar', chat: 'Conversar', start: '▶ COMEÇAR', stop: '⏸ PARAR',
     dance: '💃 Dançar', song: '🎵 Música', hint: 'cutuque · deslize para trocar', songWord: 'Música',
     st: ['Dormindo', 'Ouvindo', 'Pensando', 'Falando', 'Dançando', 'Cantando'],
-    fx: ['Normal', 'Esquilo', 'Gigante', 'Robô', 'Caverna', 'Alien', 'Rádio', 'Coral', 'Debaixo d\'água', 'Aleatório'],
+    fx: ['Esquilo', 'Gigante', 'Robô', 'Caverna', 'Alien', 'Rádio', 'Coral', 'Debaixo d\'água', 'Aleatório'],
     names: ['Cacto', 'Ursinho', 'Robô', 'Dragão', 'Comprido', 'Pequeno'],
     setInfo: 'Ajuste a voz aqui. As respostas vêm do telefone, sem internet.',
     toneChar: 'Tom: personagem', speedChar: 'Velocidade: personagem', vChar: 'Voz: a própria voz', vPhone: 'Voz: leitor do telefone',
     test: '🔊 Testar voz', brainOff: 'Cérebro: respostas próprias', langAuto: 'Idioma: automático',
     fxTitle: 'Efeito de voz', fxSub: 'muda a voz, não o personagem',
     elastic: 'Elástico', elaSt: 'Puxe, estique, amasse!',
-    ela: { pull: ['Uau estou comprido!', 'Me solta bobinho!', 'Mais mais mais!'], squash: ['Ufa estou amassado!', 'Minha barriga!', 'Puf!'],
+    ela: { pull: ['Uau estou comprido!', 'Sou como chiclete!', 'Mais mais mais!'], squash: ['Ufa estou amassado!', 'Minha barriga!', 'Puf!'],
       bend: ['Uou estou dobrando!', 'Que tontura!'], wow: ['Oba!', 'De novo de novo!', 'Foi demais!'] },
     off: { hi: ['Oi! Estava esperando você.', 'Olá! Hoje estou muito alegre.'], how: ['Estou ótimo!', 'Bem, só com um pouco de sede.'],
       q: ['Não sei, mas boa pergunta.', 'Hmm, o que você acha?', 'Talvez sim, ou vamos dançar.'],
@@ -757,14 +761,14 @@ const I18N = {
   ru: { locale: 'ru-RU', dancing: 'Танцующий', mimic: 'Повторюшка', chat: 'Болтать', start: '▶ СТАРТ', stop: '⏸ СТОП',
     dance: '💃 Танец', song: '🎵 Песня', hint: 'ткни · проведи для смены', songWord: 'Песня',
     st: ['Спит', 'Слушает', 'Думает', 'Говорит', 'Танцует', 'Поёт'],
-    fx: ['Обычный', 'Бурундук', 'Великан', 'Робот', 'Пещера', 'Пришелец', 'Рация', 'Хор', 'Под водой', 'Случайно'],
+    fx: ['Бурундук', 'Великан', 'Робот', 'Пещера', 'Пришелец', 'Рация', 'Хор', 'Под водой', 'Случайно'],
     names: ['Кактус', 'Мишка', 'Робот', 'Дракон', 'Длинный', 'Малыш'],
     setInfo: 'Настрой голос здесь. Ответы берутся из телефона, интернет не нужен.',
     toneChar: 'Тон: персонаж', speedChar: 'Скорость: персонаж', vChar: 'Голос: собственный', vPhone: 'Голос: чтец телефона',
     test: '🔊 Проверить голос', brainOff: 'Мозг: свои ответы', langAuto: 'Язык: автоматически',
     fxTitle: 'Эффект голоса', fxSub: 'меняет голос, а не персонажа',
     elastic: 'Тянучка', elaSt: 'Тяни, растягивай, сжимай!',
-    ela: { pull: ['Ууу я расту!', 'Отпусти шалун!', 'Ещё ещё ещё!'], squash: ['Ой меня сплющили!', 'Мой животик!', 'Пуф!'],
+    ela: { pull: ['Ууу я расту!', 'Я как жвачка!', 'Ещё ещё ещё!'], squash: ['Ой меня сплющили!', 'Мой животик!', 'Пуф!'],
       bend: ['Ух я гнусь!', 'Голова кружится!'], wow: ['Ура!', 'Ещё разок!', 'Вот здорово!'] },
     off: { hi: ['Привет! Я тебя ждал.', 'Здравствуй! Сегодня мне весело.'], how: ['У меня всё отлично!', 'Хорошо, только пить хочется.'],
       q: ['Не знаю, но вопрос хороший.', 'Хмм, а ты как думаешь?', 'Может быть. А может, потанцуем.'],
@@ -773,14 +777,14 @@ const I18N = {
   ar: { locale: 'ar-SA', rtl: 1, dancing: 'الراقص', mimic: 'تقليد', chat: 'دردشة', start: '▶ ابدأ', stop: '⏸ توقف',
     dance: '💃 ارقص', song: '🎵 أغنية', hint: 'اضغط · اسحب للتبديل', songWord: 'أغنية',
     st: ['نائم', 'يستمع', 'يفكر', 'يتكلم', 'يرقص', 'يغني'],
-    fx: ['عادي', 'سنجاب', 'عملاق', 'روبوت', 'كهف', 'فضائي', 'لاسلكي', 'جوقة', 'تحت الماء', 'عشوائي'],
+    fx: ['سنجاب', 'عملاق', 'روبوت', 'كهف', 'فضائي', 'لاسلكي', 'جوقة', 'تحت الماء', 'عشوائي'],
     names: ['صبار', 'دبدوب', 'روبوت', 'تنين', 'طويل', 'صغير'],
     setInfo: 'اضبط الصوت هنا. الإجابات من الهاتف نفسه، بدون إنترنت.',
     toneChar: 'النغمة: الشخصية', speedChar: 'السرعة: الشخصية', vChar: 'الصوت: صوته الخاص', vPhone: 'الصوت: قارئ الهاتف',
     test: '🔊 جرب الصوت', brainOff: 'العقل: إجابات داخلية', langAuto: 'اللغة: تلقائي',
     fxTitle: 'مؤثر الصوت', fxSub: 'يغيّر الصوت لا الشخصية',
     elastic: 'مطاطي', elaSt: 'اسحبني ومدّدني واعصرني!',
-    ela: { pull: ['أنا أطول وأطول!', 'اتركني يا شقي!', 'أكثر أكثر!'], squash: ['آخ انعصرت!', 'بطني بطني!', 'بوف!'],
+    ela: { pull: ['أنا أطول وأطول!', 'أنا مثل العلكة!', 'أكثر أكثر!'], squash: ['آخ انعصرت!', 'بطني بطني!', 'بوف!'],
       bend: ['أنا أنحني!', 'رأسي يدور!'], wow: ['يا سلام!', 'مرة أخرى!', 'كان رائعا!'] },
     off: { hi: ['مرحبا! كنت أنتظرك.', 'أهلا! أنا سعيد اليوم.'], how: ['أنا بخير تماما!', 'بخير، لكني عطشان قليلا.'],
       q: ['لا أعرف، لكنه سؤال جميل.', 'همم، ما رأيك أنت؟', 'ربما نعم، أو لنرقص.'],
@@ -789,14 +793,14 @@ const I18N = {
   hi: { locale: 'hi-IN', dancing: 'नाचने वाला', mimic: 'नकल', chat: 'बातचीत', start: '▶ शुरू', stop: '⏸ रुको',
     dance: '💃 नाचो', song: '🎵 गाना', hint: 'छुओ · बदलने के लिए स्वाइप करो', songWord: 'गाना',
     st: ['सो रहा है', 'सुन रहा है', 'सोच रहा है', 'बोल रहा है', 'नाच रहा है', 'गा रहा है'],
-    fx: ['सामान्य', 'गिलहरी', 'दानव', 'रोबोट', 'गुफा', 'एलियन', 'रेडियो', 'कोरस', 'पानी के नीचे', 'कोई भी'],
+    fx: ['गिलहरी', 'दानव', 'रोबोट', 'गुफा', 'एलियन', 'रेडियो', 'कोरस', 'पानी के नीचे', 'कोई भी'],
     names: ['कैक्टस', 'भालू', 'रोबोट', 'ड्रैगन', 'लंबू', 'नन्हा'],
     setInfo: 'आवाज़ यहाँ चुनो। जवाब फ़ोन से आते हैं, इंटरनेट नहीं चाहिए।',
     toneChar: 'सुर: किरदार', speedChar: 'गति: किरदार', vChar: 'आवाज़: अपनी आवाज़', vPhone: 'आवाज़: फ़ोन का वाचक',
     test: '🔊 आवाज़ सुनो', brainOff: 'दिमाग़: अपने जवाब', langAuto: 'भाषा: स्वतः',
     fxTitle: 'आवाज़ का असर', fxSub: 'आवाज़ बदलता है, किरदार नहीं',
     elastic: 'खिंचाव', elaSt: 'खींचो, मरोड़ो, दबाओ!',
-    ela: { pull: ['ऊऊ मैं लंबा हो गया!', 'छोड़ो मुझे!', 'और और और!'], squash: ['उफ़ मैं पिचक गया!', 'मेरा पेट!', 'पुफ़!'],
+    ela: { pull: ['ऊऊ मैं लंबा हो गया!', 'मैं च्युइंगम जैसा हूँ!', 'और और और!'], squash: ['उफ़ मैं पिचक गया!', 'मेरा पेट!', 'पुफ़!'],
       bend: ['ओहो मैं मुड़ रहा हूँ!', 'चक्कर आ गया!'], wow: ['याहू!', 'फिर से फिर से!', 'मज़ा आ गया!'] },
     off: { hi: ['नमस्ते! मैं तुम्हारा इंतज़ार कर रहा था।', 'हैलो! आज मैं बहुत खुश हूँ।'], how: ['मैं बहुत बढ़िया हूँ!', 'ठीक हूँ, थोड़ी प्यास लगी है।'],
       q: ['पता नहीं, पर सवाल अच्छा है।', 'हम्म, तुम क्या कहते हो?', 'शायद हाँ, या चलो नाचें।'],
@@ -852,7 +856,7 @@ function buildLangSelect() {
 /* ================= KARAKTERLER ================= */
 const CHARS = [
   {
-    name: 'Kaktüs', voiceFx: 'dry', mood: 'sevimli', body: ['#2f9d5c', '#59dc87', '#238a4c'], acc: ['#2ba3bd', '#5fdcee', '#1d8ba6'],
+    name: 'Kaktüs', voiceFx: 'sincap', mood: 'sevimli', body: ['#2f9d5c', '#59dc87', '#238a4c'], acc: ['#2ba3bd', '#5fdcee', '#1d8ba6'],
     pot: ['#2ea6c2', '#6fe0f0', '#1c88a4'], rim: '#7fe6f4', line: '#15532f', accLine: '#0e5f72',
     head: 'hHood', face: 'round', eyes: 'eLens', mouth: null, pat: 'patQuilt', ex: 'ex-spike', base: 'pot',
     segW: 50, segH: 52, armW: 40, armH: 66, headK: 1, segRx: 24, armRx: 20, twist: true,
@@ -1068,8 +1072,9 @@ function shaper(amount) {
 }
 
 /* ================= EFEKTLER ================= */
-const FX = ['dry', 'sincap', 'dev', 'robot', 'yanki', 'uzayli', 'telefon', 'koro', 'suyalti', 'rastgele'];
-const FXUI = { dry: ['🎙️', 'Normal'], sincap: ['🐿️', 'Sincap'], dev: ['👹', 'Dev'], robot: ['🤖', 'Robot'], yanki: ['🕳️', 'Mağara'], uzayli: ['👽', 'Uzaylı'], telefon: ['📞', 'Telsiz'], koro: ['👥', 'Koro'], suyalti: ['🐠', 'Su altı'], rastgele: ['🎲', 'Karışık'] };
+// 'Normal/işlenmemiş ses' seçeneği bilerek yok: çocuk her zaman efektli, eğlenceli ses duyar
+const FX = ['sincap', 'dev', 'robot', 'yanki', 'uzayli', 'telefon', 'koro', 'suyalti', 'rastgele'];
+const FXUI = { sincap: ['🐿️', 'Sincap'], dev: ['👹', 'Dev'], robot: ['🤖', 'Robot'], yanki: ['🕳️', 'Mağara'], uzayli: ['👽', 'Uzaylı'], telefon: ['📞', 'Telsiz'], koro: ['👥', 'Koro'], suyalti: ['🐠', 'Su altı'], rastgele: ['🎲', 'Karışık'] };
 let fx = 'sincap', live = null;
 const fxByMode = { parrot: 'sincap', elastic: 'sincap' };   // duz/varsayilan TTS sesi asla cikmasin
 function trim(buf, sec) {
@@ -1400,7 +1405,7 @@ function conSeg(ctx, dest, at, kind, hz, base) {
   return dur;
 }
 function fxNow() {
-  const k = fx === 'rastgele' ? FX[1 + Math.floor(Math.random() * (FX.length - 2))] : fx;
+  const k = fx === 'rastgele' ? FX[Math.floor(Math.random() * (FX.length - 1))] : fx;
   return k;
 }
 async function speakSynth(text) {
@@ -1879,9 +1884,9 @@ function speak(text) {
   u.lang = (chosenVoice && chosenVoice.lang) || L.locale;
   const tv = parseFloat(el('tone').value), sv = parseFloat(el('speed').value);
   let fk = fxNow();
-  // elastikte "Normal" bile seçilse karakterin kendi ses rengiyle konuşsun, yavan olmasın
-  if (mode === 'elastic' && fk === 'dry') fk = (curChar().voiceFx !== 'dry' && curChar().voiceFx) || 'sincap';
-  const m = TTSFX[fk] || [1, 1];
+  // güvenlik ağı: işlenmemiş/yavan ses hiçbir koşulda çıkmasın
+  if (fk === 'dry' || !TTSFX[fk]) fk = curChar().voiceFx || 'sincap';
+  const m = TTSFX[fk] || [1.6, 1.1];
   const bp = isFinite(tv) ? tv : (curChar().tone || 1.2);
   const br = isFinite(sv) ? sv : (curChar().rate || 1);
   u.pitch = Math.min(2, Math.max(0, bp * m[0]));
@@ -1944,7 +1949,7 @@ function setMode(m) {
   el('mElastic').setAttribute('aria-pressed', m === 'elastic');
   el('go').textContent = running ? L.stop : L.start;
   el('fxGrid').classList.add('on');
-  fx = fxByMode[m] || 'dry';
+  fx = fxByMode[m] || 'sincap';
   [...el('fxGrid').children].forEach((c, i) => c.setAttribute('aria-pressed', FX[i] === fx));
   // elastik modda çekiştirme hemen çalışır, ipucunu göster
   el('hint').textContent = m === 'elastic' ? L.elaSt : L.hint;
