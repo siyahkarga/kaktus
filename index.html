@@ -154,64 +154,114 @@
         <stop id="potA" offset="0" stop-color="#2ea6c2"/><stop id="potB" offset=".4" stop-color="#6fe0f0"/><stop id="potC" offset="1" stop-color="#1c88a4"/>
       </linearGradient>
       <linearGradient id="gLens" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#d8e6ef"/></linearGradient>
-      <clipPath id="bodyClip"><path id="bodyClipP" d=""/></clipPath>
+      <pattern id="pQuilt" patternUnits="userSpaceOnUse" width="36" height="36" patternTransform="rotate(45)">
+        <path id="pQuiltL" d="M0,0 H36 M0,18 H36 M0,0 V36 M18,0 V36" stroke="#1a6b3f" stroke-width="2.4" fill="none"/>
+      </pattern>
+      <pattern id="pDots" patternUnits="userSpaceOnUse" width="44" height="44">
+        <circle id="pDotA" cx="11" cy="11" r="5.5" fill="#1a6b3f"/><circle id="pDotB" cx="33" cy="33" r="5.5" fill="#1a6b3f"/>
+      </pattern>
       <clipPath id="potClip"><path d="M-96,-170 C-104,-104 -88,-32 -74,-6 C-38,10 38,10 74,-6 C88,-32 104,-104 96,-170 Z"/></clipPath>
     </defs>
 
     <ellipse cx="200" cy="606" rx="122" ry="15" fill="rgba(0,0,0,.35)"/>
 
-    <!-- YUMUŞAK GÖVDE: tek parça jel silüet, her karede fizikten çizilir -->
+    <!-- ESNEK PELUŞ: eski segmentli form (kafa + 3 gövde + iki parçalı kollar), yumuşak-gövde fiziğiyle.
+         Her parça kendi grubunda: desen, diken, çizgi ve cıvatalar parçayla birlikte hareket eder. -->
     <g id="body" transform="translate(200,600)">
-      <path id="bodyP" d="" fill="url(#gBody)" stroke="#15532f" stroke-width="5" stroke-linejoin="round"/>
-      <g clip-path="url(#bodyClip)">
-        <g id="patQuilt" stroke="#1a6b3f" stroke-width="2.4" fill="none" opacity=".4">
-          <path d="M-170,-190 L70,-640 M-170,-110 L150,-640 M-170,-30 L210,-580 M-130,10 L230,-500 M-50,10 L250,-420 M30,10 L250,-340"/>
-          <path d="M170,-190 L-70,-640 M170,-110 L-150,-640 M170,-30 L-210,-580 M130,10 L-230,-500 M50,10 L-250,-420 M-30,10 L-250,-340"/>
-        </g>
-        <g id="patDots" fill="#1a6b3f" opacity=".3">
-          <circle cx="-42" cy="-300" r="7"/><circle cx="32" cy="-340" r="7"/><circle cx="-8" cy="-250" r="6"/><circle cx="50" cy="-270" r="6"/>
-          <circle cx="-54" cy="-372" r="6"/><circle cx="22" cy="-412" r="6"/><circle cx="-30" cy="-452" r="6"/><circle cx="44" cy="-470" r="5"/>
-        </g>
-        <g id="patBolts" fill="#c6d0ea" stroke="#3a4463" stroke-width="2">
-          <circle cx="-28" cy="-262" r="5"/><circle cx="28" cy="-262" r="5"/><circle cx="-28" cy="-352" r="5"/><circle cx="28" cy="-352" r="5"/>
-          <rect x="-30" y="-318" width="60" height="18" rx="4" fill="#2a3050" stroke="#151a2e"/>
-        </g>
-        <ellipse id="belly" cx="0" cy="0" rx="34" ry="44" fill="#ffe8c9" opacity=".9"/>
-        <ellipse id="gloss" cx="0" cy="0" rx="22" ry="34" fill="#fff" opacity=".16"/>
+      <g id="segNeck"><rect class="limb" x="-15" y="-60" width="30" height="120" rx="15"/></g>
+      <g id="seg1" class="segG">
+        <rect class="limb sg" x="-25" y="-31" width="50" height="62" rx="24"/>
+        <rect class="pat sg" x="-25" y="-31" width="50" height="62" rx="24"/>
+        <path class="twist" d="M-19,-23 C4,-15 -4,3 18,11"/>
+        <g class="ex-spike"><path class="spL" d="M-25,-14 l-11,-4 l11,-4z"/><path class="spR" d="M25,6 l11,-4 l-11,-4z"/></g>
+        <g class="ex-bolt"><circle class="bA" cx="-16" cy="-16" r="4"/><circle class="bB" cx="16" cy="-16" r="4"/><circle class="bC" cx="-16" cy="12" r="4"/><circle class="bD" cx="16" cy="12" r="4"/></g>
+        <g class="ex-back"><path class="bkA" d="M25,-20 l16,-8 l-4,16z"/><path class="bkB" d="M25,8 l16,-8 l-4,16z"/></g>
       </g>
-      <path id="spines" d="" fill="#15532f"/>
-      <path id="backSpikes" d="" fill="#ffd66b" stroke="#8a6410" stroke-width="3" stroke-linejoin="round"/>
-      <g id="hat">
-        <g id="hLeaf"><path d="M-16,6 C-6,-24 6,-24 16,6 C8,-4 -8,-4 -16,6 Z" fill="#5fdcee" stroke="#0e5f72" stroke-width="4"/></g>
-        <g id="hAnt"><path d="M0,2 L0,-40" stroke="#9aa6c8" stroke-width="7" stroke-linecap="round"/><circle cx="0" cy="-49" r="13" fill="#ff5c8a" stroke="#3a4463" stroke-width="4"/></g>
-        <g id="hTuft"><path d="M0,4 C-22,-22 -12,-42 4,-34 M0,4 C2,-28 14,-44 26,-30 M0,4 C-6,-16 8,-28 20,-18" stroke="#4d5573" stroke-width="6" fill="none" stroke-linecap="round"/></g>
-        <g id="hBow" transform="translate(30,-6)"><path d="M0,0 C-10,-18 -34,-16 -30,0 C-34,16 -10,18 0,0 C10,-18 34,-16 30,0 C34,16 10,18 0,0 Z" fill="#ffd66b" stroke="#8a6410" stroke-width="3"/><circle r="6" fill="#d9a323"/></g>
+      <g id="seg2" class="segG">
+        <rect class="limb sg" x="-25" y="-31" width="50" height="62" rx="24"/>
+        <rect class="pat sg" x="-25" y="-31" width="50" height="62" rx="24"/>
+        <path class="twist" d="M18,-23 C-4,-15 4,3 -18,11"/>
+        <g class="ex-spike"><path class="spL" d="M-25,2 l-11,-4 l11,-4z"/><path class="spR" d="M25,-18 l11,-4 l-11,-4z"/></g>
+        <g class="ex-bolt"><circle class="bA" cx="-16" cy="-18" r="4"/><circle class="bB" cx="16" cy="-18" r="4"/><circle class="bC" cx="-16" cy="10" r="4"/><circle class="bD" cx="16" cy="10" r="4"/></g>
+        <g class="ex-back"><path class="bkA" d="M25,-22 l16,-8 l-4,16z"/><path class="bkB" d="M25,6 l16,-8 l-4,16z"/></g>
       </g>
-      <g id="earL"><circle r="30" fill="url(#gBody)" stroke="#4a2a12" stroke-width="5"/><circle r="15" fill="url(#gHood)"/></g>
-      <g id="earR"><circle r="30" fill="url(#gBody)" stroke="#4a2a12" stroke-width="5"/><circle r="15" fill="url(#gHood)"/></g>
-      <g id="hornL"><path d="M6,12 C-14,-14 -10,-44 12,-48 C4,-32 6,-12 14,2 Z" fill="url(#gHood)" stroke="#3a1858" stroke-width="5" stroke-linejoin="round"/></g>
-      <g id="hornR"><path d="M-6,12 C14,-14 10,-44 -12,-48 C-4,-32 -6,-12 -14,2 Z" fill="url(#gHood)" stroke="#3a1858" stroke-width="5" stroke-linejoin="round"/></g>
-      <g id="face">
-        <g id="mMuzzle"><ellipse cx="0" cy="0" rx="38" ry="27" fill="#ffe8c9" stroke="#4a2a12" stroke-width="4"/><ellipse cx="0" cy="-15" rx="13" ry="9" fill="#3a2418"/></g>
-        <ellipse id="cheekL" rx="13" ry="8" fill="#ff5c8a" opacity=".3"/>
-        <ellipse id="cheekR" rx="13" ry="8" fill="#ff5c8a" opacity=".3"/>
-        <g id="eyeL"><g id="eyeLs">
-          <ellipse id="scL" rx="24" ry="27" fill="#fff" stroke="#14322a" stroke-width="5"/>
-          <g id="pupL"><circle id="irisL" r="13" fill="#2a8aa8"/><circle r="7" fill="#14322a"/><circle cx="-4.5" cy="-5" r="3.4" fill="#fff"/></g>
-        </g></g>
-        <g id="eyeR"><g id="eyeRs">
-          <ellipse id="scR" rx="24" ry="27" fill="#fff" stroke="#14322a" stroke-width="5"/>
-          <g id="pupR"><circle id="irisR" r="13" fill="#2a8aa8"/><circle r="7" fill="#14322a"/><circle cx="-4.5" cy="-5" r="3.4" fill="#fff"/></g>
-        </g></g>
-        <g id="eyeSqL"><g id="eyeSqLs"><rect x="-23" y="-17" width="46" height="34" rx="8" fill="#8ef0ff" stroke="#3a4463" stroke-width="5"/><g id="pupSqL"><rect x="-8" y="-8" width="16" height="16" rx="3" fill="#14322a"/></g></g></g>
-        <g id="eyeSqR"><g id="eyeSqRs"><rect x="-23" y="-17" width="46" height="34" rx="8" fill="#8ef0ff" stroke="#3a4463" stroke-width="5"/><g id="pupSqR"><rect x="-8" y="-8" width="16" height="16" rx="3" fill="#14322a"/></g></g></g>
-        <g id="mouthG">
+      <g id="seg3" class="segG">
+        <rect class="limb sg" x="-31" y="-35" width="62" height="70" rx="29"/>
+        <rect class="pat sg" x="-31" y="-35" width="62" height="70" rx="29"/>
+        <path class="twist" d="M-22,-25 C6,-15 -6,3 22,13"/>
+        <ellipse class="ex-belly" cx="0" cy="3" rx="22" ry="26"/>
+        <g class="ex-spike"><path class="spL" d="M-31,-21 l-11,-4 l11,-4z"/><path class="spR" d="M31,-3 l11,-4 l-11,-4z"/></g>
+        <g class="ex-bolt"><circle class="bA" cx="-20" cy="-21" r="4"/><circle class="bB" cx="20" cy="-21" r="4"/><circle class="bC" cx="0" cy="15" r="5"/></g>
+        <g class="ex-back"><path class="bkA" d="M31,-25 l17,-9 l-4,17z"/><path class="bkB" d="M31,3 l17,-9 l-4,17z"/></g>
+      </g>
+      <g id="armLU" class="armG"><rect class="limb arm" x="-20" y="-33" width="40" height="66" rx="20"/><path class="side" d="M-14,-23 C-19,-5 -19,13 -14,27"/></g>
+      <g id="armLF" class="armG"><rect class="limb arm" x="-19" y="-32" width="38" height="64" rx="19"/><path class="side" d="M-13,-22 C-18,-4 -18,12 -13,24"/><path class="stitch" d="M-10,-16 L10,-16 M-11,0 L11,0 M-10,16 L10,16"/></g>
+      <g id="armRU" class="armG"><rect class="limb arm" x="-20" y="-33" width="40" height="66" rx="20"/><path class="side" d="M14,-23 C19,-5 19,13 14,27"/></g>
+      <g id="armRF" class="armG"><rect class="limb arm" x="-19" y="-32" width="38" height="64" rx="19"/><path class="side" d="M13,-22 C18,-4 18,12 13,24"/><path class="stitch" d="M-10,-16 L10,-16 M-11,0 L11,0 M-10,16 L10,16"/></g>
+      <g id="head">
+        <g id="hEars">
+          <circle cx="-62" cy="-176" r="30" fill="url(#gBody)" stroke="#15532f" stroke-width="5"/>
+          <circle cx="62" cy="-176" r="30" fill="url(#gBody)" stroke="#15532f" stroke-width="5"/>
+          <circle cx="-62" cy="-176" r="15" fill="url(#gHood)"/><circle cx="62" cy="-176" r="15" fill="url(#gHood)"/>
+        </g>
+        <g id="hHorns">
+          <path d="M-46,-176 C-58,-206 -50,-224 -34,-228 C-40,-212 -40,-194 -34,-184 Z" fill="url(#gHood)" stroke="#15532f" stroke-width="5" stroke-linejoin="round"/>
+          <path d="M46,-176 C58,-206 50,-224 34,-228 C40,-212 40,-194 34,-184 Z" fill="url(#gHood)" stroke="#15532f" stroke-width="5" stroke-linejoin="round"/>
+        </g>
+        <g id="hAnt">
+          <path d="M0,-196 L0,-238" stroke="#9aa6c8" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="0" cy="-246" r="13" fill="#ff5c8a" stroke="#3a4463" stroke-width="4"/>
+        </g>
+        <g id="hHood">
+          <path id="hoodShape" d="M-88,-54 C-98,-164 -52,-214 0,-214 C52,-214 98,-164 88,-54 C58,-14 -58,-14 -88,-54 Z"
+                fill="url(#gHood)" stroke="#0e5f72" stroke-width="5" stroke-linejoin="round"/>
+          <path id="tipLeaf" d="M-16,-206 C-6,-232 6,-232 16,-206 C8,-214 -8,-214 -16,-206 Z" fill="#5fdcee" stroke="#0e5f72" stroke-width="4"/>
+        </g>
+        <path id="faceRound" d="M-70,-58 C-76,-152 -42,-192 0,-192 C42,-192 76,-152 70,-58 C46,-22 -46,-22 -70,-58 Z"
+              fill="url(#gBody)" stroke="#15532f" stroke-width="5" stroke-linejoin="round"/>
+        <rect id="faceSquare" x="-72" y="-196" width="144" height="150" rx="18" fill="url(#gBody)" stroke="#15532f" stroke-width="5"/>
+        <path id="facePat" d="M-70,-58 C-76,-152 -42,-192 0,-192 C42,-192 76,-152 70,-58 C46,-22 -46,-22 -70,-58 Z" fill="url(#pQuilt)" opacity=".5"/>
+        <ellipse id="gloss" cx="-28" cy="-160" rx="16" ry="22" fill="#fff" opacity=".14"/>
+        <g id="mMuzzle">
+          <ellipse cx="0" cy="-58" rx="40" ry="30" fill="#ffe8c9" stroke="#15532f" stroke-width="4"/>
+          <ellipse cx="0" cy="-76" rx="13" ry="9" fill="#3a2418"/>
+        </g>
+        <g id="mGrill">
+          <rect x="-42" y="-76" width="84" height="34" rx="10" fill="#2a3050" stroke="#9aa6c8" stroke-width="4"/>
+          <path d="M-30,-72 L-30,-46 M-14,-72 L-14,-46 M2,-72 L2,-46 M18,-72 L18,-46 M32,-72 L32,-46" stroke="#9aa6c8" stroke-width="4"/>
+        </g>
+        <ellipse id="cheekL" cx="-54" cy="-92" rx="13" ry="8" fill="#ff5c8a" opacity=".3"/>
+        <ellipse id="cheekR" cx="54" cy="-92" rx="13" ry="8" fill="#ff5c8a" opacity=".3"/>
+        <g transform="translate(0,-124)">
+          <g id="eyeL" transform="translate(-33,0)"><g id="eyeLs">
+            <ellipse id="scL" rx="25" ry="27" fill="#fff" stroke="#14322a" stroke-width="5"/>
+            <g id="pupL"><circle id="irisL" r="13" fill="#2a8aa8"/><circle r="7" fill="#14322a"/><circle cx="-4.5" cy="-5" r="3.4" fill="#fff"/></g>
+          </g></g>
+          <g id="eyeR" transform="translate(33,0)"><g id="eyeRs">
+            <ellipse id="scR" rx="25" ry="27" fill="#fff" stroke="#14322a" stroke-width="5"/>
+            <g id="pupR"><circle id="irisR" r="13" fill="#2a8aa8"/><circle r="7" fill="#14322a"/><circle cx="-4.5" cy="-5" r="3.4" fill="#fff"/></g>
+          </g></g>
+          <g id="eyeSqL" transform="translate(-35,0)"><g id="eyeSqLs"><rect x="-23" y="-17" width="46" height="34" rx="8" fill="#8ef0ff" stroke="#3a4463" stroke-width="5"/><g id="pupSqL"><rect x="-8" y="-8" width="16" height="16" rx="3" fill="#14322a"/></g></g></g>
+          <g id="eyeSqR" transform="translate(35,0)"><g id="eyeSqRs"><rect x="-23" y="-17" width="46" height="34" rx="8" fill="#8ef0ff" stroke="#3a4463" stroke-width="5"/><g id="pupSqR"><rect x="-8" y="-8" width="16" height="16" rx="3" fill="#14322a"/></g></g></g>
+        </g>
+        <g id="mouthG" transform="translate(0,-50)">
           <ellipse id="mouth" rx="15" ry="4" fill="#2c0f22" stroke="#15532f" stroke-width="3"/>
           <ellipse id="tongue" cy="6" rx="7" ry="4" fill="#ff7a9c"/>
         </g>
-        <g id="mGrill"><rect x="-40" y="-14" width="80" height="30" rx="9" fill="#2a3050" stroke="#9aa6c8" stroke-width="4"/><path d="M-28,-10 L-28,12 M-12,-10 L-12,12 M4,-10 L4,12 M20,-10 L20,12" stroke="#9aa6c8" stroke-width="4"/></g>
       </g>
     </g>
+
+    <style>
+      .limb{fill:url(#gBody);stroke:#15532f;stroke-width:5;stroke-linejoin:round}
+      .pat{stroke:none;opacity:.5}
+      .twist{fill:none;stroke:#3fc9e0;stroke-width:9;stroke-linecap:round;opacity:.75}
+      .side{fill:none;stroke:#3fc9e0;stroke-width:10;stroke-linecap:round;opacity:.8}
+      .stitch{fill:none;stroke:#15532f;stroke-width:2.4;stroke-linecap:round;opacity:.45;stroke-dasharray:5 6}
+      .ex-spike{fill:#15532f}
+      .ex-bolt{fill:#c6d0ea;stroke:#3a4463;stroke-width:2}
+      .ex-back{fill:#ffd66b;stroke:#8a6410;stroke-width:3;stroke-linejoin:round}
+      .ex-belly{fill:#ffe8c9;stroke:#15532f;stroke-width:4;opacity:.9}
+    </style>
 
     <g id="pot" transform="translate(200,600)">
       <path d="M-96,-170 C-104,-104 -88,-32 -74,-6 C-38,10 38,10 74,-6 C88,-32 104,-104 96,-170 Z"
@@ -298,7 +348,7 @@
   <input id="brainCfg" type="password" placeholder="sk-ant-… (isteğe bağlı)" autocomplete="off">
 </div>
 
-<p class="ver" id="ver">v33</p>
+<p class="ver" id="ver">v34</p>
 </div>
 </div>
 </div>
@@ -310,14 +360,14 @@ const one = a => a[Math.floor(Math.random() * a.length)];
 const semi = s => Math.pow(2, s / 12);
 
 /* ================= RIG ================= */
+const segRef = id => { const g = el(id); return { el: g, rects: [...g.querySelectorAll('rect.limb, rect.pat')] }; };
 const N = {
-  pot: el('pot'), base2: el('baseBlower'), bodyP: el('bodyP'), clipP: el('bodyClipP'),
-  spines: el('spines'), back: el('backSpikes'), hat: el('hat'), earL: el('earL'), earR: el('earR'),
-  hornL: el('hornL'), hornR: el('hornR'), eyeL: el('eyeL'), eyeR: el('eyeR'),
-  eyeSqL: el('eyeSqL'), eyeSqR: el('eyeSqR'),
+  pot: el('pot'), base2: el('baseBlower'), head: el('head'),
+  segs: { neck: segRef('segNeck'), s1: segRef('seg1'), s2: segRef('seg2'), s3: segRef('seg3'),
+    lu: segRef('armLU'), lf: segRef('armLF'), ru: segRef('armRU'), rf: segRef('armRF') },
+  eyeLs: el('eyeLs'), eyeRs: el('eyeRs'), eyeSqLs: el('eyeSqLs'), eyeSqRs: el('eyeSqRs'),
   pupL: el('pupL'), pupR: el('pupR'), pupSqL: el('pupSqL'), pupSqR: el('pupSqR'),
-  cheekL: el('cheekL'), cheekR: el('cheekR'), mouthG: el('mouthG'), mouth: el('mouth'), tongue: el('tongue'),
-  grill: el('mGrill'), muzzle: el('mMuzzle'), belly: el('belly'), gloss: el('gloss')
+  mouth: el('mouth'), tongue: el('tongue')
 };
 function ch(v, k = 120, d = 14) { return { x: v, v: 0, t: v, k, d }; }
 const C = {
@@ -487,174 +537,124 @@ function targets(t) {
   elasticTargets(T);
 }
 function integrate(dt) { for (const k in C) { const c = C[k]; c.v += ((c.t - c.x) * c.k - c.v * c.d) * dt; c.x += c.v * dt; } }
-/* ================= YUMUŞAK GÖVDE FİZİĞİ =================
-   Karakter tek parça jel silüet: kapalı bir kontrol-noktası halkası. Her nokta
-   (1) koreografiden gelen "pozlanmış dinlenme" konumuna yayla bağlı,
-   (2) komşularına kenar yaylarıyla bağlı (şekil), (3) alan korunumu basıncıyla
-   (gerilince incelir, ezilince şişer), (4) tutulunca parmağa Gauss ağırlıklı yapışır. */
-const SB = { pts: [], n: 0, H: 400, y0: -160, area0: 1, ix: {}, eyeW0: 100, mech: false, smooth: true, grab: null };
+/* ================= ESNEK PELUŞ FİZİĞİ =================
+   Eski segmentli form korunur: taban → 3 gövde parçası → boyun → kafa düğüm zinciri; her kolda
+   omuz → dirsek → el. Düğümler koreografiden gelen dinlenme pozuna ve komşularına yayla bağlı;
+   tutulan düğüm parmağa yapışır. Parçalar iki düğüm arasına çizilir: uzayınca incelir (hacim),
+   bükülür, bırakınca sallanır. Desenler parça grubunda olduğu için parçayla birlikte hareket eder.
+   Çizgi kalınlıkları hiç ölçeklenmez. */
+const SB = { B: [], AL: [], AR: [], grab: null, mech: false, c: null, y0: -160 };
+const mkNode = (kind, i) => ({ x: 0, y: 0, vx: 0, vy: 0, rx: 0, ry: 0, kind, i });
+const rot = (x, y, a) => { const c = Math.cos(a), s = Math.sin(a); return [x * c - y * s, x * s + y * c]; };
+SB.all = () => SB.B.concat(SB.AL, SB.AR);
+SB.dyn = () => SB.B.slice(1).concat(SB.AL.slice(1), SB.AR.slice(1));
 function buildBody(c) {
-  const H = c.H, y0 = c.base === 'blower' ? -118 : -160, P = c.prof;   // taban tipine göre gövde dibi
-  const wAt = f => { for (let i = 1; i < P.length; i++) if (f <= P[i][0]) { const [f0, w0] = P[i - 1], [f1, w1] = P[i]; return w0 + (w1 - w0) * (f - f0) / (f1 - f0); } return P[P.length - 1][1]; };
-  const roleOf = f => Math.abs(f - .72) < .02 ? 'jaw' : Math.abs(f - .82) < .02 ? 'eye' : Math.abs(f - .9) < .02 ? 'ear' : Math.abs(f - .4) < .02 ? 'belly' : 'side';
-  const right = [], aF = c.armF, lo = aF - .1, hi = aF + .1;
-  const add = (bx, by, f, role, extra) => right.push(Object.assign({ bx, by, f, role, side: 1 }, extra || {}));
-  P.forEach(([f, w]) => { if (f < 1 && f <= lo) add(w, y0 - H * f, f, roleOf(f)); });
-  const wa = wAt(aF), Lm = c.armLen, th = c.armTh, shx = wa, shy = y0 - H * aF;   // kol lobu: yuvarlak eldiven (omuz etrafında döner)
-  [[wa, y0 - H * (aF - .1), 'shoulder'], [wa + Lm * .55, shy + th, 'arm'], [wa + Lm + th * .15, shy + th * .45, 'armTip'],
-   [wa + Lm + th * .15, shy - th * .45, 'armTip'], [wa + Lm * .55, shy - th, 'arm'], [wa, y0 - H * (aF + .1), 'shoulder']]
-    .forEach(([bx, by, role]) => add(bx, by, aF, role, { ox: bx - shx, oy: by - shy, shx, shy }));
-  P.forEach(([f, w]) => { if (f < 1 && f >= hi) add(w, y0 - H * f, f, roleOf(f)); });
-  const apex = { bx: 0, by: y0 - H, f: 1, role: 'apex', side: 0 };
-  const left = right.slice().reverse().map(p => {
-    const q = Object.assign({}, p, { bx: -p.bx, side: -1 });
-    if (p.ox !== undefined) { q.ox = -p.ox; q.shx = -p.shx; }
-    return q;
-  });
-  const pts = right.concat([apex], left), n = pts.length;
-  pts.forEach(p => { p.x = p.rx = p.bx; p.y = p.ry = p.by; p.vx = 0; p.vy = 0; });
-  for (let i = 0; i < n; i++) { const p = pts[i], q = pts[(i + 1) % n]; p.Ln = Math.hypot(q.bx - p.bx, q.by - p.by); q.Lp = p.Ln; }
-  let A = 0; for (let i = 0; i < n; i++) { const p = pts[i], q = pts[(i + 1) % n]; A += p.bx * q.by - q.bx * p.by; }
-  SB.area0 = A / 2; SB.pts = pts; SB.n = n; SB.H = H; SB.y0 = y0;
-  SB.mech = !!c.mech; SB.smooth = c.smooth !== false; SB.grab = null;
-  const find = (role, side) => pts.findIndex(p => p.role === role && p.side === side);
-  SB.ix = { apex: right.length, eyeL: find('eye', -1), eyeR: find('eye', 1), jawL: find('jaw', -1), jawR: find('jaw', 1),
-    earL: find('ear', -1), earR: find('ear', 1), bellyL: find('belly', -1), bellyR: find('belly', 1) };
-  const eL = pts[SB.ix.eyeL], eR = pts[SB.ix.eyeR];
-  SB.eyeW0 = eL && eR ? Math.hypot(eR.bx - eL.bx, eR.by - eL.by) : 100;
+  SB.c = c; SB.mech = !!c.mech; SB.y0 = c.base === 'blower' ? -118 : -160;
+  SB.B = [0, 1, 2, 3, 4].map(i => mkNode('b', i));            // taban, s1 üstü, s2 üstü, boyun, kafa merkezi
+  SB.AL = [0, 1, 2].map(i => mkNode('aL', i)); SB.AR = [0, 1, 2].map(i => mkNode('aR', i));   // omuz, dirsek, el
+  SB.grab = null;
+  poseBody();
+  SB.all().forEach(n => { n.x = n.rx; n.y = n.ry; n.vx = n.vy = 0; });
 }
 function poseBody() {
-  const pts = SB.pts, H = SB.H, y0 = SB.y0;
-  const bend = C.s1.x + C.s2.x + C.s3.x, headT = C.head.x, root = C.rootRot.x;
-  const sx = C.sx.x, sy = C.sy.x, bob = C.bobY.x;
-  const raiseL = Math.max(-1, Math.min(1.3, (-76 - C.armL.x) / 60)), raiseR = Math.max(-1, Math.min(1.3, (C.armR.x - 76) / 60));
-  for (const p of pts) {
-    let x = p.bx, y = p.by;
-    if (p.ox !== undefined) {
-      const a = p.side < 0 ? raiseL * 1.1 : -raiseR * 1.1, cs = Math.cos(a), sn = Math.sin(a);
-      x = p.shx + p.ox * cs - p.oy * sn; y = p.shy + p.ox * sn + p.oy * cs;
-    }
-    const dy = (y - y0) * sy, f = Math.max(0, -(y - y0) / H); x *= sx;
-    // eski eklem zinciriyle aynı görsel eğilme: taban etrafında ilerleyen dönüş, ölçekli
-    const ang = (root + bend * .42 * Math.pow(f, 1.2) + (f > .74 ? headT * .6 * (f - .74) / .26 : 0)) * Math.PI / 180;
-    const cs = Math.cos(ang), sn = Math.sin(ang);
-    p.rx = x * cs - dy * sn; p.ry = y0 + x * sn + dy * cs + bob;
+  const c = SB.c, hh = c.segH, D = Math.PI / 180, B = SB.B;
+  const y0 = SB.y0 + C.bobY.x, sx = C.sx.x, sy = C.sy.x;
+  B[0].rx = 0; B[0].ry = y0;
+  let a = C.rootRot.x * D, cx = 0, cy = 0;
+  const segs = [C.s1.x, C.s2.x, C.s3.x], angs = [];
+  for (let i = 0; i < 3; i++) {
+    a += segs[i] * D; angs.push(a);
+    const [dx, dy] = rot(0, -hh, a); cx += dx; cy += dy;
+    B[i + 1].rx = cx * sx; B[i + 1].ry = y0 + cy * sy;
   }
+  const aH = a + C.head.x * D, [hx, hy] = rot(0, -110 * c.headK, aH);
+  B[4].rx = (cx + hx) * sx; B[4].ry = y0 + (cy + hy) * sy;
+  const a3 = angs[2], w3 = c.segW + 12;
+  const arm = (side, A, armA, foreA) => {
+    const [ox, oy] = rot(side * (w3 / 2 + 2), -hh * .55, a3);
+    A[0].rx = B[2].rx + ox; A[0].ry = B[2].ry + oy;
+    const aU = a3 + armA * D, [ex, ey] = rot(0, -54, aU);
+    A[1].rx = A[0].rx + ex; A[1].ry = A[0].ry + ey;
+    const aF = aU + foreA * D, [fx, fy] = rot(0, -c.armH * .9, aF);
+    A[2].rx = A[1].rx + fx; A[2].ry = A[1].ry + fy;
+  };
+  arm(-1, SB.AL, C.armL.x, C.armLF.x); arm(1, SB.AR, C.armR.x, C.armRF.x);
 }
 function stepBody(dt) {
-  const pts = SB.pts, n = pts.length; if (!n) return;
   const mech = SB.mech, g = SB.grab;
-  const kR = mech ? 420 : 150, dR = mech ? 24 : 9, kE = mech ? 900 : 320, kP = mech ? 1800 : 3200;
-  const sub = 2, h = Math.min(.012, dt / sub);
+  const kR = mech ? 480 : 170, dR = mech ? 26 : 10, kE = mech ? 1400 : 600;
+  const sub = 2, h = Math.min(.012, dt / sub), chains = [SB.B, SB.AL, SB.AR];
   for (let s = 0; s < sub; s++) {
-    let A = 0, cx = 0, cy = 0;
-    for (let i = 0; i < n; i++) { const p = pts[i], q = pts[(i + 1) % n]; A += p.x * q.y - q.x * p.y; cx += p.x; cy += p.y; }
-    A /= 2; cx /= n; cy /= n;
-    const pr = kP * (SB.area0 - A) / SB.area0;
-    for (let i = 0; i < n; i++) {
-      const p = pts[i];
-      if (p.f < .03) { p.x = p.rx; p.y = p.ry; p.vx = 0; p.vy = 0; continue; }   // saksının içinde sabit
-      const pp = pts[(i - 1 + n) % n], pn = pts[(i + 1) % n];
-      let ax = (p.rx - p.x) * kR - p.vx * dR, ay = (p.ry - p.y) * kR - p.vy * dR;
-      let dx = pp.x - p.x, dy = pp.y - p.y, d = Math.hypot(dx, dy) || 1e-6, fm = (d - p.Lp) * kE; ax += dx / d * fm; ay += dy / d * fm;
-      dx = pn.x - p.x; dy = pn.y - p.y; d = Math.hypot(dx, dy) || 1e-6; fm = (d - p.Ln) * kE; ax += dx / d * fm; ay += dy / d * fm;
-      const tx = pn.x - pp.x, ty = pn.y - pp.y, tl = Math.hypot(tx, ty) || 1e-6;
-      let nx = ty / tl, ny = -tx / tl;
-      if ((p.x - cx) * nx + (p.y - cy) * ny < 0) { nx = -nx; ny = -ny; }
-      const pk = p.ox !== undefined ? .15 : 1;     // ince kollar basınçla içeri emilmesin
-      ax += nx * pr * pk; ay += ny * pr * pk;
-      if (g && g.w[i] > 0) {
-        const w = g.w[i], gx = p.rx + g.dx * w, gy = p.ry + g.dy * w;
-        ax += (gx - p.x) * 900 * w - p.vx * 34 * w; ay += (gy - p.y) * 900 * w - p.vy * 34 * w;
+    for (const ch of chains) {
+      for (let i = 1; i < ch.length; i++) {
+        const n = ch[i], p = ch[i - 1];
+        let ax = (n.rx - n.x) * kR - n.vx * dR, ay = (n.ry - n.y) * kR - n.vy * dR;
+        const L0 = Math.hypot(n.rx - p.rx, n.ry - p.ry) || 1;
+        let dx = p.x - n.x, dy = p.y - n.y, d = Math.hypot(dx, dy) || 1e-6, fm = (d - L0) * kE;
+        ax += dx / d * fm; ay += dy / d * fm;
+        if (i + 1 < ch.length) {
+          const q = ch[i + 1], L1 = Math.hypot(q.rx - n.rx, q.ry - n.ry) || 1;
+          dx = q.x - n.x; dy = q.y - n.y; d = Math.hypot(dx, dy) || 1e-6; fm = (d - L1) * kE;
+          ax += dx / d * fm; ay += dy / d * fm;
+        }
+        if (g && g.w.has(n)) {
+          const w = g.w.get(n), gx = n.rx + g.dx * w, gy = n.ry + g.dy * w;
+          ax += (gx - n.x) * 900 * w - n.vx * 34 * w; ay += (gy - n.y) * 900 * w - n.vy * 34 * w;
+        }
+        n.vx += ax * h; n.vy += ay * h;
       }
-      p.vx += ax * h; p.vy += ay * h;
     }
-    for (const p of pts) { p.x += p.vx * h; p.y += p.vy * h; }
+    for (const ch of chains) {
+      ch[0].x = ch[0].rx; ch[0].y = ch[0].ry; ch[0].vx = ch[0].vy = 0;
+      for (let i = 1; i < ch.length; i++) { ch[i].x += ch[i].vx * h; ch[i].y += ch[i].vy * h; }
+    }
   }
 }
-function pathOf(pts, smooth) {
-  const n = pts.length, F = v => v.toFixed(1);
-  if (!smooth) { let d = ''; for (let i = 0; i < n; i++) d += (i ? 'L' : 'M') + F(pts[i].x) + ',' + F(pts[i].y); return d + 'Z'; }
-  let d = 'M' + F(pts[0].x) + ',' + F(pts[0].y);
-  for (let i = 0; i < n; i++) {
-    const p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
-    d += 'C' + F(p1.x + (p2.x - p0.x) / 7.5) + ',' + F(p1.y + (p2.y - p0.y) / 7.5) + ' ' + F(p2.x - (p3.x - p1.x) / 7.5) + ',' + F(p2.y - (p3.y - p1.y) / 7.5) + ' ' + F(p2.x) + ',' + F(p2.y);
-  }
-  return d + 'Z';
+function nearestNode(lx, ly) {
+  let best = null, bd = 1e12;
+  SB.dyn().forEach(n => { const d = (n.x - lx) * (n.x - lx) + (n.y - ly) * (n.y - ly); if (d < bd) { bd = d; best = n; } });
+  return best;
 }
-function nearestPt(lx, ly) {
-  let bi = 0, bd = 1e12;
-  SB.pts.forEach((p, i) => { const d = (p.x - lx) * (p.x - lx) + (p.y - ly) * (p.y - ly); if (d < bd) { bd = d; bi = i; } });
-  return bi;
-}
-function grabWeights(gi, sigma) {
-  const n = SB.n, w = new Float32Array(n);
-  for (let i = 0; i < n; i++) { const r = Math.min(Math.abs(i - gi), n - Math.abs(i - gi)); const v = Math.exp(-(r * r) / (2 * sigma * sigma)); w[i] = v < .02 ? 0 : v; }
+function grabWeights(node, sigma) {
+  const w = new Map(), ch = node.kind === 'b' ? SB.B : node.kind === 'aL' ? SB.AL : SB.AR;
+  ch.forEach(n => { if (n.i === 0) return; const r = Math.abs(n.i - node.i), v = Math.exp(-(r * r) / (2 * sigma * sigma)); if (v > .03) w.set(n, v); });
+  if (node.kind === 'b' && node.i >= 3) [SB.AL, SB.AR].forEach(A => A.slice(1).forEach(n => w.set(n, .35)));   // kafa/omuz çekilince kollar da gelsin
   return w;
 }
+function nodeZone(n) { return n.kind === 'aL' ? 'armL' : n.kind === 'aR' ? 'armR' : n.i >= 4 ? 'top' : n.i >= 2 ? 'mid' : 'low'; }
+function pokeNode(n, lx, ly) {
+  grabWeights(n, 1.0).forEach((wv, m) => { const dx = m.x - lx, dy = m.y - ly, dl = Math.hypot(dx, dy) || 1; m.vx += dx / dl * 380 * wv; m.vy += dy / dl * 380 * wv; });
+}
 function apply(dt) {
-  const c = curChar(), pts = SB.pts; if (!pts.length) return;
+  const c = SB.c; if (!c) return;
   poseBody(); stepBody(dt || .016);
-  const F = v => v.toFixed(1), T = (x, y) => 'translate(' + F(x) + ',' + F(y) + ')';
-  const d = pathOf(pts, SB.smooth);
-  N.bodyP.setAttribute('d', d); N.clipP.setAttribute('d', d);
-  const n = pts.length, ix = SB.ix, P = i => pts[i];
-  const mid = SB.y0 - SB.H / 2;
-  const outward = i => {
-    const pp = P((i - 1 + n) % n), pn = P((i + 1) % n), p = P(i);
-    const tx = pn.x - pp.x, ty = pn.y - pp.y, tl = Math.hypot(tx, ty) || 1;
-    let nx = ty / tl, ny = -tx / tl;
-    if (p.x * nx + (p.y - mid) * ny < 0) { nx = -nx; ny = -ny; }
-    return [nx, ny, tx / tl, ty / tl];
+  const F = v => v.toFixed(1), B = SB.B;
+  const seg = (key, P, Q, w0, rx0, ov) => {
+    const dx = Q.x - P.x, dy = Q.y - P.y, L = Math.hypot(dx, dy) || 1;
+    const L0 = Math.hypot(Q.rx - P.rx, Q.ry - P.ry) || 1;
+    const W = w0 * Math.max(.6, Math.min(1.45, Math.sqrt(L0 / L)));   // hacim: uzayan incelir, ezilen genişler
+    const ang = Math.atan2(dy, dx) * 180 / Math.PI + 90, g = N.segs[key], rx = Math.min(rx0, W / 2);
+    g.el.setAttribute('transform', 'translate(' + F((P.x + Q.x) / 2) + ',' + F((P.y + Q.y) / 2) + ') rotate(' + F(ang) + ')');
+    g.rects.forEach(r => { r.setAttribute('x', F(-W / 2)); r.setAttribute('width', F(W)); r.setAttribute('y', F(-L / 2 - ov)); r.setAttribute('height', F(L + 2 * ov)); r.setAttribute('rx', F(rx)); });
   };
-  const lerp = (a, b, t) => [a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t];
-  const eL = P(ix.eyeL), eR = P(ix.eyeR);
-  let hs = 1;
-  if (eL && eR) {
-    hs = Math.hypot(eR.x - eL.x, eR.y - eL.y) / SB.eyeW0;
-    const s = Math.max(.55, Math.min(1.5, hs)) * (c.eyeK || 1);
-    const tilt = Math.atan2(eR.y - eL.y, eR.x - eL.x) * 180 / Math.PI;
-    const open = Math.max(.06, C.eye.x * (1 - eyeClose));
-    const [lx, ly] = lerp(eL, eR, .3), [rx, ry] = lerp(eL, eR, .7);
-    const eyeT = (x, y) => T(x, y) + ' rotate(' + F(tilt) + ') scale(' + s.toFixed(3) + ',' + (s * open).toFixed(3) + ')';
-    const sq = c.eyes === 'square';
-    (sq ? N.eyeSqL : N.eyeL).setAttribute('transform', eyeT(lx, ly));
-    (sq ? N.eyeSqR : N.eyeR).setAttribute('transform', eyeT(rx, ry));
-    const pu = T(C.pupX.x * .9, C.pupY.x * .9);
-    N.pupL.setAttribute('transform', pu); N.pupR.setAttribute('transform', pu); N.pupSqL.setAttribute('transform', pu); N.pupSqR.setAttribute('transform', pu);
-    const [cLx, cLy] = lerp(eL, eR, .08), [cRx, cRy] = lerp(eL, eR, .92);
-    N.cheekL.setAttribute('transform', T(cLx, cLy + 22 * s) + ' scale(' + s.toFixed(3) + ')');
-    N.cheekR.setAttribute('transform', T(cRx, cRy + 22 * s) + ' scale(' + s.toFixed(3) + ')');
-    const jL = P(ix.jawL), jR = P(ix.jawR);
-    const mx = jL && jR ? (jL.x + jR.x) / 2 : (lx + rx) / 2, my = jL && jR ? (jL.y + jR.y) / 2 - 2 * s : (ly + ry) / 2 + 40 * s;
-    const fT = T(mx, my) + ' rotate(' + F(tilt) + ') scale(' + s.toFixed(3) + ')';
-    N.mouthG.setAttribute('transform', fT); N.grill.setAttribute('transform', fT);
-    N.muzzle.setAttribute('transform', T(mx, my - 6 * s) + ' rotate(' + F(tilt) + ') scale(' + s.toFixed(3) + ')');
-    const mo = C.mouth.x;
-    N.mouth.setAttribute('ry', (3 + mo * 14).toFixed(2)); N.mouth.setAttribute('rx', (15 * Math.max(.4, C.mouthW.x)).toFixed(2));
-    N.tongue.setAttribute('cy', (2 + mo * 9).toFixed(2)); N.tongue.style.display = mo > .45 ? '' : 'none';
-    const [gx, gy] = lerp(eL, eR, .22);
-    N.gloss.setAttribute('transform', T(gx - 4 * s, gy - 46 * s) + ' scale(' + s.toFixed(3) + ')');
-  }
-  const ap = P(ix.apex), app = P(ix.apex - 1), apn = P(ix.apex + 1);
-  const hatRot = Math.atan2(apn.y - app.y, apn.x - app.x) * 180 / Math.PI + 180;
-  N.hat.setAttribute('transform', T(ap.x, ap.y) + ' rotate(' + F(hatRot) + ')');
-  const es = Math.max(.6, Math.min(1.4, hs));
-  const sideNode = (i, node) => { if (i < 0) return; const p = P(i), [nx, ny] = outward(i); node.setAttribute('transform', T(p.x + nx * 6, p.y + ny * 6) + ' scale(' + es.toFixed(3) + ')'); };
-  sideNode(ix.earL, N.earL); sideNode(ix.earR, N.earR); sideNode(ix.earL, N.hornL); sideNode(ix.earR, N.hornR);
-  const bL = P(ix.bellyL), bR = P(ix.bellyR);
-  if (bL && bR) N.belly.setAttribute('transform', T((bL.x + bR.x) / 2, (bL.y + bR.y) / 2 - 12) + ' scale(' + Math.max(.5, Math.hypot(bR.x - bL.x, bR.y - bL.y) / (2 * Math.abs(bL.bx) || 1)).toFixed(3) + ',1)');
-  if (c.spines || c.back) {   // dikenler silüetle birlikte eğilir
-    let sd = '', bd = '';
-    for (let i = 0; i < n; i++) {
-      const p = P(i); if (p.role !== 'side' && p.role !== 'jaw' && p.role !== 'belly') continue;
-      if (p.f < .1 || p.f > .88) continue;
-      const [nx, ny, tx, ty] = outward(i);
-      if (c.spines && i % 2 === 0) sd += 'M' + F(p.x - tx * 6) + ',' + F(p.y - ty * 6) + 'L' + F(p.x + nx * 19) + ',' + F(p.y + ny * 19) + 'L' + F(p.x + tx * 6) + ',' + F(p.y + ty * 6) + 'Z';
-      if (c.back && p.side > 0 && p.f > .2 && p.f < .8 && i % 2 === 1) bd += 'M' + F(p.x - tx * 8) + ',' + F(p.y - ty * 8) + 'L' + F(p.x + nx * 22 - tx * 6) + ',' + F(p.y + ny * 22 - ty * 6) + 'L' + F(p.x + tx * 8) + ',' + F(p.y + ty * 8) + 'Z';
-    }
-    N.spines.setAttribute('d', sd); N.back.setAttribute('d', bd);
-  }
+  const w = c.segW;
+  seg('neck', B[3], B[4], w * .62, c.segRx * .6, 6);
+  seg('s1', B[0], B[1], w, c.segRx, 5); seg('s2', B[1], B[2], w, c.segRx, 5); seg('s3', B[2], B[3], w + 12, c.segRx + 5, 8);
+  seg('lu', SB.AL[0], SB.AL[1], c.armW, c.armRx, 4); seg('lf', SB.AL[1], SB.AL[2], c.armW * .95, c.armRx, 4);
+  seg('ru', SB.AR[0], SB.AR[1], c.armW, c.armRx, 4); seg('rf', SB.AR[1], SB.AR[2], c.armW * .95, c.armRx, 4);
+  // kafa: boyun düğümünden kafa merkezine yönelir; boyun uzarsa kafa hafifçe uzayıp incelir
+  const n3 = B[3], nH = B[4], hdx = nH.x - n3.x, hdy = nH.y - n3.y;
+  const Ln = Math.hypot(hdx, hdy) || 1, L0n = Math.hypot(nH.rx - n3.rx, nH.ry - n3.ry) || 1;
+  const k = Ln / L0n, syh = Math.max(.85, Math.min(1.25, 1 + (k - 1) * .5)), sxh = 1 / Math.sqrt(syh);
+  const angH = Math.atan2(hdy, hdx) * 180 / Math.PI + 90;
+  N.head.setAttribute('transform', 'translate(' + F(nH.x) + ',' + F(nH.y) + ') rotate(' + F(angH) + ') scale(' + (sxh * c.headK).toFixed(3) + ',' + (syh * c.headK).toFixed(3) + ') translate(0,110)');
+  const open = Math.max(.06, C.eye.x * (1 - eyeClose)), oT = 'scale(1,' + open.toFixed(3) + ')';
+  N.eyeLs.setAttribute('transform', oT); N.eyeRs.setAttribute('transform', oT); N.eyeSqLs.setAttribute('transform', oT); N.eyeSqRs.setAttribute('transform', oT);
+  const pu = 'translate(' + F(C.pupX.x) + ',' + F(C.pupY.x) + ')';
+  N.pupL.setAttribute('transform', pu); N.pupR.setAttribute('transform', pu); N.pupSqL.setAttribute('transform', pu); N.pupSqR.setAttribute('transform', pu);
+  const mo = C.mouth.x;
+  N.mouth.setAttribute('ry', (3 + mo * 14).toFixed(2)); N.mouth.setAttribute('rx', (15 * Math.max(.4, C.mouthW.x)).toFixed(2));
+  N.tongue.setAttribute('cy', (2 + mo * 9).toFixed(2)); N.tongue.style.display = mo > .45 ? '' : 'none';
   const bt = 'translate(200,600) scale(1,' + C.potSy.x.toFixed(3) + ')';
   N.pot.setAttribute('transform', bt); if (N.base2) N.base2.setAttribute('transform', bt);
 }
@@ -870,48 +870,48 @@ function buildLangSelect() {
 }
 
 /* ================= KARAKTERLER ================= */
-// prof: sağ yarım silüet [yükseklik oranı, yarı genişlik]; .72 çene, .82 göz, .9 kulak/boynuz, .4 göbek hizası
+// Eski peluş formu: kafa tipi, yüz, göz, ağız, desen, ekstra süs, gövde/kol oranları
 const CHARS = [
   {
     name: 'Kaktüs', voiceFx: 'sincap', mood: 'sevimli', body: ['#2f9d5c', '#59dc87', '#238a4c'], acc: ['#2ba3bd', '#5fdcee', '#1d8ba6'],
     pot: ['#2ea6c2', '#6fe0f0', '#1c88a4'], rim: '#7fe6f4', line: '#15532f', accLine: '#0e5f72', base: 'pot',
-    H: 400, prof: [[0, 44], [.12, 50], [.26, 54], [.4, 56], [.62, 50], [.68, 42], [.72, 50], [.82, 62], [.9, 56], [.96, 36], [1, 0]],
-    armF: .5, armLen: 46, armTh: 20, hat: 'leaf', spines: true, pat: 'quilt', eyes: 'round', eyeK: 1, iris: '#2a8aa8',
+    head: 'hHood', face: 'round', eyes: 'round', mouth: null, pat: 'quilt', ex: 'ex-spike', twist: true,
+    segW: 50, segH: 52, armW: 40, armH: 66, headK: 1, segRx: 24, armRx: 20, iris: '#2a8aa8',
     sHead: ['giggle', 'laugh'], sArm: ['boing', 'squeak'], sBase: ['pop', 'drum'], poke: 'bounce', tone: 1.3, rate: 1, sing: 'a'
   },
   {
     name: 'Ayıcık', voiceFx: 'dev', mood: 'uykucu', body: ['#a9713f', '#e0a86b', '#8a5a2e'], acc: ['#ff9fc0', '#ffc9dc', '#e07098'],
     pot: ['#ff8f5e', '#ffc19b', '#d4642f'], rim: '#ffd8bd', line: '#4a2a12', accLine: '#a04068', base: 'pot',
-    H: 350, prof: [[0, 58], [.12, 72], [.26, 78], [.4, 76], [.62, 62], [.67, 52], [.72, 62], [.82, 72], [.9, 64], [.96, 42], [1, 0]],
-    armF: .52, armLen: 50, armTh: 24, ears: true, muzzle: true, belly: true, eyes: 'round', eyeK: .95, iris: '#5a3a1a', cheek: '#ff8fa8',
+    head: 'hEars', face: 'round', eyes: 'round', mouth: 'mMuzzle', pat: null, ex: 'ex-belly', twist: false,
+    segW: 80, segH: 44, armW: 46, armH: 52, headK: 1.06, segRx: 30, armRx: 23, iris: '#5a3a1a', cheek: '#ff8fa8',
     sHead: ['growl', 'laugh'], sArm: ['huff', 'boing'], sBase: ['thud', 'drum'], poke: 'shrink', tone: 1.05, rate: .9, sing: 'o'
   },
   {
     name: 'Robot', voiceFx: 'robot', mood: 'komik', body: ['#8f9bb8', '#d5def0', '#6b7796'], acc: ['#ff5c8a', '#ffa3c0', '#c93b68'],
-    pot: ['#3a4463', '#6a769a', '#252c45'], rim: '#9aa6c8', line: '#3a4463', accLine: '#3a4463', base: 'blower',
-    H: 380, prof: [[0, 46], [.06, 50], [.4, 50], [.64, 50], [.68, 34], [.7, 60], [.72, 60], [.82, 60], [.95, 60], [.985, 52], [1, 0]],
-    armF: .52, armLen: 44, armTh: 15, hat: 'ant', grill: true, eyes: 'square', pat: 'bolts', mech: true, smooth: false, eyeK: 1,
+    pot: ['#3a4463', '#6a769a', '#252c45'], rim: '#9aa6c8', line: '#3a4463', accLine: '#3a4463', base: 'blower', mech: true,
+    head: 'hAnt', face: 'square', eyes: 'square', mouth: 'mGrill', pat: null, ex: 'ex-bolt', twist: false,
+    segW: 44, segH: 56, armW: 30, armH: 62, headK: .95, segRx: 7, armRx: 7,
     sHead: ['beep', 'glitch'], sArm: ['servo', 'zap'], sBase: ['clank', 'servo'], poke: 'shake', tone: 1.55, rate: 1.1, sing: 'i'
   },
   {
     name: 'Ejder', voiceFx: 'dev', mood: 'huysuz', body: ['#7d3fb8', '#b57af0', '#5f2a91'], acc: ['#ffd66b', '#ffe9a8', '#d9a323'],
     pot: ['#3ac0a0', '#7fe8d0', '#218f74'], rim: '#a8f0dc', line: '#3a1858', accLine: '#8a6410', base: 'pot',
-    H: 380, prof: [[0, 52], [.12, 62], [.26, 68], [.4, 66], [.62, 52], [.67, 44], [.72, 56], [.82, 66], [.9, 60], [.96, 38], [1, 0]],
-    armF: .52, armLen: 48, armTh: 22, horns: true, belly: true, back: true, pat: 'dots', eyes: 'round', eyeK: 1.05, iris: '#d9a323',
+    head: 'hHorns', face: 'round', eyes: 'round', mouth: null, pat: 'dots', ex: 'ex-back', twist: false,
+    segW: 64, segH: 50, armW: 46, armH: 58, headK: 1.04, segRx: 20, armRx: 18, iris: '#d9a323',
     sHead: ['roar', 'grumble'], sArm: ['huff', 'growl'], sBase: ['thud', 'grumble'], poke: 'spin', tone: .95, rate: .95, sing: 'e'
   },
   {
     name: 'Uzun', voiceFx: 'uzayli', mood: 'çılgın', body: ['#f27022', '#ffa25c', '#c8500f'], acc: ['#2a2f45', '#4d5573', '#1a1e30'],
     pot: ['#3a4463', '#6a769a', '#252c45'], rim: '#9aa6c8', line: '#7a3208', accLine: '#1a1e30', base: 'blower',
-    H: 440, prof: [[0, 32], [.12, 32], [.26, 30], [.4, 32], [.67, 24], [.72, 30], [.82, 44], [.9, 42], [.96, 28], [1, 0]],
-    armF: .56, armLen: 40, armTh: 13, hat: 'tuft', eyes: 'round', eyeK: .8, iris: '#1a1e30',
+    head: null, face: 'round', eyes: 'round', mouth: null, pat: null, ex: null, twist: false,
+    segW: 30, segH: 72, armW: 22, armH: 76, headK: .74, segRx: 15, armRx: 11, iris: '#1a1e30',
     sHead: ['squeal', 'raspberry'], sArm: ['flap', 'boing'], sBase: ['fanwhir', 'flap'], poke: 'flail', tone: 1.25, rate: 1.15, sing: 'a'
   },
   {
     name: 'Minik', voiceFx: 'sincap', mood: 'utangaç', body: ['#e34d8c', '#ff9ac2', '#b02f68'], acc: ['#ffd66b', '#fff0b8', '#d9a323'],
     pot: ['#5566d8', '#8f9bf0', '#3543a8'], rim: '#c0c9ff', line: '#7a1f47', accLine: '#8a6410', base: 'pot',
-    H: 250, prof: [[0, 64], [.12, 74], [.26, 80], [.4, 78], [.62, 66], [.67, 58], [.72, 72], [.82, 78], [.9, 70], [.96, 46], [1, 0]],
-    armF: .52, armLen: 34, armTh: 20, hat: 'bow', pat: 'dots', eyes: 'round', eyeK: 1.15, iris: '#c93b68',
+    head: null, face: 'round', eyes: 'round', mouth: null, pat: 'dots', ex: 'ex-belly', twist: false,
+    segW: 88, segH: 34, armW: 40, armH: 42, headK: 1.14, segRx: 17, armRx: 20, iris: '#c93b68',
     sHead: ['titter', 'giggle'], sArm: ['squeak', 'pop'], sBase: ['pop', 'titter'], poke: 'shy', tone: 1.65, rate: 1.05, sing: 'u'
   }
 ];
@@ -926,21 +926,36 @@ function applyChar(i) {
     el('pot' + k).setAttribute('stop-color', c.pot[n]);
   });
   el('potRim').setAttribute('fill', c.rim);
-  el('bodyP').setAttribute('stroke', c.line); el('spines').setAttribute('fill', c.line);
-  el('patQuilt').setAttribute('stroke', c.line); el('patDots').setAttribute('fill', c.line);
-  ['earL', 'earR', 'hornL', 'hornR'].forEach(id => el(id).firstElementChild.setAttribute('stroke', c.line));
-  ['scL', 'scR', 'mouth'].forEach(id => el(id).setAttribute('stroke', c.line));
+  document.querySelectorAll('#body .limb, #body .ex-belly, #faceRound, #faceSquare, #mouth, #scL, #scR, #hEars circle[stroke], #hHorns path').forEach(n => n.setAttribute('stroke', c.line));
+  document.querySelectorAll('#body .ex-spike path').forEach(n => n.setAttribute('fill', c.line));
+  el('hoodShape').setAttribute('stroke', c.accLine);
+  el('pQuiltL').setAttribute('stroke', c.line); ['pDotA', 'pDotB'].forEach(id => el(id).setAttribute('fill', c.line));
   ['irisL', 'irisR'].forEach(id => el(id).setAttribute('fill', c.iris || c.acc[0]));
   ['cheekL', 'cheekR'].forEach(id => el(id).setAttribute('fill', c.cheek || '#ff5c8a'));
-  const leaf = el('hLeaf').firstElementChild; leaf.setAttribute('stroke', c.accLine); leaf.setAttribute('fill', c.acc[1]);
-  show('#hLeaf', c.hat === 'leaf'); show('#hAnt', c.hat === 'ant'); show('#hTuft', c.hat === 'tuft'); show('#hBow', c.hat === 'bow');
-  show('#earL', !!c.ears); show('#earR', !!c.ears); show('#hornL', !!c.horns); show('#hornR', !!c.horns);
+  ['hHood', 'hEars', 'hAnt', 'hHorns'].forEach(h => show('#' + h, h === c.head));
+  show('#faceRound', c.face === 'round'); show('#faceSquare', c.face === 'square');
   const sq = c.eyes === 'square';
   show('#eyeL', !sq); show('#eyeR', !sq); show('#eyeSqL', sq); show('#eyeSqR', sq);
-  show('#mMuzzle', !!c.muzzle); show('#mGrill', !!c.grill); show('#mouthG', !c.grill);
-  show('#belly', !!c.belly); show('#patQuilt', c.pat === 'quilt'); show('#patDots', c.pat === 'dots'); show('#patBolts', c.pat === 'bolts');
-  show('#spines', !!c.spines); show('#backSpikes', !!c.back);
+  ['mMuzzle', 'mGrill'].forEach(m => show('#' + m, m === c.mouth));
+  show('#mouthG', c.mouth !== 'mGrill');
+  const patUrl = c.pat === 'quilt' ? 'url(#pQuilt)' : c.pat === 'dots' ? 'url(#pDots)' : 'none';
+  document.querySelectorAll('#body rect.pat').forEach(r => r.setAttribute('fill', patUrl));
+  el('facePat').setAttribute('fill', patUrl);
+  el('facePat').setAttribute('d', c.face === 'square' ? 'M-72,-196 h144 v150 h-144 Z' : el('faceRound').getAttribute('d'));
+  ['ex-spike', 'ex-bolt', 'ex-back', 'ex-belly'].forEach(x => show('#body .' + x, x === c.ex));
+  show('#body .twist', c.twist); show('#body .side', c.twist); show('#body .stitch', c.face === 'round');
   show('#pot', c.base === 'pot'); show('#baseBlower', c.base === 'blower');
+  // süsler parça genişliğine göre yerleşir (parçayla birlikte hareket ederler)
+  const w = c.segW, w3 = w + 12;
+  const spikes = (id, ww) => { const g = el(id).querySelector('.ex-spike'); g.querySelector('.spL').setAttribute('d', 'M' + (-ww / 2) + ',-12 l-11,-4 l11,-4z'); g.querySelector('.spR').setAttribute('d', 'M' + (ww / 2) + ',8 l11,-4 l-11,-4z'); };
+  spikes('seg1', w); spikes('seg2', w); spikes('seg3', w3);
+  const backs = (id, ww) => el(id).querySelectorAll('.ex-back path').forEach((p, k) => p.setAttribute('d', 'M' + (ww / 2) + ',' + (k ? 6 : -22) + ' l16,-8 l-4,16z'));
+  backs('seg1', w); backs('seg2', w); backs('seg3', w3);
+  const bolts = (id, ww) => { const bs = el(id).querySelectorAll('.ex-bolt circle'); if (bs.length === 4) bs.forEach((b, k) => b.setAttribute('cx', (k % 2 ? 1 : -1) * ww * .32)); };
+  bolts('seg1', w); bolts('seg2', w);
+  el('seg3').querySelector('.ex-belly').setAttribute('rx', Math.min(26, w3 * .34));
+  const tw = (id, ww, flip) => { const p = el(id).querySelector('.twist'); if (p) p.setAttribute('d', flip ? 'M' + (ww * .36) + ',-23 C' + (-ww * .08) + ',-15 ' + (ww * .08) + ',3 ' + (-ww * .36) + ',11' : 'M' + (-ww * .38) + ',-23 C' + (ww * .08) + ',-15 ' + (-ww * .08) + ',3 ' + (ww * .36) + ',11'); };
+  tw('seg1', w, false); tw('seg2', w, true); tw('seg3', w3, false);
   buildBody(c);
   const nm = (L && L.names[i % CHARS.length]) || c.name;
   const ds = el('charDots');
@@ -1622,14 +1637,10 @@ function sfx(name, pmul) {
 let lastSfx = '';
 function doPoke(vx, vy) {
   const c = curChar();
-  const lx = vx - 200, ly = vy - 600, gi = nearestPt(lx, ly), gp = SB.pts[gi];
-  const part = (gp.role === 'arm' || gp.role === 'armTip' || gp.role === 'shoulder') ? 'arm' : gp.f > .68 ? 'head' : 'pot';
+  const lx = vx - 200, ly = vy - 600, nd = nearestNode(lx, ly);
+  const part = nd.kind !== 'b' ? 'arm' : nd.i >= 4 ? 'head' : 'pot';
   poke = { t: 0, d: 1, part, side: vx < 200 ? -1 : 1, style: c.poke };
-  // jel dalgası: dokunulan yer içeri göçer, komşular titreşir
-  const w = grabWeights(gi, 2.2);
-  let cx = 0, cy = 0; SB.pts.forEach(p => { cx += p.x; cy += p.y; }); cx /= SB.n; cy /= SB.n;
-  const dx = cx - lx, dy = cy - ly, dl = Math.hypot(dx, dy) || 1;
-  SB.pts.forEach((p, i) => { if (w[i] > 0 && p.f >= .03) { p.vx += dx / dl * 420 * w[i]; p.vy += dy / dl * 420 * w[i]; } });
+  pokeNode(nd, lx, ly);   // dokunulan parça göçüp titreşir
   let pool = (part === 'head' ? c.sHead : part === 'arm' ? c.sArm : c.sBase).slice();
   if (pool.length > 1) pool = pool.filter(s => s !== lastSfx);
   const pick = one(pool); lastSfx = pick;
@@ -1776,10 +1787,9 @@ requestAnimationFrame(frame);
     sx = x; sy = y; st = performance.now(); moved = false; active = true;
     if (mode === 'elastic') {
       const v = view(x, y);
-      const gi = nearestPt(v[0] - 200, v[1] - 600), gp = SB.pts[gi];
-      const isArm = gp.role === 'arm' || gp.role === 'armTip' || gp.role === 'shoulder';
-      ELA.zone = isArm ? (gp.side < 0 ? 'armL' : 'armR') : gp.f > .7 ? 'top' : gp.f > .35 ? 'mid' : 'low';
-      SB.grab = { i: gi, w: grabWeights(gi, isArm ? 1.6 : 2.4), dx: 0, dy: 0 };   // tutulan nokta parmağa yapışır
+      const nd = nearestNode(v[0] - 200, v[1] - 600);
+      ELA.zone = nodeZone(nd);
+      SB.grab = { n: nd, w: grabWeights(nd, nd.kind === 'b' ? .9 : .8), dx: 0, dy: 0 };   // tutulan parça parmağa yapışır
       ELA.on = true; ELA.nx = 0; ELA.ny = 0; ELA.dxv = 0; ELA.dyv = 0; ELA.max = 0; ELA.px = x; ELA.py = y; ELA.spd = 0;
       elasticStart();
     }
